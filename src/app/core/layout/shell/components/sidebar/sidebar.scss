@@ -1,0 +1,101 @@
+:host {
+  display: contents;
+}
+
+aside {
+  transition: width 280ms cubic-bezier(0.4, 0, 0.2, 1),
+  transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-btn {
+  transition: background 150ms ease;
+}
+
+.logo-btn:hover {
+  background: #f3f4f6;
+}
+
+.collapse-arrow {
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
+  opacity: 0;
+}
+
+.logo-btn:hover .collapse-arrow {
+  opacity: 1;
+}
+
+.collapsed .collapse-arrow {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+/* Nav text fade on collapse */
+.nav-text-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 180ms ease, max-width 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 200px;
+  opacity: 1;
+}
+
+.collapsed .nav-text-wrap {
+  max-width: 0;
+  opacity: 0;
+}
+
+.collapsed .nav-group-label {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.collapsed .nav-badge {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-group-label,
+.nav-badge {
+  transition: opacity 200ms ease;
+}
+
+.collapsed .nav-link {
+  justify-content: center;
+}
+
+.collapsed .logo-wrap {
+  justify-content: center;
+}
+
+/* Active state — applied via routerLinkActive */
+.nav-active {
+  background-color: #eff6ff;
+  color: #1d4ed8 !important;
+  font-weight: 600;
+}
+
+.nav-active .nav-icon {
+  color: #2563eb !important;
+}
+
+/* Tooltip when collapsed */
+.nav-link {
+  position: relative;
+}
+
+.collapsed .nav-link[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}

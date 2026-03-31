@@ -1,0 +1,56 @@
+<!-- ── Desktop navbar ── -->
+<header class="hidden lg:flex h-16 shrink-0 items-center gap-4 border-b border-gray-200 bg-white px-6">
+
+  <!-- Page title — reactive, updates on every navigation -->
+  <h2 class="text-base font-semibold text-gray-900">
+    {{ pageTitle.title() }}
+  </h2>
+
+  <div class="h-5 w-px bg-gray-200" aria-hidden="true"></div>
+
+  <div class="ml-auto flex items-center gap-2">
+    <button
+      class="relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+      type="button"
+      aria-label="Notificaciones"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6" />
+        <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+      </svg>
+      <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white"></span>
+    </button>
+  </div>
+</header>
+
+<!-- ── Mobile navbar ── -->
+<header class="mobile-header flex lg:hidden h-14 shrink-0 items-center gap-3 border-b border-gray-100 bg-white px-4">
+
+  <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-600">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572" />
+    </svg>
+  </div>
+
+  <!-- Same reactive title signal, same source -->
+  <h2 class="text-[15px] font-semibold text-gray-900">
+    {{ pageTitle.title() }}
+  </h2>
+
+  <div class="ml-auto flex items-center gap-1">
+    <button
+      class="relative rounded-xl p-2 text-gray-500 transition-colors active:bg-gray-100"
+      type="button"
+      aria-label="Notificaciones"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6" />
+        <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+      </svg>
+      <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white"></span>
+    </button>
+  </div>
+</header>

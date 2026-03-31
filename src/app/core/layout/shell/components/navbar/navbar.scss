@@ -1,0 +1,12 @@
+:host {
+  display: contents;
+}
+
+/*
+ * Safe area for mobile devices with notch.
+ * Applied only to the mobile header via the .mobile-header class
+ * so it does not affect the desktop header height.
+ */
+.mobile-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
