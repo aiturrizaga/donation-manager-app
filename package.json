@@ -17,8 +17,13 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@primeuix/themes": "^2.0.3",
+    "@tabler/icons-angular": "^3.41.1",
+    "@tabler/icons-webfont": "^3.41.1",
+    "primeng": "^21.1.4",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.2.2",
+    "tailwindcss-primeui": "^0.6.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

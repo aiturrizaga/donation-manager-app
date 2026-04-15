@@ -15,6 +15,7 @@ aside {
   background: #f3f4f6;
 }
 
+/* Collapse arrow — visible on hover and when collapsed */
 .collapse-arrow {
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
   opacity: 0;
@@ -29,7 +30,7 @@ aside {
   transform: rotate(180deg);
 }
 
-/* Nav text fade on collapse */
+/* Nav text fade on collapse via max-width animation */
 .nav-text-wrap {
   overflow: hidden;
   white-space: nowrap;
@@ -66,7 +67,7 @@ aside {
   justify-content: center;
 }
 
-/* Active state — applied via routerLinkActive */
+/* Active route state — applied by routerLinkActive */
 .nav-active {
   background-color: #eff6ff;
   color: #1d4ed8 !important;
@@ -77,7 +78,13 @@ aside {
   color: #2563eb !important;
 }
 
-/* Tooltip when collapsed */
+/* Tabler icon sizing — prevents inheritance from parent font-size */
+.nav-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Tooltip shown when sidebar is collapsed */
 .nav-link {
   position: relative;
 }

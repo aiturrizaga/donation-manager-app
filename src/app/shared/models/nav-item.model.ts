@@ -1,36 +1,31 @@
-export interface NavItem {
-  /** Unique identifier — used as routerLink path */
-  id: string;
+import { MenuItem } from 'primeng/api';
 
-  /** Display label */
-  label: string;
-
-  /** Tabler icon SVG path data — one or more <path> strings */
-  iconPaths: string[];
-
-  /** Router path (e.g. '/dashboard') */
-  route: string;
-
-  /** Optional badge count — shown as a pill on sidebar and bottom-nav */
-  badge?: number;
-
-  /** Optional subtitle — shown in the More page item cards */
-  subtitle?: string;
-
-  /** Navigation group label — used by sidebar to render section headers */
-  group?: string;
-
-  /** Whether this item appears in the bottom nav (max 4 items) */
+/**
+ * Extends PrimeNG's MenuItem with project-specific fields.
+ * These fields are valid because MenuItem has [key: string]: any.
+ *
+ * Using a named interface instead of inline [key: string] access
+ * gives type safety when reading these fields in NavApi and components.
+ */
+export interface NavItem extends MenuItem {
+  /**
+   * Whether this item appears in the mobile bottom nav.
+   * Max 4 items are rendered — enforced by NavApi.getBottomNavItems().
+   */
   inBottomNav?: boolean;
 
   /**
-   * Roles allowed to see this item.
-   * Empty array means visible to all roles.
-   * Reserved for future RBAC filtering — not yet enforced.
+   * Short description shown in the /mas page item cards.
+   * Maps to PrimeNG's built-in `title` field for tooltip use,
+   * but also used as subtitle text in custom layouts.
    */
-  roles?: string[];
+  subtitle?: string;
 }
 
+/**
+ * A nav group as returned by the API and rendered by the sidebar.
+ * Shape matches PrimeNG's top-level MenuItem with nested items.
+ */
 export interface NavGroup {
   label: string;
   items: NavItem[];

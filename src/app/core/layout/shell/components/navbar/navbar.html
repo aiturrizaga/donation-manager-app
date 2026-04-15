@@ -8,6 +8,14 @@
 
   <div class="h-5 w-px bg-gray-200" aria-hidden="true"></div>
 
+  <p-multi-select [options]="organizations"
+                  [(ngModel)]="selectedOrganizations"
+                  optionLabel="name"
+                  optionValue="code"
+                  placeholder="Selecciona una organización"
+                  [maxSelectedLabels]="3"
+                  class="w-full md:w-80" />
+
   <div class="ml-auto flex items-center gap-2">
     <button
       class="relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"

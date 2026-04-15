@@ -1,6 +1,6 @@
 import { Component, input, signal } from '@angular/core';
-import { NavGroup } from '../../../../../shared/models/nav-item.model';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,8 +9,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
-  /** Nav groups passed from ShellComponent, built by NavService */
-  groups = input.required<NavGroup[]>();
+  /** Nav groups from ShellComponent — MenuItem[] shape, built by NavApi */
+  groups = input.required<MenuItem[]>();
 
   collapsed = signal(false);
 

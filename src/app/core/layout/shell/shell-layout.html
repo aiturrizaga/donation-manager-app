@@ -1,25 +1,14 @@
 <div class="flex h-screen overflow-hidden bg-gray-50 font-sans antialiased">
 
-  <!-- Sidebar — desktop only, receives grouped nav data -->
   <app-sidebar [groups]="sidebarGroups()" />
 
-  <!-- Right column -->
   <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
 
-    <!--
-      Single navbar component — internally renders two <header> elements
-      controlled by Tailwind breakpoints (hidden lg:flex / flex lg:hidden).
-      No conditional rendering at this level.
-    -->
     <app-navbar />
 
-    <!-- Content — sole scrollable zone in the layout -->
     <main class="flex-1 overflow-y-auto bg-gray-50 px-4 py-5 pb-24 lg:px-6 lg:pb-6">
       <router-outlet />
     </main>
-
-    <!-- Bottom nav — mobile only, receives flat item list -->
-    <app-bottom-nav [items]="bottomNavItems()" />
 
   </div>
 </div>
