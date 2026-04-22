@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, output } from '@angular/core';
 import { PageTitleFacade } from '../../facades/page-title.facade';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class Navbar implements OnInit {
   protected readonly pageTitle = inject(PageTitleFacade);
+  menuClick = output<void>();
 
   organizations!: { name: string; code: string }[];
   selectedOrganizations!: any[];

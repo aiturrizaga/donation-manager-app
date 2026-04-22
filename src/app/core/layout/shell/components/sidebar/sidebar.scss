@@ -7,26 +7,20 @@ aside {
   transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.logo-btn {
+/* Collapse button — icon rotates when sidebar is collapsed */
+.collapse-btn {
   transition: background 150ms ease;
 }
 
-.logo-btn:hover {
+.collapse-btn:hover {
   background: #f3f4f6;
 }
 
-/* Collapse arrow — visible on hover and when collapsed */
-.collapse-arrow {
-  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
-  opacity: 0;
+.collapse-icon {
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.logo-btn:hover .collapse-arrow {
-  opacity: 1;
-}
-
-.collapsed .collapse-arrow {
-  opacity: 1;
+.collapsed .collapse-icon {
   transform: rotate(180deg);
 }
 
@@ -63,11 +57,12 @@ aside {
   justify-content: center;
 }
 
-.collapsed .logo-wrap {
+/* When collapsed: center logo mark and hide text */
+.collapsed .logo-section {
   justify-content: center;
 }
 
-/* Active route state — applied by routerLinkActive */
+/* Active route state */
 .nav-active {
   background-color: #eff6ff;
   color: #1d4ed8 !important;
@@ -78,7 +73,6 @@ aside {
   color: #2563eb !important;
 }
 
-/* Tabler icon sizing — prevents inheritance from parent font-size */
 .nav-icon {
   font-size: 20px;
   line-height: 1;

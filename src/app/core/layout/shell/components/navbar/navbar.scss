@@ -1,0 +1,7 @@
+/*
+ * Safe-area top padding for notched devices.
+ * Applied to the single header element directly.
+ */
+header {
+  padding-top: env(safe-area-inset-top, 0px);
+}

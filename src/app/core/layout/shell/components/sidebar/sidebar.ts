@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 
@@ -9,12 +9,17 @@ import { MenuItem } from 'primeng/api';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
-  /** Nav groups from ShellComponent — MenuItem[] shape, built by NavApi */
   groups = input.required<MenuItem[]>();
+  collapsed = input<boolean>(false);
+  hideCollapseBtn = input<boolean>(false);
+  mobileOpen = input<boolean>(false);
 
-  collapsed = signal(false);
+  collapseToggled = output<boolean>();
+  mobileClose = output<void>();
 
-  toggleCollapse(): void {
-    this.collapsed.update((v) => !v);
+  sidebarWidth = computed<string>(() => (this.collapsed() ? 'calc(0.25rem * 13)' : '256px'));
+
+  onCollapseClick(): void {
+    this.collapseToggled.emit(!this.collapsed());
   }
 }
