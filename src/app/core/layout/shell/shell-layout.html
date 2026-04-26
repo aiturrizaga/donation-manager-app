@@ -1,14 +1,17 @@
-<div class="flex h-screen overflow-hidden bg-gray-50 font-sans antialiased">
+<div class="shell">
 
-  <app-sidebar [groups]="sidebarGroups()" />
+  <app-sidebar
+    [navItems]="sidebarNavigationItems()"
+    [collapsed]="sidebarCollapsed()"
+    (collapseToggled)="onSidebarCollapseToggled($event)"
+  />
 
-  <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-
+  <div class="shell__body">
     <app-navbar />
 
-    <main class="flex-1 overflow-y-auto bg-gray-50 px-4 py-5 pb-24 lg:px-6 lg:pb-6">
+    <main class="shell__main">
       <router-outlet />
     </main>
-
   </div>
+
 </div>

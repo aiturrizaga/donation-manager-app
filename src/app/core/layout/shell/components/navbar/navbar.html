@@ -1,34 +1,21 @@
-<!--
-      Single header — adapts to mobile and desktop via Tailwind breakpoints.
-      h-14 on mobile → h-16 on lg+
-      px-4 on mobile → px-6 on lg+
-      gap-3 on mobile → gap-4 on lg+
-    -->
-<header class="
-      flex shrink-0 items-center
-      h-14 gap-3 px-4
-      lg:h-16 lg:gap-4 lg:px-6
-      border-b border-gray-200 bg-white
-    ">
+<header class="navbar">
 
-  <!-- ── Logo mark — mobile only ── -->
-  <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-violet-600 lg:hidden">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 24 24"
+  <!-- Logo mark — mobile only -->
+  <div class="navbar__logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
          fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
       <path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572" />
     </svg>
   </div>
 
-  <!-- ── Page title — both breakpoints, font size adapts ── -->
-  <h2 class="text-[15px] font-semibold text-gray-900 lg:text-base">
-    {{ pageTitle.title() }}
-  </h2>
+  <!-- Page title -->
+  <h2 class="navbar__title">{{ navApi.title() }}</h2>
 
-  <!-- ── Divider — desktop only ── -->
-  <div class="hidden h-5 w-px bg-gray-200 lg:block" aria-hidden="true"></div>
+  <!-- Divider — desktop only -->
+  <div class="navbar__divider" aria-hidden="true"></div>
 
-  <!-- ── Org MultiSelect — desktop only ── -->
-  <div class="hidden lg:block">
+  <!-- Org filter — desktop only -->
+  <div class="navbar__org-filter">
     <p-multi-select
       [options]="organizations"
       [(ngModel)]="selectedOrganizations"
@@ -40,23 +27,16 @@
     />
   </div>
 
-  <!-- ── Right actions ── -->
-  <div class="ml-auto flex items-center gap-1 lg:gap-2">
-
-    <!-- Notifications — both breakpoints -->
-    <button
-      class="relative rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 active:bg-gray-100"
-      type="button"
-      aria-label="Notificaciones"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+  <!-- Right actions -->
+  <div class="navbar__actions">
+    <button class="navbar__action-btn" type="button" aria-label="Notificaciones">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
         <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6" />
         <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
       </svg>
-      <span class="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white"></span>
+      <span class="navbar__notification-dot" aria-hidden="true"></span>
     </button>
-
   </div>
 
 </header>

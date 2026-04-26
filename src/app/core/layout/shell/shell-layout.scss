@@ -1,16 +1,27 @@
-:host {
-  display: contents;
-}
+@reference 'tailwindcss';
 
-main::-webkit-scrollbar {
-  width: 4px;
-}
+.shell {
+  @apply flex h-screen overflow-hidden bg-gray-50 font-sans antialiased;
 
-main::-webkit-scrollbar-track {
-  background: transparent;
-}
+  &__body {
+    @apply flex min-w-0 flex-1 flex-col overflow-hidden;
+  }
 
-main::-webkit-scrollbar-thumb {
-  background: #3b82f6;
-  border-radius: 4px;
+  &__main {
+    @apply flex-1 overflow-y-auto bg-gray-50;
+    @apply px-4 py-5 pb-24;
+    @apply lg:px-6 lg:pb-6;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      @apply bg-violet-400 rounded-full;
+    }
+  }
 }

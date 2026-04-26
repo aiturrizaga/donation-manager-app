@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NavApi } from './api/nav.api';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
@@ -11,14 +11,20 @@ import { MenuItem } from 'primeng/api';
   imports: [RouterOutlet, Navbar, Sidebar],
   templateUrl: './shell-layout.html',
   styleUrl: './shell-layout.scss',
+  host: {
+    class: 'contents',
+  },
 })
 export class ShellLayout {
-  private readonly navApi = inject(NavApi);
+  readonly #navApi = inject(NavApi);
 
-  sidebarGroups = toSignal(this.navApi.getSidebarGroups(), {
+  sidebarCollapsed = signal(false);
+
+  sidebarNavigationItems = toSignal(this.#navApi.getNavigationItems(), {
     initialValue: [] as MenuItem[],
   });
 
-  @HostListener('window:resize')
-  onResize(): void {}
+  onSidebarCollapseToggled(collapsed: boolean): void {
+    this.sidebarCollapsed.set(collapsed);
+  }
 }
