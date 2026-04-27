@@ -1,0 +1,40 @@
+<p-confirm-dialog />
+
+<div class="org-page">
+
+  <div class="org-page__header">
+    <div class="org-page__header-info">
+      <h1 class="org-page__title">Organizaciones</h1>
+      <p class="org-page__subtitle">
+        {{ store.total() }} organización{{ store.total() !== 1 ? 'es' : '' }}
+        registrada{{ store.total() !== 1 ? 's' : '' }}
+      </p>
+    </div>
+    <button
+      pButton
+      icon="ti ti-plus"
+      label="Nueva organización"
+      routerLink="nueva"
+    ></button>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+    <div class="p-4 border-b border-gray-200">
+      <app-organization-filters (filtersChange)="onFiltersChange($event)" />
+    </div>
+
+    <app-organization-table
+      [items]="store.items()"
+      [isLoading]="store.loading()"
+      [total]="store.total()"
+      [rows]="store.query().size"
+      [first]="store.first()"
+      (toggleActive)="onToggleActive($event)"
+      (delete)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    />
+
+  </div>
+
+</div>

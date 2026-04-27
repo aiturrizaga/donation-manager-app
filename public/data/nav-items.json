@@ -12,7 +12,7 @@
         "id": "donaciones",
         "label": "Donaciones",
         "icon": "ti ti-cash",
-        "routerLink": "/donaciones",
+        "routerLink": "/donations",
         "badge": "3",
         "badgeStyleClass": "p-badge-danger"
       },
@@ -20,7 +20,7 @@
         "id": "donantes",
         "label": "Donantes",
         "icon": "ti ti-users",
-        "routerLink": "/donantes"
+        "routerLink": "/donors"
       }
     ]
   },
@@ -38,7 +38,7 @@
         "id": "formularios",
         "label": "Formularios",
         "icon": "ti ti-forms",
-        "routerLink": "/formularios",
+        "routerLink": "/forms",
         "title": "Configuración de formularios de donación"
       }
     ]
@@ -50,21 +50,21 @@
         "id": "organizaciones",
         "label": "Organizaciones",
         "icon": "ti ti-building-community",
-        "routerLink": "/organizaciones",
+        "routerLink": "/organizations",
         "title": "ADEU, ACES, AKIE"
       },
       {
         "id": "usuarios",
         "label": "Usuarios",
         "icon": "ti ti-user-shield",
-        "routerLink": "/usuarios",
+        "routerLink": "/users",
         "title": "Administradores y permisos"
       },
       {
         "id": "configuracion",
         "label": "Configuración",
         "icon": "ti ti-settings-2",
-        "routerLink": "/configuracion",
+        "routerLink": "/settings",
         "title": "Tipos de doc., gateways, SMTP"
       }
     ]

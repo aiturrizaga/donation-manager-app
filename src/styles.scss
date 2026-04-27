@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import '@tabler/icons-webfont/dist/tabler-icons.css';
+@reference 'tailwindcss';
 
 :root {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -8,4 +9,27 @@
 
 body {
   font-family: var(--font-sans), serif;
+}
+
+.app-table {
+  .p-datatable-header-cell {
+    @apply text-xs font-semibold uppercase tracking-wide text-gray-500 bg-gray-50 border-b border-gray-200;
+  }
+
+  .p-datatable-tbody > tr {
+    @apply border-b border-gray-100 transition-colors hover:bg-gray-50/60;
+
+    > td {
+      @apply py-3 px-4 text-sm text-gray-700;
+    }
+  }
+
+  .p-datatable-paginator-bottom {
+    @apply border-t border-gray-200 bg-white;
+  }
+
+  // Empty state row
+  .app-table__empty-row td {
+    @apply text-center py-0;
+  }
 }
