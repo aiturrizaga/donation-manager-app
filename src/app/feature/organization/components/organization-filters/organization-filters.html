@@ -5,8 +5,15 @@
       pInputText
       type="text"
       placeholder="Buscar por nombre o RUC"
+      maxlength="50"
       class="w-full"
       [formControl]="form.controls.search"
     />
+    @if (form.controls.search.value) {
+      <p-inputicon
+        class="ti ti-x cursor-pointer"
+        (click)="form.controls.search.reset()"
+      />
+    }
   </p-iconfield>
 </form>
