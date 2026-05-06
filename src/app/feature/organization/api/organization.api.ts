@@ -13,7 +13,10 @@ export class OrganizationApi {
   readonly #http = inject(HttpClient);
   readonly #base = `${environment.apiUrl}/v1/organizations`;
 
-  getAll(query: PageQuery, filters: OrganizationFilterParams): Observable<PageContent<Organization>> {
+  getAll(
+    query: PageQuery,
+    filters: OrganizationFilterParams,
+  ): Observable<PageContent<Organization>> {
     const params = buildHttpParams({ ...query, ...filters });
     return this.#http
       .get<ApiPagedResponse<Organization>>(this.#base, { params })
@@ -24,6 +27,14 @@ export class OrganizationApi {
     return this.#http
       .get<ApiResponseModel<Organization>>(`${this.#base}/${id}`)
       .pipe(map((r) => r.data));
+  }
+
+  create(payload: any): Observable<ApiResponseModel<Organization>> {
+    return this.#http.post<ApiResponseModel<Organization>>(this.#base, payload);
+  }
+
+  update(id: number, payload: any): Observable<ApiResponseModel<Organization>> {
+    return this.#http.put<ApiResponseModel<Organization>>(`${this.#base}/${id}`, payload);
   }
 
   activate(id: number): Observable<Organization> {

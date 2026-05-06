@@ -1,14 +1,15 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { ConfirmationService } from 'primeng/api';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
+import { DialogService } from 'primeng/dynamicdialog';
 import { OrganizationStore } from '../../store/organization.store';
 import { OrganizationFilters } from '../../components/organization-filters/organization-filters';
 import { OrganizationDataView } from '../../components/organization-data-view/organization-data-view';
 import { Organization, OrganizationFilterParams } from '../../models/organization.model';
+import { SaveOrganizationDlg } from '../../components/save-organization-dlg/save-organization-dlg';
 
 const STATUS_TABS = [
   { value: 'all', label: 'Todos' },
@@ -23,7 +24,6 @@ type OrgTabValue = (typeof STATUS_TABS)[number]['value'];
   imports: [
     OrganizationFilters,
     OrganizationDataView,
-    RouterLink,
     Tabs,
     TabList,
     Tab,
@@ -33,12 +33,13 @@ type OrgTabValue = (typeof STATUS_TABS)[number]['value'];
     ButtonIcon,
     ButtonLabel,
   ],
-  providers: [OrganizationStore, ConfirmationService],
+  providers: [OrganizationStore, ConfirmationService, DialogService],
   templateUrl: './organization-list.html',
 })
 export class OrganizationListPage implements OnInit {
   readonly store = inject(OrganizationStore);
   readonly #confirm = inject(ConfirmationService);
+  readonly #dialog = inject(DialogService);
 
   readonly statusTabs = STATUS_TABS;
   activeStatus: OrgTabValue = 'all';
@@ -74,6 +75,20 @@ export class OrganizationListPage implements OnInit {
       icon: 'ti ti-trash',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => this.store.remove(org.id),
+    });
+  }
+
+  openSaveDialog(org?: Organization): void {
+    const ref = this.#dialog.open(SaveOrganizationDlg, {
+      header: org ? 'Editar organización' : 'Nueva organización',
+      width: '520px',
+      modal: true,
+      closable: true,
+      data: org,
+    });
+
+    ref?.onClose.subscribe((result: Organization) => {
+      if (result) this.store.load();
     });
   }
 }

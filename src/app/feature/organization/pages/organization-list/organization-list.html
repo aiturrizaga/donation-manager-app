@@ -22,7 +22,7 @@
   <div class="toolbar">
     <app-organization-filters class="flex-1" (filtersChange)="onFiltersChange($event)" />
     <div class="toolbar__actions">
-      <button pButton routerLink="nueva">
+      <button pButton (click)="openSaveDialog()">
         <i class="ti ti-plus" pButtonIcon></i>
         <span pButtonLabel class="hidden sm:inline">Nueva organización</span>
         <span pButtonLabel class="inline sm:hidden">Nuevo</span>

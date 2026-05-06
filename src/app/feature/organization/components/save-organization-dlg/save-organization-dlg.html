@@ -1,0 +1,95 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1">
+    <label for="txtLegalName" class="font-medium">Razón social</label>
+    <input
+      pInputText
+      type="text"
+      id="txtLegalName"
+      formControlName="legalName"
+      placeholder="Ej. Alimentos del Sur S.A.C."
+      [invalid]="formValidator.hasError('legalName')"
+    />
+    @if (formValidator.hasError('legalName')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('legalName') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtTradeName" class="font-medium">Nombre comercial</label>
+    <input
+      pInputText
+      type="text"
+      id="txtTradeName"
+      formControlName="tradeName"
+      placeholder="Ej. AlimSur"
+    />
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtRuc" class="font-medium">RUC</label>
+    <input
+      pInputText
+      type="text"
+      id="txtRuc"
+      formControlName="ruc"
+      placeholder="20512345678"
+      maxlength="11"
+      [invalid]="formValidator.hasError('ruc')"
+    />
+    @if (formValidator.hasError('ruc')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('ruc') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="txtEmail" class="font-medium">Correo electrónico</label>
+      <input
+        pInputText
+        type="email"
+        id="txtEmail"
+        formControlName="email"
+        placeholder="contacto@empresa.pe"
+        [invalid]="formValidator.hasError('email')"
+      />
+      @if (formValidator.hasError('email')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('email') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="txtPhone" class="font-medium">Teléfono</label>
+      <input
+        pInputText
+        type="text"
+        id="txtPhone"
+        formControlName="phone"
+        placeholder="987 654 321"
+        maxlength="15"
+      />
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [outlined]="true"
+      type="button"
+      (click)="close()"
+    />
+    <p-button
+      type="submit"
+      [label]="organization() ? 'Actualizar' : 'Guardar'"
+      [loading]="isSaving()"
+    />
+  </div>
+
+</form>
