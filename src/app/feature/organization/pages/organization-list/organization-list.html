@@ -53,14 +53,16 @@
     </div>
   </div>
 
-  <!-- Table -->
-  <app-organization-table
+  <!-- Data view -->
+  <app-organization-data-view
     [items]="store.items()"
     [isLoading]="store.loading()"
     [total]="store.total()"
     [rows]="store.query().size"
     [first]="store.first()"
-    (toggleActive)="onToggleActive($event)"
+    emptyIcon="ti-building-bank"
+    emptyTitle="No se encontraron organizaciones"
+    emptyDescription="Intenta ajustar los filtros o crea una nueva organización"
     (delete)="onDelete($event)"
     (pageChange)="onPageChange($event)"
   />

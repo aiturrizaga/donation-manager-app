@@ -2,8 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import '@tabler/icons-webfont/dist/tabler-icons.css';
 
-@reference 'tailwindcss';
-
 :root {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
@@ -12,26 +10,40 @@ body {
   font-family: var(--font-sans), serif;
 }
 
-.app-table {
+.data-table {
   .p-datatable-header-cell {
-    @apply text-xs font-semibold uppercase tracking-wide text-gray-500 bg-gray-50 border-b border-gray-200;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--p-gray-500);
+    background-color: var(--p-gray-50);
+    border-bottom: 1px solid var(--p-gray-200);
   }
 
   .p-datatable-tbody > tr {
-    @apply border-b border-gray-100 transition-colors hover:bg-gray-50/60;
+    border-bottom: 1px solid var(--p-gray-100);
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--p-gray-50) 60%, transparent);
+    }
 
     > td {
-      @apply py-3 px-4 text-sm text-gray-700;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: var(--p-gray-700);
     }
   }
 
   .p-datatable-paginator-bottom {
-    @apply border-t border-gray-200 bg-white;
+    border-top: 1px solid var(--p-gray-200);
+    background-color: white;
   }
 
-  // Empty state row
-  .app-table__empty-row td {
-    @apply text-center py-0;
+  .data-table__empty-row td {
+    text-align: center;
+    padding: 0;
   }
 }
 

@@ -7,7 +7,7 @@ import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
 import { OrganizationStore } from '../../store/organization.store';
 import { OrganizationFilters } from '../../components/organization-filters/organization-filters';
-import { OrganizationTable } from '../../components/organization-table/organization-table';
+import { OrganizationDataView } from '../../components/organization-table/organization-data-view';
 import {
   Organization,
   OrganizationFilterParams as OrgFiltersModel,
@@ -25,7 +25,7 @@ type OrgTabValue = (typeof STATUS_TABS)[number]['value'];
   selector: 'app-organization-list-page',
   imports: [
     OrganizationFilters,
-    OrganizationTable,
+    OrganizationDataView,
     RouterLink,
     Tabs,
     TabList,
