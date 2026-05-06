@@ -1,0 +1,12 @@
+<div class="flex flex-col items-center gap-2 py-10 text-gray-400 text-sm">
+  <i
+    [class]="'ti ' + icon() + ' ' + iconClass()"
+    [style.font-size]="iconSizeStyle()"
+  ></i>
+  @if (title()) {
+    <p class="font-medium text-gray-500">{{ title() }}</p>
+  }
+  @if (description()) {
+    <p class="text-xs text-gray-400 text-center max-w-xs">{{ description() }}</p>
+  }
+</div>

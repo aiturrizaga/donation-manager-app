@@ -18,7 +18,7 @@ export interface LegalOwner {
   email: string | null;
 }
 
-export interface OrganizationFilters {
+export interface OrganizationFilterParams {
   search?: string | null;
-  is_active?: boolean | null;
+  active?: boolean | null;
 }

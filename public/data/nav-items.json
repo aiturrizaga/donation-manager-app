@@ -1,15 +1,16 @@
 [
   {
+    "id": "group-01",
     "label": "Principal",
     "items": [
       {
-        "id": "dashboard",
+        "id": "0101-dashboard",
         "label": "Dashboard",
         "icon": "ti ti-layout-dashboard",
         "routerLink": "/dashboard"
       },
       {
-        "id": "donaciones",
+        "id": "0102-donation",
         "label": "Donaciones",
         "icon": "ti ti-cash",
         "routerLink": "/donations",
@@ -17,7 +18,7 @@
         "badgeStyleClass": "p-badge-danger"
       },
       {
-        "id": "donantes",
+        "id": "0103-donor",
         "label": "Donantes",
         "icon": "ti ti-users",
         "routerLink": "/donors"
@@ -25,17 +26,18 @@
     ]
   },
   {
+    "id": "group-02",
     "label": "Presencia pública",
     "items": [
       {
-        "id": "landing",
+        "id": "0201-landing-page",
         "label": "Página pública",
         "icon": "ti ti-layout-navbar",
         "routerLink": "/landing",
         "title": "Landing y formularios del donante"
       },
       {
-        "id": "formularios",
+        "id": "0202-forms",
         "label": "Formularios",
         "icon": "ti ti-forms",
         "routerLink": "/forms",
@@ -44,24 +46,25 @@
     ]
   },
   {
+    "id": "group-03",
     "label": "Administración",
     "items": [
       {
-        "id": "organizaciones",
+        "id": "0301-organization",
         "label": "Organizaciones",
         "icon": "ti ti-building-community",
         "routerLink": "/organizations",
         "title": "ADEU, ACES, AKIE"
       },
       {
-        "id": "usuarios",
+        "id": "0302-user",
         "label": "Usuarios",
         "icon": "ti ti-user-shield",
         "routerLink": "/users",
         "title": "Administradores y permisos"
       },
       {
-        "id": "configuracion",
+        "id": "0303-settings",
         "label": "Configuración",
         "icon": "ti ti-settings-2",
         "routerLink": "/settings",

@@ -1,57 +1,66 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
+import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { ConfirmationService } from 'primeng/api';
+import { Badge } from 'primeng/badge';
+import { Chip } from 'primeng/chip';
 import { OrganizationStore } from '../../store/organization.store';
 import { OrganizationFilters } from '../../components/organization-filters/organization-filters';
 import { OrganizationTable } from '../../components/organization-table/organization-table';
 import {
   Organization,
-  OrganizationFilters as OrgFiltersModel,
+  OrganizationFilterParams as OrgFiltersModel,
 } from '../../models/organization.model';
 
+const STATUS_TABS = [
+  { value: 'all', label: 'Todos' },
+  { value: 'active', label: 'Activos' },
+  { value: 'inactive', label: 'Inactivos' },
+] as const;
+
+type OrgTabValue = (typeof STATUS_TABS)[number]['value'];
+
 @Component({
-  selector: 'app-organization-list',
-  imports: [OrganizationFilters, OrganizationTable, ButtonModule, RouterLink, ConfirmDialogModule],
+  selector: 'app-organization-list-page',
+  imports: [
+    OrganizationFilters,
+    OrganizationTable,
+    RouterLink,
+    Tabs,
+    TabList,
+    Tab,
+    Badge,
+    Chip,
+    ButtonDirective,
+    ButtonIcon,
+    ButtonLabel,
+  ],
   providers: [OrganizationStore, ConfirmationService],
   templateUrl: './organization-list.html',
-  styles: [
-    `
-      @reference 'tailwindcss';
-
-      .org-page {
-        @apply flex flex-col gap-4;
-
-        &__header {
-          @apply flex items-center justify-between gap-4;
-        }
-
-        &__header-info {
-          @apply flex flex-col gap-0.5;
-        }
-
-        &__title {
-          @apply text-lg font-semibold text-gray-900;
-        }
-
-        &__subtitle {
-          @apply text-sm text-gray-400;
-        }
-      }
-    `,
-  ],
 })
 export class OrganizationListPage implements OnInit {
   readonly store = inject(OrganizationStore);
   readonly #confirm = inject(ConfirmationService);
 
+  readonly statusTabs = STATUS_TABS;
+  activeStatus: OrgTabValue = 'all';
+
   ngOnInit(): void {
     this.store.load();
   }
 
-  onFiltersChange(filters: OrgFiltersModel): void {
-    this.store.setFilters(filters);
+  onStatusChange(tab: string | number | undefined): void {
+    this.activeStatus = (tab as OrgTabValue) ?? 'all';
+    const isActive = tab === 'active' ? true : tab === 'inactive' ? false : undefined;
+    this.store.setFilters({ active: isActive ?? null });
+    this.store.load();
+  }
+
+  onFiltersChange(filters: Omit<OrgFiltersModel, 'is_active'>): void {
+    const isActive =
+      this.activeStatus === 'active' ? true : this.activeStatus === 'inactive' ? false : null;
+    this.store.setFilters({ ...filters, active: isActive });
     this.store.load();
   }
 

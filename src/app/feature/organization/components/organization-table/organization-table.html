@@ -86,28 +86,24 @@
 
         <td>
           <div class="flex items-center gap-1">
-            <button
-              pButton
+            <p-button
               [icon]="org.isActive ? 'ti ti-toggle-right' : 'ti ti-toggle-left'"
               [pTooltip]="org.isActive ? 'Desactivar' : 'Activar'"
               tooltipPosition="top"
-              tooltipStyleClass="sidebar-tooltip"
               severity="secondary"
               [text]="true"
               size="small"
-              (click)="toggleActive.emit(org)"
-            ></button>
-            <button
-              pButton
+              (onClick)="toggleActive.emit(org)"
+            />
+            <p-button
               icon="ti ti-trash"
               pTooltip="Eliminar"
               tooltipPosition="top"
-              tooltipStyleClass="sidebar-tooltip"
               severity="danger"
               [text]="true"
               size="small"
-              (click)="delete.emit(org)"
-            ></button>
+              (onClick)="delete.emit(org)"
+            />
           </div>
         </td>
 
@@ -119,10 +115,12 @@
     @if (!isLoading()) {
       <tr>
         <td colspan="5" class="text-center py-0">
-          <div class="flex flex-col items-center gap-2 py-10 text-gray-400 text-sm">
-            <i class="ti ti-building-bank text-[40px]"></i>
-            <p>No se encontraron organizaciones</p>
-          </div>
+          <app-empty-state
+            icon="ti-building-bank"
+            iconClass="text-5xl"
+            title="No se encontraron organizaciones"
+            description="Intenta ajustar los filtros o crea una nueva organización"
+          />
         </td>
       </tr>
     }

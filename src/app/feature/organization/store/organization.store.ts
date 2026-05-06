@@ -4,7 +4,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { computed } from '@angular/core';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { OrganizationApi } from '../api/organization.api';
-import { Organization, OrganizationFilters } from '../models/organization.model';
+import { Organization, OrganizationFilterParams } from '../models/organization.model';
 import { DEFAULT_PAGE_QUERY, PageQuery } from '@shared/models/pagination.model';
 
 interface OrganizationListState {
@@ -12,7 +12,7 @@ interface OrganizationListState {
   total: number;
   pages: number;
   query: PageQuery;
-  filters: OrganizationFilters;
+  filters: OrganizationFilterParams;
   loading: boolean;
   error: string | null;
 }
@@ -55,7 +55,7 @@ export const OrganizationStore = signalStore(
       ),
     ),
 
-    setFilters(filters: OrganizationFilters): void {
+    setFilters(filters: OrganizationFilterParams): void {
       patchState(store, {
         filters,
         query: { ...store.query(), page: 1 },

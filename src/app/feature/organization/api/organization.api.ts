@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { ApiPagedResponse, ApiResponseModel, PageContent } from '@shared/models/api-response.model';
 import { PageQuery } from '@shared/models/pagination.model';
 import { buildHttpParams } from '@shared/utils/http.util';
-import { Organization, OrganizationFilters } from '../models/organization.model';
+import { Organization, OrganizationFilterParams } from '../models/organization.model';
 import { environment } from '@env/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -13,7 +13,7 @@ export class OrganizationApi {
   readonly #http = inject(HttpClient);
   readonly #base = `${environment.apiUrl}/v1/organizations`;
 
-  getAll(query: PageQuery, filters: OrganizationFilters): Observable<PageContent<Organization>> {
+  getAll(query: PageQuery, filters: OrganizationFilterParams): Observable<PageContent<Organization>> {
     const params = buildHttpParams({ ...query, ...filters });
     return this.#http
       .get<ApiPagedResponse<Organization>>(this.#base, { params })

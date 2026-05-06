@@ -1,24 +1,12 @@
-<div class="org-filters">
-  <form [formGroup]="form" class="org-filters__form">
-
-    <p-icon-field class="org-filters__search">
-      <p-inputicon class="ti ti-search" />
-      <input
-        pInputText
-        formControlName="search"
-        placeholder="Buscar por nombre, RUC..."
-        class="w-full"
-      />
-    </p-icon-field>
-
-    <p-select
-      formControlName="is_active"
-      [options]="statusOptions"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Estado"
-      class="org-filters__status"
+<form [formGroup]="form">
+  <p-iconfield class="w-full block">
+    <p-inputicon class="ti ti-search" />
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por nombre o RUC"
+      class="w-full"
+      [formControl]="form.controls.search"
     />
-
-  </form>
-</div>
+  </p-iconfield>
+</form>
