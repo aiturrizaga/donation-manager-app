@@ -7,11 +7,8 @@ import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
 import { OrganizationStore } from '../../store/organization.store';
 import { OrganizationFilters } from '../../components/organization-filters/organization-filters';
-import { OrganizationDataView } from '../../components/organization-table/organization-data-view';
-import {
-  Organization,
-  OrganizationFilterParams as OrgFiltersModel,
-} from '../../models/organization.model';
+import { OrganizationDataView } from '../../components/organization-data-view/organization-data-view';
+import { Organization, OrganizationFilterParams } from '../../models/organization.model';
 
 const STATUS_TABS = [
   { value: 'all', label: 'Todos' },
@@ -57,7 +54,7 @@ export class OrganizationListPage implements OnInit {
     this.store.load();
   }
 
-  onFiltersChange(filters: Omit<OrgFiltersModel, 'is_active'>): void {
+  onFiltersChange(filters: Omit<OrganizationFilterParams, 'active'>): void {
     const isActive =
       this.activeStatus === 'active' ? true : this.activeStatus === 'inactive' ? false : null;
     this.store.setFilters({ ...filters, active: isActive });
@@ -68,15 +65,6 @@ export class OrganizationListPage implements OnInit {
     const page = Math.floor(event.first / event.rows) + 1;
     this.store.changePage(page, event.rows);
     this.store.load();
-  }
-
-  onToggleActive(org: Organization): void {
-    this.#confirm.confirm({
-      message: `¿${org.isActive ? 'Desactivar' : 'Activar'} "${org.legalName}"?`,
-      header: 'Confirmar acción',
-      icon: org.isActive ? 'ti ti-toggle-left' : 'ti ti-toggle-right',
-      accept: () => this.store.toggleActive(org),
-    });
   }
 
   onDelete(org: Organization): void {
