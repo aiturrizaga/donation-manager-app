@@ -1,0 +1,26 @@
+<div class="profile-card flex items-center gap-2 min-w-0"
+     [class]="'profile-card--' + size()">
+
+  <div class="relative shrink-0">
+    <p-avatar [label]="initials()" shape="circle" />
+    @if (showStatus()) {
+      <span class="profile-card__status absolute bottom-0 right-0 rounded-full bg-green-500 ring-2 ring-white"></span>
+    }
+  </div>
+
+  <div class="hidden lg:flex flex-col min-w-0 text-left" style="max-width:120px; align-items:flex-start">
+    <span class="text-gray-700 truncate w-full font-medium" style="font-size: var(--name-size)">
+      {{ name() }}
+    </span>
+    @if (showRole()) {
+      <span class="text-gray-400 truncate w-full leading-none mt-0.5" style="font-size: var(--role-size)">
+        {{ role() }}
+      </span>
+    }
+  </div>
+
+  @if (showChevron()) {
+    <i class="ti ti-chevron-down hidden lg:block shrink-0 text-gray-400 text-sm"></i>
+  }
+
+</div>

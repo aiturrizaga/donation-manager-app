@@ -2,59 +2,71 @@
 
 $transition-fast: 150ms ease;
 
-@mixin icon-button {
-  @apply relative rounded-lg p-2 text-gray-500;
-  @apply transition-colors hover:bg-gray-100 hover:text-gray-900 active:bg-gray-100;
-  cursor: pointer;
-
-  svg {
-    @apply size-5;
-  }
-}
-
 .navbar {
-  @apply flex shrink-0 items-center;
-  @apply h-14 gap-3 px-4;
-  @apply lg:gap-4 lg:px-6;
-  @apply border-b border-gray-200 bg-white;
+  &__breadcrumb {
+    ::ng-deep .p-breadcrumb {
+      background: transparent;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+    }
 
-  // Safe-area for notched devices
-  padding-top: env(safe-area-inset-top, 0px);
+    ::ng-deep .p-breadcrumb-list {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-wrap: nowrap;
+    }
 
-  &__logo {
-    @apply flex size-7 shrink-0 items-center justify-center rounded-lg bg-violet-600;
-    @apply lg:hidden;
+    ::ng-deep .p-breadcrumb-item-link {
+      font-size: 0.875rem;
+      color: theme('colors.gray.400');
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+      transition: color $transition-fast;
 
-    svg {
-      @apply h-4 w-4 text-white;
+      &:hover {
+        color: theme('colors.gray.600');
+      }
+    }
+
+    ::ng-deep .p-breadcrumb-item:last-child {
+      .p-breadcrumb-item-link {
+        color: theme('colors.gray.900');
+        font-weight: 600;
+        cursor: default;
+        pointer-events: none;
+      }
+    }
+
+    ::ng-deep .p-breadcrumb-separator svg {
+      display: none;
     }
   }
 
-  &__title {
-    @apply text-[15px] font-semibold text-gray-900;
-    @apply lg:text-base;
-  }
-
-  &__divider {
-    @apply hidden h-5 w-px bg-gray-200;
-    @apply lg:block;
-  }
-
-  &__org-filter {
-    @apply hidden lg:block;
-  }
-
-  &__actions {
-    @apply ml-auto flex items-center gap-1;
-    @apply lg:gap-2;
-  }
-
   &__action-btn {
-    @include icon-button;
-  }
+    &.p-button {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      color: theme('colors.gray.500');
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: 2.25rem;
+      height: 2.25rem;
+      min-width: unset;
+      transition: background $transition-fast, color $transition-fast;
 
-  &__notification-dot {
-    @apply absolute right-1.5 top-1.5;
-    @apply h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white;
+      i {
+        font-size: 1.25rem;
+        line-height: 1;
+      }
+
+      &:hover {
+        background: theme('colors.gray.100');
+        color: theme('colors.gray.900');
+      }
+    }
   }
 }

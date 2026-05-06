@@ -1,42 +1,80 @@
-<header class="navbar">
+<header class="navbar flex shrink-0 items-center h-14 gap-3 px-4 lg:gap-4 lg:px-6 border-b border-gray-200 bg-white"
+        style="padding-top: env(safe-area-inset-top, 0px)">
 
-  <!-- Logo mark — mobile only -->
-  <div class="navbar__logo">
+  <!-- Mobile - Logo mark -->
+  <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-brand-700 lg:hidden">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+         class="size-5 text-white"
          fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
       <path d="M19.5 12.572l-7.5 7.428l-7.5-7.428a5 5 0 1 1 7.5-6.566a5 5 0 1 1 7.5 6.572" />
+      <path
+        d="M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543.543c.69.69 1.81.69 2.5 0l1-1a3.182 3.182 0 0 1 4.5 0l2.25 2.25" />
+      <path d="M12.5 15.5l2 2" />
+      <path d="M15 13l2 2" />
     </svg>
   </div>
 
-  <!-- Page title -->
-  <h2 class="navbar__title">{{ navApi.title() }}</h2>
+  <!-- Breadcrumb -->
+  <p-breadcrumb
+    class="navbar__breadcrumb shrink-0"
+    [model]="visibleBreadcrumb()"
+  >
+    <ng-template #separator>
+      <i class="ti ti-chevron-right text-xs text-gray-300"></i>
+    </ng-template>
+  </p-breadcrumb>
 
-  <!-- Divider — desktop only -->
-  <div class="navbar__divider" aria-hidden="true"></div>
-
-  <!-- Org filter — desktop only -->
-  <div class="navbar__org-filter">
-    <p-multi-select
-      [options]="organizations"
-      [(ngModel)]="selectedOrganizations"
-      optionLabel="name"
-      optionValue="code"
-      placeholder="Selecciona una organización"
-      [maxSelectedLabels]="3"
-      class="w-80"
-    />
+  <!-- Desktop - Search bar -->
+  <div class="hidden lg:flex flex-1 items-center justify-center">
+    <button
+      type="button"
+      class="navbar__search flex items-center gap-2.5 h-9 px-2.5 rounded-lg w-96 border border-gray-300 cursor-pointer select-none transition-all duration-150 bg-transparent hover:border-gray-400"
+      aria-label="Buscar"
+      (click)="onSearchClick()"
+    >
+      <i class="ti ti-search text-base text-gray-400 shrink-0"></i>
+      <span class="flex-1 text-left text-sm text-gray-400 font-medium">Buscar</span>
+      <span class="flex items-center gap-1 shrink-0">
+        <kbd
+          class="inline-flex items-center justify-center h-5 min-w-5 px-1 rounded border border-gray-200 bg-gray-50 text-[11px] font-medium text-gray-400 font-sans leading-none">Ctrl</kbd>
+        <span class="text-[11px] text-gray-400 font-medium">+</span>
+        <kbd
+          class="inline-flex items-center justify-center h-5 min-w-5 px-1 rounded border border-gray-200 bg-gray-50 text-[11px] font-medium text-gray-400 font-sans leading-none">K</kbd>
+      </span>
+    </button>
   </div>
 
   <!-- Right actions -->
-  <div class="navbar__actions">
-    <button class="navbar__action-btn" type="button" aria-label="Notificaciones">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3H4a4 4 0 0 0 2-3v-3a7 7 0 0 1 4-6" />
-        <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
-      </svg>
-      <span class="navbar__notification-dot" aria-hidden="true"></span>
+  <div class="ml-auto flex items-center gap-1 lg:gap-2">
+
+    <!-- Mobile - Search button -->
+    <button
+      pButton
+      type="button"
+      class="navbar__action-btn lg:hidden!"
+      [text]="true"
+      severity="secondary"
+      aria-label="Buscar"
+      (click)="onSearchClick()"
+    >
+      <i class="ti ti-search"></i>
     </button>
+
+    <!-- App switcher -->
+    <button
+      pButton
+      type="button"
+      class="navbar__action-btn"
+      [text]="true"
+      severity="secondary"
+      aria-label="Cambiar módulo"
+    >
+      <i class="ti ti-layout-grid"></i>
+    </button>
+
+    <!-- User menu -->
+    <app-user-menu />
+
   </div>
 
 </header>

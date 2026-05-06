@@ -1,76 +1,13 @@
-@reference 'tailwindcss';
-
 $transition-collapse: 280ms cubic-bezier(0.4, 0, 0.2, 1);
 $transition-fade: 180ms ease;
 $transition-fast: 150ms ease;
 
-@mixin collapsible-text {
-  overflow: hidden;
-  white-space: nowrap;
-  max-width: 200px;
-  opacity: 1;
-  transition: max-width $transition-collapse,
-  opacity $transition-fade;
-
-  &--hidden {
-    max-width: 0;
-    opacity: 0;
-  }
-}
-
-@mixin icon-button {
-  @apply shrink-0 rounded-lg p-1.5 text-gray-400;
-  @apply transition-colors hover:bg-gray-100 hover:text-gray-700;
-  cursor: pointer;
-}
-
 // Sidebar
-
 .sidebar {
-  @apply hidden lg:flex shrink-0 flex-col bg-white overflow-hidden relative;
-  @apply border-r border-gray-200;
   transition: width $transition-collapse,
   transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  &__header {
-    @apply flex h-14 shrink-0 items-center gap-2 px-3;
-    @apply border-b border-gray-200;
-
-    &.sidebar--collapsed {
-      @apply justify-center px-0;
-    }
-  }
-
-  &__brand {
-    @apply flex min-w-0 flex-1 items-center gap-2.5;
-  }
-
-  &__logo {
-    @apply flex size-8 shrink-0 items-center justify-center rounded-lg bg-violet-700;
-
-    svg {
-      @apply size-6 text-white;
-    }
-  }
-
-  &__brand-text {
-    @apply flex flex-col leading-none;
-  }
-
-  &__brand-name {
-    @apply text-sm font-semibold text-gray-900;
-  }
-
-  &__brand-version {
-    @apply mt-0.5 text-xs leading-none text-gray-400;
-  }
-
-  &__collapse-btn {
-    @include icon-button;
-  }
-
   &__collapse-icon {
-    @apply size-4.5 shrink-0;
     transition: transform $transition-collapse;
 
     &--rotated {
@@ -79,169 +16,111 @@ $transition-fast: 150ms ease;
   }
 
   &__nav {
-    @apply flex-1 overflow-y-auto overflow-x-hidden py-3 px-2;
     transition: padding $transition-collapse;
 
     .sidebar--collapsed & {
-      @apply px-0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
   }
 
-  &__footer {
-    @apply flex w-full shrink-0 items-center gap-2.5 px-3 py-3 text-left;
-    @apply border-t border-gray-200;
-    @apply cursor-pointer transition-colors hover:bg-gray-50;
-
-    &--collapsed {
-      @apply justify-center px-0;
-    }
-
-    p-avatar {
-      --p-avatar-width: 1.75rem;
-      --p-avatar-height: 1.75rem;
-      --p-avatar-font-size: 0.625rem;
-      --p-avatar-background: theme('colors.violet.600');
-      --p-avatar-color: #fff;
-      @apply shrink-0 font-bold;
-    }
-  }
-
-  &__user-info {
-    @apply min-w-0 flex-1 overflow-hidden text-left;
-  }
-
-  &__user-name {
-    @apply truncate text-xs font-semibold text-gray-800;
-  }
-
-  &__user-role {
-    @apply mt-0.5 text-[11px] leading-none text-gray-400;
-  }
-
-  &__footer-dots {
-    @apply shrink-0 text-[16px] text-gray-400;
+  &__footer--collapsed {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 
 // Nav group
-
 .nav-group {
-  & + & {
-    margin-top: 0.75rem;
+  .sidebar--collapsed & {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   &__label {
-    @apply px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1;
     transition: opacity 200ms ease;
 
     &--hidden {
-      @apply opacity-0 pointer-events-none;
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      margin: 0;
+      padding: 0;
     }
+  }
+}
+
+// Nav accordion
+.nav-accordion {
+  .sidebar--collapsed & {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__body {
+    border-left: 1.5px solid var(--color-primary-100);
+    overflow: hidden;
+    animation: accordion-down 180ms ease forwards;
+  }
+}
+
+@keyframes accordion-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 // Nav item
-
 .nav-item {
-  @apply mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2;
-  @apply text-sm text-gray-600;
-  @apply transition-colors duration-150 hover:bg-violet-50 hover:text-violet-700;
   position: relative;
 
   &--collapsed {
-    @apply justify-center gap-0 px-0 py-0;
+    justify-content: center;
+    gap: 0;
     width: 40px;
     height: 40px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 0 2px 0;
+    padding: 0 !important;
   }
 
   &--active {
-    @apply bg-violet-50 text-violet-700 font-semibold;
+    background-color: var(--color-brand-50);
+    color: var(--color-brand-700);
+    font-weight: 600;
 
     .nav-item__icon {
-      @apply text-violet-600;
+      color: var(--color-brand-600);
     }
   }
 
   &__icon {
-    @apply shrink-0 text-[18px] leading-none text-gray-400;
     transition: color $transition-fast;
   }
 
   &__label {
-    @include collapsible-text;
-    @apply flex-1;
-  }
-}
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 200px;
+    opacity: 1;
+    flex: 1;
+    transition: max-width $transition-collapse, opacity $transition-fade;
 
-// p-menu overrides
-
-:host ::ng-deep .sidebar-user-menu {
-  @apply overflow-hidden;
-  margin-left: 6px;
-  margin-right: 6px;
-
-  .p-menu-item-disabled {
-    .p-menu-item-content {
-      @apply px-2 py-1.5;
-    }
-
-    .p-menu-item-label {
-      @apply text-[11px] text-gray-400 font-normal;
-    }
-
-    .p-menu-item-icon {
-      display: none;
+    &--hidden {
+      max-width: 0;
+      opacity: 0;
     }
   }
 
-  .p-menu-item-content {
-    @apply rounded-md;
-    transition: background $transition-fast;
-  }
-
-  .p-menu-item-link {
-    @apply flex items-center gap-2.5 px-2.5 py-1.5;
-  }
-
-  .p-menu-item-icon {
-    @apply text-[17px] leading-none text-gray-400;
-    margin: 0;
-  }
-
-  .p-menu-item-label {
-    @apply text-sm text-gray-700;
-  }
-
-  .p-menu-separator {
-    @apply my-0.5 mx-1.5;
-  }
-
-  .user-menu-item--danger {
-    .p-menu-item-icon {
-      @apply text-red-500!;
-    }
-
-    .p-menu-item-label {
-      @apply text-red-600;
-    }
-
-    .p-menu-item-content {
-      &:hover {
-        @apply bg-red-50!;
-      }
-    }
-
-    &:hover,
-    &.p-focus {
-      .p-menu-item-icon {
-        @apply text-red-500!;
-      }
-
-      .p-menu-item-label {
-        @apply text-red-600!;
-      }
-    }
+  &__chevron {
+    transition: transform 200ms ease;
   }
 }

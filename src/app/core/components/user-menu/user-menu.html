@@ -1,0 +1,28 @@
+<button
+  type="button"
+  class="user-menu__trigger"
+  aria-label="Menú de usuario"
+  (click)="onToggle($event)"
+>
+  <app-profile-card
+    [name]="user().fullName"
+    [role]="user().role"
+    [initials]="initials()"
+    [showChevron]="true"
+    size="md"
+  />
+</button>
+
+<p-menu
+  #menu
+  [model]="menuItems"
+  [popup]="true"
+  styleClass="user-menu__popup"
+>
+  <ng-template pTemplate="start">
+    <div class="user-menu__header">
+      <span class="user-menu__header-name">{{ user().fullName }}</span>
+      <span class="user-menu__header-email">{{ user().email }}</span>
+    </div>
+  </ng-template>
+</p-menu>

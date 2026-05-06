@@ -1,29 +1,25 @@
-import { Component, inject, OnInit, output } from '@angular/core';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { FormsModule } from '@angular/forms';
+import { Component, computed, inject } from '@angular/core';
+import { ButtonDirective } from 'primeng/button';
+import { Breadcrumb } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 import { NavApi } from '@core/layout/shell/api';
+import { UserMenu } from '@core/components';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FormsModule, MultiSelectModule],
+  imports: [ButtonDirective, UserMenu, Breadcrumb],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
-  host: {
-    class: 'contents',
-  },
 })
-export class Navbar implements OnInit {
+export class Navbar {
   protected readonly navApi = inject(NavApi);
-  menuClick = output<void>();
 
-  organizations!: { name: string; code: string }[];
-  selectedOrganizations!: any[];
+  readonly visibleBreadcrumb = computed<MenuItem[]>(() => {
+    const items = this.navApi.breadcrumb();
+    if (items.length <= 3) return items;
 
-  ngOnInit() {
-    this.organizations = [
-      { name: 'ADEU', code: 'adeu' },
-      { name: 'ACES', code: 'aces' },
-      { name: 'DEMO', code: 'otro' },
-    ];
-  }
+    return [items[0], { label: '...', disabled: true }, items[items.length - 1]];
+  });
+
+  onSearchClick(): void {}
 }

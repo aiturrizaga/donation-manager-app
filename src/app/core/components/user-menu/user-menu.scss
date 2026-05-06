@@ -1,0 +1,81 @@
+@reference 'tailwindcss';
+
+$transition-fast: 150ms ease;
+
+.user-menu {
+
+  &__trigger {
+    @apply flex items-center rounded-lg px-2 py-1.5;
+    @apply transition-colors hover:bg-gray-100 cursor-pointer;
+    background: none;
+    border: none;
+    outline: none;
+  }
+}
+
+:host ::ng-deep .user-menu__popup {
+  @apply overflow-hidden;
+  margin-left: 6px;
+  margin-right: 6px;
+
+  .user-menu__header {
+    @apply flex flex-col px-3 py-3;
+    @apply border-b border-gray-100;
+  }
+
+  .user-menu__header-name {
+    @apply text-sm font-semibold text-gray-800;
+  }
+
+  .user-menu__header-email {
+    @apply text-xs text-gray-400 mt-0.5;
+  }
+
+  .p-menu-item-content {
+    @apply rounded-md;
+    transition: background $transition-fast;
+  }
+
+  .p-menu-item-link {
+    @apply flex items-center gap-2.5 px-2.5 py-1.5;
+  }
+
+  .p-menu-item-icon {
+    @apply text-[17px] leading-none text-gray-400;
+    margin: 0;
+  }
+
+  .p-menu-item-label {
+    @apply text-sm text-gray-700;
+  }
+
+  .p-menu-separator {
+    @apply my-0.5 mx-1.5;
+  }
+
+  .user-menu-item--danger {
+    .p-menu-item-icon {
+      @apply text-red-500!;
+    }
+
+    .p-menu-item-label {
+      @apply text-red-600;
+    }
+
+    .p-menu-item-content {
+      &:hover {
+        @apply bg-red-50!;
+      }
+    }
+
+    &:hover, &.p-focus {
+      .p-menu-item-icon {
+        @apply text-red-500!;
+      }
+
+      .p-menu-item-label {
+        @apply text-red-600!;
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+.profile-card {
+  --avatar-size: 1.75rem;
+  --avatar-font-size: 0.625rem;
+  --name-size: 0.875rem;
+  --role-size: 0.6875rem;
+  --status-size: 0.625rem;
+
+  &--sm {
+    gap: 0.375rem;
+    --avatar-size: 1.5rem;
+    --avatar-font-size: 0.5rem;
+    --name-size: 0.75rem;
+    --role-size: 0.625rem;
+    --status-size: 0.5rem;
+  }
+
+  &--lg {
+    gap: 0.75rem;
+    --avatar-size: 2.25rem;
+    --avatar-font-size: 0.75rem;
+    --name-size: 0.875rem;
+    --role-size: 0.75rem;
+    --status-size: 0.625rem;
+  }
+
+  p-avatar {
+    --p-avatar-width: var(--avatar-size);
+    --p-avatar-height: var(--avatar-size);
+    --p-avatar-font-size: var(--avatar-font-size);
+    --p-avatar-background: var(--color-brand-700);
+    --p-avatar-color: var(--color-white);
+    font-weight: 700;
+  }
+
+  &__status {
+    width: var(--status-size);
+    height: var(--status-size);
+  }
+}

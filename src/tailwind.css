@@ -1,2 +1,28 @@
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
+
+:root {
+  --color-brand-50: oklch(96.9% 0.016 293.756);
+  --color-brand-100: oklch(94.3% 0.029 294.588);
+  --color-brand-200: oklch(89.4% 0.057 293.283);
+  --color-brand-300: oklch(81.1% 0.111 293.571);
+  --color-brand-400: oklch(70.2% 0.183 293.541);
+  --color-brand-500: oklch(60.6% 0.25 292.717);
+  --color-brand-600: oklch(54.1% 0.281 293.009);
+  --color-brand-700: oklch(49.1% 0.27 292.581);
+  --color-brand-800: oklch(43.2% 0.232 292.759);
+  --color-brand-900: oklch(38% 0.189 293.745);
+}
+
+@theme {
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+}
