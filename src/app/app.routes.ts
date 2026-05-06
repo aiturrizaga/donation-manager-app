@@ -8,13 +8,20 @@ export const routes: Routes = [
     component: ShellLayout,
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard',
+      },
+      {
         title: 'Dashboard',
         path: 'dashboard',
+        data: { breadcrumb: 'Dashboard' },
         component: Dashboard,
       },
       {
         title: 'Organizaciones',
         path: 'organizations',
+        data: { breadcrumb: 'Organizaciones' },
         loadChildren: () =>
           import('./feature/organization/organization.routes').then((m) => m.routes),
       },
