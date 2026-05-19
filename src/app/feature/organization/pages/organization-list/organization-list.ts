@@ -33,7 +33,7 @@ type OrgTabValue = (typeof STATUS_TABS)[number]['value'];
     ButtonIcon,
     ButtonLabel,
   ],
-  providers: [OrganizationStore, ConfirmationService, DialogService],
+  providers: [OrganizationStore, DialogService],
   templateUrl: './organization-list.html',
 })
 export class OrganizationListPage implements OnInit {

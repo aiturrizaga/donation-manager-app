@@ -3,7 +3,7 @@ import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { UserStore } from '../../store/user.store';
 import { UserFilters } from '../../components/user-filters/user-filters';
@@ -33,7 +33,7 @@ type UserTabValue = (typeof STATUS_TABS)[number]['value'];
     ButtonIcon,
     ButtonLabel,
   ],
-  providers: [UserStore, ConfirmationService, DialogService, MessageService],
+  providers: [UserStore, DialogService],
   templateUrl: './user-list.html',
 })
 export class UserListPage implements OnInit {
@@ -74,8 +74,11 @@ export class UserListPage implements OnInit {
       message: `¿Deseas ${action} a ${user.partner.name}?`,
       header: user.isActive ? 'Desactivar usuario' : 'Activar usuario',
       icon: user.isActive ? 'ti ti-user-off' : 'ti ti-user-check',
+      rejectLabel: 'No',
+      acceptLabel: `Si, ${action}`,
       acceptButtonStyleClass: user.isActive ? 'p-button-danger' : '',
       accept: () => this.store.toggleActive(user),
+      reject: () => this.store.revertToggle(user),
     });
   }
 
@@ -83,15 +86,20 @@ export class UserListPage implements OnInit {
     this.#confirm.confirm({
       message: `Se enviará un correo a ${user.partner.email} para restablecer la contraseña.`,
       header: 'Restablecer contraseña',
+      rejectLabel: 'No',
+      acceptLabel: 'Si, enviar',
       icon: 'ti ti-lock-open',
       accept: () => this.store.resetPassword(user.id),
     });
   }
 
   onDelete(user: User): void {
+    console.log('Delete user', user);
     this.#confirm.confirm({
       message: `¿Eliminar a ${user.partner.name}? Esta acción no se puede deshacer.`,
       header: 'Eliminar usuario',
+      rejectLabel: 'No',
+      acceptLabel: 'Si, eliminar',
       icon: 'ti ti-trash',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => this.store.remove(user.id),

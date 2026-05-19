@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output, signal, viewChild } from '@angular/core';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
@@ -45,6 +45,30 @@ export class UserDataView {
 
   readonly skeletonRows = Array(5).fill({});
 
+  readonly menu = viewChild.required<Menu>('menu');
+  selectedUser = signal<User | null>(null);
+
+  readonly menuItems = computed((): MenuItem[] => {
+    const user = this.selectedUser();
+    if (!user) return [];
+    return [
+      {
+        label: 'Restablecer contraseña',
+        icon: 'ti ti-lock-open',
+        command: () => this.resetPassword.emit(user),
+      },
+      { separator: true },
+      {
+        label: 'Eliminar usuario',
+        icon: 'ti ti-trash',
+        labelClass: 'text-red-500!',
+        iconClass: 'text-red-500!',
+        styleClass: 'bg-red-50!',
+        command: () => this.delete.emit(user),
+      },
+    ];
+  });
+
   getInitials(name: string): string {
     return name
       .split(' ')
@@ -62,23 +86,9 @@ export class UserDataView {
     return role === 'super_admin' ? 'danger' : 'secondary';
   }
 
-  buildMenuItems(user: User): MenuItem[] {
-    return [
-      {
-        label: 'Restablecer contraseña',
-        icon: 'ti ti-lock-open',
-        command: () => this.resetPassword.emit(user),
-      },
-      { separator: true },
-      {
-        label: 'Eliminar usuario',
-        icon: 'ti ti-trash',
-        labelClass: 'text-red-500!',
-        iconClass: 'text-red-500!',
-        styleClass: 'bg-red-50!',
-        command: () => this.delete.emit(user),
-      },
-    ];
+  openMenu(event: MouseEvent, user: User): void {
+    this.selectedUser.set(user);
+    this.menu().toggle(event);
   }
 
   onPageChange(event: TablePageEvent | PaginatorState): void {

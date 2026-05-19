@@ -62,13 +62,12 @@
           />
         </td>
         <td>
-          <p-menu #menu [model]="buildMenuItems(user)" [popup]="true" appendTo="body" />
           <p-button
             icon="ti ti-dots-vertical"
             [text]="true"
             severity="secondary"
             size="small"
-            (onClick)="menu.toggle($event)"
+            (onClick)="openMenu($event, user)"
           />
         </td>
       </tr>
@@ -151,13 +150,12 @@
               [ngModel]="user.isActive"
               (ngModelChange)="toggleActive.emit(user)"
             />
-            <p-menu #menuMobile [model]="buildMenuItems(user)" [popup]="true" appendTo="body" />
             <p-button
               icon="ti ti-dots-vertical"
               [text]="true"
               severity="secondary"
               size="small"
-              (onClick)="menuMobile.toggle($event)"
+              (onClick)="openMenu($event, user)"
             />
           </div>
 
@@ -182,3 +180,5 @@
     </div>
   }
 </div>
+
+<p-menu #menu [model]="menuItems()" [popup]="true" appendTo="body" />

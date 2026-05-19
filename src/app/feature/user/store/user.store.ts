@@ -82,6 +82,12 @@ export const UserStore = signalStore(
         .subscribe();
     },
 
+    revertToggle(user: User): void {
+      patchState(store, {
+        items: store.items().map((u) => (u.id === user.id ? { ...user } : u)),
+      });
+    },
+
     resetPassword(id: number): void {
       api.resetPassword(id).subscribe();
     },
