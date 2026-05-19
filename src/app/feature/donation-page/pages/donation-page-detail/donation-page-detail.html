@@ -1,0 +1,143 @@
+<div class="flex flex-col gap-4">
+
+  <!-- Header -->
+  <div class="card">
+    <div class="my-2 -mr-0.5">
+      <p-button
+        icon="ti ti-arrow-left"
+        label="Volver a páginas"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        (onClick)="goBack()"
+      />
+    </div>
+
+    <div class="flex items-start justify-between gap-4 px-4 pb-4">
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xl font-semibold text-gray-900">
+            {{ resolvedPage().name }}
+          </span>
+          <p-tag
+            [value]="resolvedPage().isActive ? 'Activa' : 'Inactiva'"
+            [severity]="resolvedPage().isActive ? 'success' : 'secondary'"
+          />
+          @if (resolvedPage().domain) {
+            <p-tag
+              [value]="resolvedPage().domainStatus"
+              [severity]="getDomainStatusSeverity()"
+            />
+          }
+        </div>
+        <div class="flex flex-wrap gap-x-4 gap-y-1">
+          <span class="flex items-center gap-1.5 text-sm text-gray-500 font-mono">
+            <i class="ti ti-link text-gray-400 text-xs" aria-hidden="true"></i>
+            /{{ resolvedPage().slug }}
+          </span>
+          @if (resolvedPage().domain) {
+            <span class="flex items-center gap-1.5 text-sm text-gray-500 font-mono">
+              <i class="ti ti-world text-gray-400 text-xs" aria-hidden="true"></i>
+              {{ resolvedPage().domain }}
+            </span>
+          }
+          <span class="flex items-center gap-1.5 text-sm text-gray-500">
+            <i class="ti ti-building-community text-gray-400 text-xs" aria-hidden="true"></i>
+            {{ resolvedPage().organization?.tradeName ?? resolvedPage().organization?.legalName ?? '—' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <p-button
+          [icon]="resolvedPage().isActive ? 'ti ti-eye-off' : 'ti ti-eye'"
+          [label]="resolvedPage().isActive ? 'Desactivar' : 'Activar'"
+          [severity]="resolvedPage().isActive ? 'danger' : 'secondary'"
+          [outlined]="true"
+          size="small"
+          (onClick)="toggleActive()"
+        />
+        @if (resolvedPage().domain) {
+          <p-button
+            icon="ti ti-external-link"
+            label="Ver portal"
+            severity="secondary"
+            [outlined]="true"
+            size="small"
+            (onClick)="openLink('https://' + resolvedPage().domain)"
+          />
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="card p-0! overflow-hidden">
+    <p-tabs value="general">
+      <p-tablist class="px-4">
+        <p-tab value="general">
+          <div class="flex items-center gap-2">
+            <i class="ti ti-settings" aria-hidden="true"></i>
+            <span>General</span>
+          </div>
+        </p-tab>
+        <p-tab value="branding">
+          <div class="flex items-center gap-2">
+            <i class="ti ti-palette" aria-hidden="true"></i>
+            <span>Branding</span>
+          </div>
+        </p-tab>
+        <p-tab value="formulario">
+          <div class="flex items-center gap-2">
+            <i class="ti ti-forms" aria-hidden="true"></i>
+            <span>Formulario</span>
+          </div>
+        </p-tab>
+        <p-tab value="targets">
+          <div class="flex items-center gap-2">
+            <i class="ti ti-target" aria-hidden="true"></i>
+            <span>Targets</span>
+          </div>
+        </p-tab>
+        <p-tab value="pasarela">
+          <div class="flex items-center gap-2">
+            <i class="ti ti-credit-card" aria-hidden="true"></i>
+            <span>Pasarela</span>
+          </div>
+        </p-tab>
+      </p-tablist>
+
+      <p-tabpanels class="p-5">
+        <p-tabpanel value="general">
+          <app-page-tab-general
+            [page]="resolvedPage()"
+            (saved)="onPageSaved($event)"
+          />
+        </p-tabpanel>
+
+        <p-tabpanel value="branding">
+          <app-page-tab-branding
+            [page]="resolvedPage()"
+            (saved)="saveBranding()"
+          />
+        </p-tabpanel>
+
+        <p-tabpanel value="formulario">
+          <app-page-form-config
+            [pageId]="resolvedPage().id"
+            [initialConfig]="resolvedPage().formConfig"
+          />
+        </p-tabpanel>
+
+        <p-tabpanel value="targets">
+          <app-page-tab-targets [page]="resolvedPage()" />
+        </p-tabpanel>
+
+        <p-tabpanel value="pasarela">
+          <app-page-tab-gateway [page]="resolvedPage()" />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+
+</div>

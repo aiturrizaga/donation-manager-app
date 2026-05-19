@@ -1,0 +1,81 @@
+<div class="flex flex-col gap-4">
+
+  <!-- Selector card -->
+  <div class="card p-4">
+    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+      <div class="flex flex-col gap-0.5">
+        <span class="font-semibold text-gray-900">Configuración de formularios</span>
+        <span class="text-sm text-gray-400">
+          Selecciona una página para editar su formulario de donación
+        </span>
+      </div>
+      @if (selectedPage()) {
+        <a
+          [routerLink]="['/pages', selectedPage()!.id]"
+          class="text-sm text-gray-500 flex items-center gap-1.5 hover:underline"
+        >
+          <i class="ti ti-external-link text-xs" aria-hidden="true"></i>
+          Ver página completa
+        </a>
+      }
+    </div>
+
+    <div class="mt-4">
+      <p-select
+        [ngModel]="selectedPageId()"
+        (ngModelChange)="onPageSelect($event)"
+        [options]="pages()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Selecciona una página..."
+        [showClear]="true"
+        class="w-full sm:w-80"
+        appendTo="body"
+      >
+        <ng-template #selectedItem let-page>
+          @if (page) {
+            <div class="flex items-center gap-2">
+              <span>{{ page.name }}</span>
+              <span class="text-xs text-gray-400 font-mono">/{{ page.slug }}</span>
+            </div>
+          }
+        </ng-template>
+        <ng-template #item let-page>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-medium">{{ page.name }}</span>
+            <span class="text-xs text-gray-400 font-mono">/{{ page.slug }}</span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+  </div>
+
+  <!-- Form config -->
+  @if (selectedPageId()) {
+    <div class="card p-4">
+      @if (loading()) {
+        <div class="flex flex-col gap-4">
+          @for (_ of [1, 2, 3, 4]; track $index) {
+            <p-skeleton height="2.5rem" />
+          }
+        </div>
+      } @else {
+        <app-page-form-config
+          [pageId]="selectedPageId()!"
+          [initialConfig]="formConfig()"
+          (saved)="onFormSaved($event)"
+        />
+      }
+    </div>
+  } @else {
+    <div class="card">
+      <app-empty-state
+        icon="ti-forms"
+        iconClass="text-5xl"
+        title="Selecciona una página"
+        description="Elige una página de donación para ver y editar su configuración de formulario."
+      />
+    </div>
+  }
+
+</div>

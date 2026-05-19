@@ -20,7 +20,7 @@ export class DonationApi {
   }
 
   getById(id: string): Observable<Donation> {
-    return this.#http.get<ApiResponse<Donation>>(id).pipe(map((r) => r.data));
+    return this.#http.get<ApiResponse<Donation>>(`${this.#base}/${id}`).pipe(map((r) => r.data));
   }
 
   refund(id: string, payload: { refundReason: string }): Observable<Donation> {

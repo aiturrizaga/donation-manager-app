@@ -1,0 +1,186 @@
+<p-menu #menu [model]="menuItems()" [popup]="true" appendTo="body" />
+
+<div class="hidden sm:block">
+  <p-table
+    [value]="items()"
+    [loading]="isLoading()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="rows()"
+    [first]="first()"
+    [totalRecords]="total()"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    paginatorDropdownAppendTo="body"
+    currentPageReportTemplate="{first} – {last} de {totalRecords}"
+    paginatorStyleClass="flex! justify-end!"
+    [tableStyle]="{ 'min-width': '640px' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Página</th>
+        <th>Organización</th>
+        <th>Dominio</th>
+        <th class="text-center">Config.</th>
+        <th>Estado</th>
+        <th class="w-16"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-page>
+      <tr>
+        <td>
+          <div class="flex flex-col gap-0.5">
+            <a
+              [routerLink]="['/pages', page.id]"
+              class="font-medium text-gray-900 hover:underline cursor-pointer"
+            >
+              {{ page.name }}
+            </a>
+            <span class="text-xs text-gray-400 font-mono">/{{ page.slug }}</span>
+          </div>
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">
+            {{ page.organization?.tradeName ?? page.organization?.legalName ?? '—' }}
+          </span>
+        </td>
+        <td>
+          @if (page.domain) {
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-mono text-gray-600">{{ page.domain }}</span>
+              <p-tag
+                [value]="page.domainStatus"
+                [severity]="getDomainStatusSeverity(page.domainStatus)"
+                class="text-[10px]!"
+              />
+            </div>
+          } @else {
+            <span class="text-gray-400">—</span>
+          }
+        </td>
+        <td>
+          <div class="flex items-center justify-center gap-1.5">
+            <i
+              class="ti text-base"
+              [class.ti-palette]="true"
+              [class.text-green-600]="page.hasBranding"
+              [class.text-gray-300]="!page.hasBranding"
+              pTooltip="Branding"
+              tooltipPosition="top"
+              aria-hidden="true"
+            ></i>
+            <i
+              class="ti ti-forms text-base"
+              [class.text-green-600]="page.hasFormConfig"
+              [class.text-gray-300]="!page.hasFormConfig"
+              pTooltip="Formulario"
+              tooltipPosition="top"
+              aria-hidden="true"
+            ></i>
+          </div>
+        </td>
+        <td>
+          <p-toggle-switch
+            [ngModel]="page.isActive"
+            (onChange)="toggleActive.emit(page)"
+          />
+        </td>
+        <td>
+          <p-button
+            icon="ti ti-dots-vertical"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="openMenu($event, page)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="text-center py-0">
+          <app-empty-state
+            [icon]="emptyIcon()"
+            iconClass="text-5xl"
+            [title]="emptyTitle()"
+            [description]="emptyDescription()"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Mobile -->
+<div class="sm:hidden">
+  @if (isLoading()) {
+    <div class="divide-y divide-gray-100">
+      @for (_ of skeletonRows; track $index) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex flex-col gap-1.5 flex-1">
+            <p-skeleton height="0.875rem" width="8rem" />
+            <p-skeleton height="0.75rem" width="5rem" />
+          </div>
+          <p-skeleton height="1.5rem" width="2.5rem" borderRadius="999px" />
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      [icon]="emptyIcon()"
+      iconClass="text-5xl"
+      [title]="emptyTitle()"
+      [description]="emptyDescription()"
+    />
+  } @else {
+    <div class="divide-y divide-gray-100">
+      @for (page of items(); track page.id) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex flex-col gap-0.5 min-w-0">
+            <a
+              [routerLink]="['/pages', page.id]"
+              class="text-sm font-medium text-gray-900 truncate hover:underline"
+            >
+              {{ page.name }}
+            </a>
+            <span class="text-xs font-mono text-gray-400">/{{ page.slug }}</span>
+            <span class="text-xs text-gray-400">
+              {{ page.organization?.tradeName ?? '—' }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <p-toggle-switch
+              [ngModel]="page.isActive"
+              (onChange)="toggleActive.emit(page)"
+            />
+            <p-button
+              icon="ti ti-dots-vertical"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="openMenu($event, page)"
+            />
+          </div>
+        </div>
+      }
+    </div>
+    <div class="border-t border-gray-200">
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="total()"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [showPageLinks]="false"
+        [showFirstLastIcon]="false"
+        appendTo="body"
+        currentPageReportTemplate="{first} – {last} de {totalRecords}"
+        class="flex! justify-between!"
+      />
+    </div>
+  }
+</div>

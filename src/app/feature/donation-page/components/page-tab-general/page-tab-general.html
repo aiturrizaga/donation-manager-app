@@ -1,0 +1,131 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-5">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Nombre</label>
+      <input
+        pInputText
+        formControlName="name"
+        placeholder="Ej. Página principal ACES"
+        maxlength="150"
+        [invalid]="formValidator.hasError('name')"
+      />
+      @if (formValidator.hasError('name')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('name') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Slug</label>
+      <input
+        pInputText
+        formControlName="slug"
+        placeholder="ej. aces-2026"
+        maxlength="100"
+        [invalid]="formValidator.hasError('slug')"
+      />
+      @if (formValidator.hasError('slug')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('slug') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">
+      Dominio personalizado
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+    </label>
+    <div class="flex items-center gap-2">
+      <input
+        pInputText
+        formControlName="domain"
+        placeholder="dona.aces.edu.pe"
+        maxlength="255"
+        class="flex-1"
+      />
+      @if (page().domain) {
+        <p-tag
+          [value]="getDomainStatusLabel()"
+          [severity]="getDomainStatusSeverity()"
+        />
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">
+      Descripción
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+    </label>
+    <textarea
+      pTextarea
+      formControlName="description"
+      placeholder="Describe la causa visible al donante..."
+      rows="3"
+      class="w-full"
+    ></textarea>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Texto de bienvenida
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <textarea
+        pTextarea
+        formControlName="welcomeText"
+        placeholder="Mensaje de bienvenida en la página pública..."
+        rows="3"
+        class="w-full"
+      ></textarea>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Texto post-donación
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <textarea
+        pTextarea
+        formControlName="thankYouText"
+        placeholder="Mensaje de agradecimiento..."
+        rows="3"
+        class="w-full"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">
+      Montos sugeridos
+      <span class="text-gray-400 font-normal text-xs ml-1">(separados por coma)</span>
+    </label>
+    <input
+      pInputText
+      formControlName="suggestedAmounts"
+      placeholder="20, 50, 100, 200"
+    />
+  </div>
+
+  <div class="flex items-center gap-3">
+    <p-toggleswitch formControlName="allowsRecurring" />
+    <div class="flex flex-col gap-0.5">
+      <span class="text-sm font-medium">Permite donaciones recurrentes</span>
+      <span class="text-xs text-gray-400">Activa el selector de frecuencia en el formulario</span>
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <p-button
+      type="submit"
+      label="Guardar cambios"
+      [loading]="isSaving()"
+    />
+  </div>
+
+</form>

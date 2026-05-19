@@ -33,7 +33,7 @@
         "id": "0201-landing-page",
         "label": "Página pública",
         "icon": "ti ti-layout-navbar",
-        "routerLink": "/landing",
+        "routerLink": "/pages",
         "title": "Landing y formularios del donante"
       },
       {

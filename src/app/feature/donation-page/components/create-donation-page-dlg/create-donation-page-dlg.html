@@ -1,0 +1,64 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Organización</label>
+    <p-select
+      formControlName="organizationId"
+      [options]="organizations()"
+      optionLabel="tradeName"
+      optionValue="id"
+      placeholder="Selecciona una organización"
+      styleClass="w-full"
+      appendTo="body"
+      [invalid]="formValidator.hasError('organizationId')"
+    />
+    @if (formValidator.hasError('organizationId')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('organizationId') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Nombre</label>
+    <input
+      pInputText
+      formControlName="name"
+      placeholder="Ej. Página principal ACES"
+      maxlength="150"
+      [invalid]="formValidator.hasError('name')"
+    />
+    @if (formValidator.hasError('name')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('name') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Slug</label>
+    <input
+      pInputText
+      formControlName="slug"
+      placeholder="ej. aces-principal"
+      maxlength="100"
+      [invalid]="formValidator.hasError('slug')"
+    />
+    <span class="text-xs text-gray-400">Solo minúsculas, números y guiones. Ej: aces-2026</span>
+    @if (formValidator.hasError('slug')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('slug') }}
+      </p-message>
+    }
+  </div>
+
+  <p-message severity="info" size="small" variant="simple">
+    Después de crear la página podrás configurar el branding, formulario, targets y pasarela.
+  </p-message>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" (click)="close()" />
+    <p-button type="submit" label="Crear y configurar" [loading]="isSaving()" />
+  </div>
+
+</form>

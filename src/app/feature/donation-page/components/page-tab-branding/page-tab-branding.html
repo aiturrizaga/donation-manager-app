@@ -1,0 +1,123 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-5">
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Nombre de la empresa</label>
+    <input
+      pInputText
+      formControlName="companyName"
+      placeholder="Ej. ACES"
+      maxlength="150"
+      [invalid]="formValidator.hasError('companyName')"
+    />
+    @if (formValidator.hasError('companyName')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('companyName') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        URL del logo
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        formControlName="logoUrl"
+        placeholder="https://..."
+        maxlength="500"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        URL hero image
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        formControlName="heroImageUrl"
+        placeholder="https://..."
+        maxlength="500"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        URL favicon
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        formControlName="faviconUrl"
+        placeholder="https://..."
+        maxlength="500"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Color primario</label>
+      <div class="flex items-center gap-2">
+        <input
+          type="color"
+          [value]="form.controls.primaryColor.value"
+          (input)="form.controls.primaryColor.setValue($any($event.target).value)"
+          class="w-10 h-9 rounded cursor-pointer border border-gray-200"
+        />
+        <input
+          pInputText
+          formControlName="primaryColor"
+          placeholder="#0056A0"
+          maxlength="7"
+          class="flex-1 font-mono"
+          [invalid]="formValidator.hasError('primaryColor')"
+        />
+      </div>
+      @if (formValidator.hasError('primaryColor')) {
+        <p-message severity="error" size="small" variant="simple">
+          Formato inválido. Usa #RRGGBB
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Color secundario
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <div class="flex items-center gap-2">
+        <input
+          type="color"
+          [value]="form.controls.secondaryColor.value ?? '#ffffff'"
+          (input)="form.controls.secondaryColor.setValue($any($event.target).value)"
+          class="w-10 h-9 rounded cursor-pointer border border-gray-200"
+        />
+        <input
+          pInputText
+          formControlName="secondaryColor"
+          placeholder="#FFFFFF"
+          maxlength="7"
+          class="flex-1 font-mono"
+          [invalid]="formValidator.hasError('secondaryColor')"
+        />
+      </div>
+      @if (formValidator.hasError('secondaryColor')) {
+        <p-message severity="error" size="small" variant="simple">
+          Formato inválido. Usa #RRGGBB
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <p-button
+      type="submit"
+      [label]="hasExisting() ? 'Guardar cambios' : 'Crear branding'"
+      [loading]="isSaving()"
+    />
+  </div>
+
+</form>

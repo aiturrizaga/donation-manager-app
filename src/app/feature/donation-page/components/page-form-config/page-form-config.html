@@ -1,0 +1,184 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-6">
+
+  <!-- Moneda -->
+  <div class="flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Moneda</div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Opciones</label>
+        <p-multi-select
+          formControlName="currencyOptions"
+          [options]="currencyOptions"
+          optionLabel="label"
+          optionValue="value"
+          display="chip"
+          class="w-full"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Default</label>
+        <p-select
+          formControlName="currencyDefault"
+          [options]="currencyOptions"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex items-center gap-3 pt-6">
+        <p-toggleswitch formControlName="currencyVisible" />
+        <span class="text-sm">Visible al donante</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monto -->
+  <div class="flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Monto</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">
+          Monto por defecto
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <p-input-number
+          formControlName="amountDefault"
+          mode="decimal"
+          [minFractionDigits]="2"
+          placeholder="0.00"
+          class="w-full"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">
+          Monto mínimo personalizado
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <p-input-number
+          formControlName="amountMinCustom"
+          mode="decimal"
+          [minFractionDigits]="2"
+          placeholder="0.00"
+          class="w-full"
+        />
+      </div>
+      <div class="flex items-center gap-3">
+        <p-toggleswitch formControlName="amountLocked" />
+        <span class="text-sm">Monto bloqueado (no editable)</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <p-toggleswitch formControlName="amountAllowCustom" />
+        <span class="text-sm">Permitir monto libre</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Frecuencia -->
+  <div class="flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Frecuencia</div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Opciones</label>
+        <p-multi-select
+          formControlName="frequencyOptions"
+          [options]="frequencyOptions"
+          optionLabel="label"
+          optionValue="value"
+          display="chip"
+          class="w-full"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Default</label>
+        <p-select
+          formControlName="frequencyDefault"
+          [options]="frequencyOptions"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex items-center gap-3 pt-6">
+        <p-toggleswitch formControlName="frequencyVisible" />
+        <span class="text-sm">Visible al donante</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmación -->
+  <div class="flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+      Pantalla de confirmación
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Encabezado</label>
+        <input
+          pInputText
+          formControlName="confirmHeading"
+          placeholder="¡Gracias por tu donación!"
+          maxlength="200"
+          [invalid]="formValidator.hasError('confirmHeading')"
+        />
+        @if (formValidator.hasError('confirmHeading')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('confirmHeading') }}
+          </p-message>
+        }
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">
+          Mensaje personalizado
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <textarea
+          pTextarea
+          formControlName="confirmMessage"
+          placeholder="Mensaje post-donación con variables..."
+          rows="3"
+          class="w-full"
+        ></textarea>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="font-medium text-sm">
+            Cita
+            <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+          </label>
+          <textarea
+            pTextarea
+            formControlName="confirmQuoteText"
+            placeholder="Texto de la cita inspiracional..."
+            rows="2"
+            class="w-full"
+          ></textarea>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-medium text-sm">
+            Autor de la cita
+            <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+          </label>
+          <input
+            pInputText
+            formControlName="confirmQuoteAuthor"
+            placeholder="Ej. Nelson Mandela"
+            maxlength="150"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <p-button
+      type="submit"
+      [label]="hasExisting() ? 'Guardar cambios' : 'Crear formulario'"
+      [loading]="isSaving()"
+    />
+  </div>
+
+</form>

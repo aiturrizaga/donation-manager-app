@@ -1,0 +1,149 @@
+<div class="flex flex-col gap-5">
+
+  <!-- Status bar -->
+  @if (gateway()) {
+    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+      <div class="flex items-center gap-3">
+        <i class="ti ti-credit-card text-xl text-gray-600" aria-hidden="true"></i>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-sm font-medium">Culqi</span>
+          <span class="text-xs text-gray-400">
+            {{ gateway()!.testMode ? 'Modo sandbox' : 'Producción' }}
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        @if (testResult()) {
+          <p-tag
+            [value]="testResult()!.success ? 'Conexión OK' : 'Error'"
+            [severity]="testResult()!.success ? 'success' : 'danger'"
+          />
+        }
+        <p-tag
+          [value]="gateway()!.isActive ? 'Activa' : 'Inactiva'"
+          [severity]="gateway()!.isActive ? 'success' : 'secondary'"
+        />
+        <p-button
+          [icon]="gateway()!.isActive ? 'ti ti-player-pause' : 'ti ti-player-play'"
+          [label]="gateway()!.isActive ? 'Desactivar' : 'Activar'"
+          [severity]="gateway()!.isActive ? 'danger' : 'secondary'"
+          [outlined]="true"
+          size="small"
+          [loading]="isTogglingActive()"
+          (onClick)="toggleActive()"
+        />
+        <p-button
+          icon="ti ti-plug-connected"
+          label="Test"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          [loading]="isTesting()"
+          (onClick)="testConnection()"
+        />
+      </div>
+    </div>
+  }
+
+  <!-- Credentials form -->
+  <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+
+    <div class="flex items-center justify-between">
+      <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+        Credenciales Culqi
+      </div>
+      <p-button
+        [icon]="showSecrets() ? 'ti ti-eye-off' : 'ti ti-eye'"
+        [label]="showSecrets() ? 'Ocultar' : 'Mostrar'"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        (onClick)="showSecrets.set(!showSecrets())"
+      />
+    </div>
+
+    <p-message severity="warn" size="small" variant="simple">
+      Las credenciales se cifran antes de almacenarse. Nunca se devuelven por API.
+    </p-message>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Clave pública</label>
+        <input
+          pInputText
+          formControlName="publicKey"
+          [type]="showSecrets() ? 'text' : 'password'"
+          placeholder="pk_test_..."
+          [invalid]="formValidator.hasError('publicKey')"
+        />
+        @if (formValidator.hasError('publicKey')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('publicKey') }}
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">Clave secreta</label>
+        <input
+          pInputText
+          formControlName="secretKey"
+          [type]="showSecrets() ? 'text' : 'password'"
+          placeholder="sk_test_..."
+          [invalid]="formValidator.hasError('secretKey')"
+        />
+        @if (formValidator.hasError('secretKey')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('secretKey') }}
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">
+          Webhook secret
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <input
+          pInputText
+          formControlName="webhookSecret"
+          [type]="showSecrets() ? 'text' : 'password'"
+          placeholder="whsec_..."
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-medium text-sm">
+          RSA ID
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <input
+          pInputText
+          formControlName="rsaId"
+          [type]="showSecrets() ? 'text' : 'password'"
+          placeholder="ID de llave RSA"
+        />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <p-toggleswitch formControlName="testMode" />
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm font-medium">Modo sandbox</span>
+        <span class="text-xs text-gray-400">
+          Desactívalo solo cuando estés listo para recibir pagos reales
+        </span>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <p-button
+        type="submit"
+        [label]="gateway() ? 'Actualizar credenciales' : 'Guardar credenciales'"
+        [loading]="isSaving()"
+      />
+    </div>
+
+  </form>
+
+</div>

@@ -46,6 +46,20 @@ export const routes: Routes = [
         loadChildren: () => import('./feature/donation/donation.routes').then((m) => m.routes),
       },
       {
+        title: 'Páginas',
+        path: 'pages',
+        data: { breadcrumb: 'Páginas' },
+        loadChildren: () =>
+          import('./feature/donation-page/donation-page.routes').then((m) => m.routes),
+      },
+      {
+        title: 'Formularios',
+        path: 'forms',
+        data: { breadcrumb: 'Formularios' },
+        loadChildren: () =>
+          import('./feature/donation-form/donation-form.routes').then((m) => m.routes),
+      },
+      {
         path: 'settings/targets',
         loadChildren: () =>
           import('./feature/donation-target/donation-target.routes').then((m) => m.routes),
