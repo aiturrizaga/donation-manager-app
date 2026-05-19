@@ -1,16 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
-import { ConfirmationService, MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { NavApi } from '@core/layout/shell/api';
 import { Navbar } from '@core/layout/shell/components/navbar/navbar';
 import { Sidebar } from '@core/layout/shell/components/sidebar/sidebar';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-shell-layout',
-  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialog],
-  providers: [ConfirmationService],
+  imports: [RouterOutlet, Navbar, Sidebar, ConfirmDialog, Toast],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './shell-layout.html',
   styleUrl: './shell-layout.scss',
   host: {

@@ -1,0 +1,120 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="txtFirstName" class="font-medium">Nombres</label>
+      <input
+        pInputText
+        type="text"
+        id="txtFirstName"
+        formControlName="firstName"
+        placeholder="Ej. Juan"
+        [invalid]="formValidator.hasError('firstName')"
+      />
+      @if (formValidator.hasError('firstName')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('firstName') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="txtLastName" class="font-medium">Apellidos</label>
+      <input
+        pInputText
+        type="text"
+        id="txtLastName"
+        formControlName="lastName"
+        placeholder="Ej. Pérez García"
+        [invalid]="formValidator.hasError('lastName')"
+      />
+      @if (formValidator.hasError('lastName')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('lastName') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtEmail" class="font-medium">Correo electrónico</label>
+    <input
+      pInputText
+      type="email"
+      id="txtEmail"
+      formControlName="email"
+      placeholder="usuario@dominio.com"
+      [invalid]="formValidator.hasError('email')"
+    />
+    @if (formValidator.hasError('email')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('email') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="txtPhone" class="font-medium">
+        Teléfono
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        id="txtPhone"
+        formControlName="phone"
+        placeholder="987 654 321"
+        maxlength="20"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="txtDocument" class="font-medium">
+        N° de documento
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        id="txtDocument"
+        formControlName="documentNumber"
+        placeholder="12345678"
+        maxlength="20"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="selRole" class="font-medium">Rol</label>
+    <p-select
+      id="selRole"
+      formControlName="role"
+      [options]="roleOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Selecciona un rol"
+      class="w-full"
+    />
+  </div>
+
+  <p-message severity="info" size="small" variant="simple">
+    Se enviará un correo al usuario para que establezca su contraseña.
+  </p-message>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [outlined]="true"
+      type="button"
+      (click)="close()"
+    />
+    <p-button
+      type="submit"
+      label="Crear usuario"
+      [loading]="isSaving()"
+    />
+  </div>
+
+</form>

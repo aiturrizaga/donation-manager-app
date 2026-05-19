@@ -1,4 +1,4 @@
-export interface ApiResponseModel<T> {
+export interface ApiResponse<T> {
   status: boolean;
   message: string;
   data: T;
@@ -12,4 +12,4 @@ export interface PageContent<T> {
   pages: number;
 }
 
-export type ApiPagedResponse<T> = ApiResponseModel<PageContent<T>>;
+export type ApiPagedResponse<T> = ApiResponse<PageContent<T>>;

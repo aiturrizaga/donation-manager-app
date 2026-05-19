@@ -1,0 +1,19 @@
+<form [formGroup]="form">
+  <p-iconfield class="w-full block">
+    <p-inputicon class="ti ti-search" />
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por nombre o correo"
+      maxlength="100"
+      class="w-full"
+      [formControl]="form.controls.search"
+    />
+    @if (form.controls.search.value) {
+      <p-inputicon
+        class="ti ti-x cursor-pointer"
+        (click)="form.controls.search.reset()"
+      />
+    }
+  </p-iconfield>
+</form>

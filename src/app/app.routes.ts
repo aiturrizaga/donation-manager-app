@@ -25,6 +25,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./feature/organization/organization.routes').then((m) => m.routes),
       },
+      {
+        title: 'Usuarios',
+        path: 'users',
+        data: { breadcrumb: 'Usuarios' },
+        loadChildren: () => import('./feature/user/user.routes').then((m) => m.routes),
+      },
     ],
   },
 ];

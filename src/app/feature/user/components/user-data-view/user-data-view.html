@@ -1,0 +1,184 @@
+<!-- Desktop -->
+<div class="hidden sm:block">
+  <p-table
+    [value]="items()"
+    [loading]="isLoading()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="rows()"
+    [first]="first()"
+    [totalRecords]="total()"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    paginatorDropdownAppendTo="body"
+    currentPageReportTemplate="{first} – {last} de {totalRecords}"
+    paginatorStyleClass="flex! justify-end!"
+    [tableStyle]="{ 'min-width': '640px' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Usuario</th>
+        <th>Correo</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th class="w-16"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-user>
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <p-avatar
+              [label]="getInitials(user.partner.name)"
+              shape="circle"
+              size="normal"
+              class="text-xs font-semibold"
+            />
+            <div class="flex flex-col gap-0.5">
+              <span class="font-medium text-gray-900">{{ user.partner.name }}</span>
+              @if (user.partner.documentNumber) {
+                <span class="text-xs text-gray-400 font-mono">
+                  {{ user.partner.documentNumber }}
+                </span>
+              }
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">{{ user.partner.email ?? '—' }}</span>
+        </td>
+        <td>
+          <p-tag
+            [value]="getRoleLabel(user.role)"
+            [severity]="getRoleSeverity(user.role)"
+          />
+        </td>
+        <td>
+          <p-toggle-switch
+            [ngModel]="user.isActive"
+            (ngModelChange)="toggleActive.emit(user)"
+          />
+        </td>
+        <td>
+          <p-menu #menu [model]="buildMenuItems(user)" [popup]="true" appendTo="body" />
+          <p-button
+            icon="ti ti-dots-vertical"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="menu.toggle($event)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="text-center py-0">
+          <app-empty-state
+            [icon]="emptyIcon()"
+            iconClass="text-5xl"
+            [title]="emptyTitle()"
+            [description]="emptyDescription()"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Mobile -->
+<div class="sm:hidden">
+  @if (isLoading()) {
+    <div class="divide-y divide-gray-100">
+      @for (_ of skeletonRows; track $index) {
+        <div class="flex flex-col gap-3 px-4 py-4">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <p-skeleton shape="circle" size="2.25rem" />
+              <div class="flex flex-col gap-1.5">
+                <p-skeleton height="0.875rem" width="8rem" />
+                <p-skeleton height="0.75rem" width="5rem" />
+              </div>
+            </div>
+            <p-skeleton height="1.5rem" width="2.5rem" borderRadius="999px" />
+          </div>
+          <div class="flex items-center justify-between">
+            <p-skeleton height="0.75rem" width="10rem" />
+            <p-skeleton height="1.25rem" width="3.5rem" borderRadius="999px" />
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      [icon]="emptyIcon()"
+      iconClass="text-5xl"
+      [title]="emptyTitle()"
+      [description]="emptyDescription()"
+    />
+  } @else {
+    <div class="divide-y divide-gray-100">
+      @for (user of items(); track user.id) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+
+          <div class="flex items-center gap-3 min-w-0">
+            <p-avatar
+              [label]="getInitials(user.partner.name)"
+              shape="circle"
+              size="normal"
+              class="text-xs font-semibold shrink-0"
+            />
+            <div class="flex flex-col gap-0.5 min-w-0">
+              <span class="text-sm font-medium text-gray-900 truncate">
+                {{ user.partner.name }}
+              </span>
+              <span class="text-xs text-gray-400 truncate">
+                {{ user.partner.email ?? '—' }}
+              </span>
+              <p-tag
+                [value]="getRoleLabel(user.role)"
+                [severity]="getRoleSeverity(user.role)"
+                class="w-fit mt-0.5"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <p-toggle-switch
+              [ngModel]="user.isActive"
+              (ngModelChange)="toggleActive.emit(user)"
+            />
+            <p-menu #menuMobile [model]="buildMenuItems(user)" [popup]="true" appendTo="body" />
+            <p-button
+              icon="ti ti-dots-vertical"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="menuMobile.toggle($event)"
+            />
+          </div>
+
+        </div>
+      }
+    </div>
+
+    <div class="border-t border-gray-200">
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="total()"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [showPageLinks]="false"
+        [showFirstLastIcon]="false"
+        appendTo="body"
+        currentPageReportTemplate="{first} – {last} de {totalRecords}"
+        class="flex! justify-between!"
+      />
+    </div>
+  }
+</div>

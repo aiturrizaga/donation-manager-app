@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiPagedResponse, ApiResponseModel, PageContent } from '@shared/models/api-response.model';
+import { ApiPagedResponse, ApiResponse, PageContent } from '@shared/models/api-response.model';
 import { PageQuery } from '@shared/models/pagination.model';
 import { buildHttpParams } from '@shared/utils/http.util';
 import { Organization, OrganizationFilterParams } from '../models/organization.model';
@@ -25,27 +25,27 @@ export class OrganizationApi {
 
   getById(id: number): Observable<Organization> {
     return this.#http
-      .get<ApiResponseModel<Organization>>(`${this.#base}/${id}`)
+      .get<ApiResponse<Organization>>(`${this.#base}/${id}`)
       .pipe(map((r) => r.data));
   }
 
-  create(payload: any): Observable<ApiResponseModel<Organization>> {
-    return this.#http.post<ApiResponseModel<Organization>>(this.#base, payload);
+  create(payload: any): Observable<ApiResponse<Organization>> {
+    return this.#http.post<ApiResponse<Organization>>(this.#base, payload);
   }
 
-  update(id: number, payload: any): Observable<ApiResponseModel<Organization>> {
-    return this.#http.put<ApiResponseModel<Organization>>(`${this.#base}/${id}`, payload);
+  update(id: number, payload: any): Observable<ApiResponse<Organization>> {
+    return this.#http.put<ApiResponse<Organization>>(`${this.#base}/${id}`, payload);
   }
 
   activate(id: number): Observable<Organization> {
     return this.#http
-      .patch<ApiResponseModel<Organization>>(`${this.#base}/${id}/activate`, {})
+      .patch<ApiResponse<Organization>>(`${this.#base}/${id}/activate`, {})
       .pipe(map((r) => r.data));
   }
 
   deactivate(id: number): Observable<Organization> {
     return this.#http
-      .patch<ApiResponseModel<Organization>>(`${this.#base}/${id}/deactivate`, {})
+      .patch<ApiResponse<Organization>>(`${this.#base}/${id}/deactivate`, {})
       .pipe(map((r) => r.data));
   }
 
