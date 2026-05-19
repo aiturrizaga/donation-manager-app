@@ -1,0 +1,40 @@
+<form [formGroup]="form" class="flex flex-wrap gap-2 w-full">
+
+  <p-select
+    formControlName="organizationId"
+    [options]="organizations()"
+    optionLabel="tradeName"
+    optionValue="id"
+    placeholder="Todas las organizaciones"
+    [showClear]="true"
+    class="w-full sm:w-52"
+    appendTo="body"
+  />
+
+  <p-iconfield class="flex-1 min-w-48">
+    <p-inputicon class="ti ti-search" />
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por nombre..."
+      maxlength="100"
+      class="w-full"
+      [formControl]="form.controls.search"
+    />
+    @if (form.controls.search.value) {
+      <p-inputicon class="ti ti-x cursor-pointer" (click)="form.controls.search.reset()" />
+    }
+  </p-iconfield>
+
+  <p-select
+    formControlName="targetType"
+    [options]="typeOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Todos los tipos"
+    [showClear]="true"
+    class="w-full sm:w-40"
+    appendTo="body"
+  />
+
+</form>

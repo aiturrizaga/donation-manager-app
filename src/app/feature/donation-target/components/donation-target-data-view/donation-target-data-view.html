@@ -1,0 +1,189 @@
+<p-menu #menu [model]="menuItems()" [popup]="true" appendTo="body" />
+
+<!-- Desktop -->
+<div class="hidden sm:block">
+  <p-table
+    [value]="items()"
+    [loading]="isLoading()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="rows()"
+    [first]="first()"
+    [totalRecords]="total()"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    paginatorDropdownAppendTo="body"
+    currentPageReportTemplate="{first} – {last} de {totalRecords}"
+    paginatorStyleClass="flex! justify-end!"
+    [tableStyle]="{ 'min-width': '640px' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Meta</th>
+        <th>Recaudado</th>
+        <th>Período</th>
+        <th>Estado</th>
+        <th class="w-16"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-target>
+      <tr>
+        <td>
+          <div class="flex flex-col gap-0.5">
+            <span class="font-medium text-gray-900">{{ target.name }}</span>
+            @if (target.description) {
+              <span class="text-xs text-gray-400 truncate max-w-xs">
+                {{ target.description }}
+              </span>
+            }
+            @if (!target.isPublic) {
+              <span class="text-xs text-amber-600 flex items-center gap-1">
+                <i class="ti ti-eye-off text-[11px]"></i> Solo admin
+              </span>
+            }
+          </div>
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">{{ getTypeLabel(target.targetType) }}</span>
+        </td>
+        <td>
+          @if (target.amountGoal) {
+            <span class="text-sm font-mono text-gray-700">
+              S/ {{ target.amountGoal | number:'1.2-2' }}
+            </span>
+          } @else {
+            <span class="text-gray-400">—</span>
+          }
+        </td>
+        <td>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-mono text-gray-700">
+              S/ {{ target.amountRaised | number:'1.2-2' }}
+            </span>
+            @if (target.amountGoal) {
+              <div class="w-20 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-gray-900 rounded-full"
+                  [style.width.%]="Math.min(100, (target.amountRaised / target.amountGoal) * 100)"
+                ></div>
+              </div>
+            }
+          </div>
+        </td>
+        <td>
+          <div class="flex flex-col gap-0.5 text-xs text-gray-500">
+            @if (target.startsAt) {
+              <span>{{ target.startsAt | date:'dd MMM yyyy' }}</span>
+            }
+            @if (target.endsAt) {
+              <span>→ {{ target.endsAt | date:'dd MMM yyyy' }}</span>
+            }
+            @if (!target.startsAt && !target.endsAt) {
+              <span class="text-gray-400">Sin período</span>
+            }
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="getStatusLabel(target.status)"
+            [severity]="getStatusSeverity(target.status)"
+          />
+        </td>
+        <td>
+          <p-button
+            icon="ti ti-dots-vertical"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="openMenu($event, target)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="text-center py-0">
+          <app-empty-state
+            [icon]="emptyIcon()"
+            iconClass="text-5xl"
+            [title]="emptyTitle()"
+            [description]="emptyDescription()"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Mobile -->
+<div class="sm:hidden">
+  @if (isLoading()) {
+    <div class="divide-y divide-gray-100">
+      @for (_ of skeletonRows; track $index) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex flex-col gap-1.5 flex-1">
+            <p-skeleton height="0.875rem" width="8rem" />
+            <p-skeleton height="0.75rem" width="5rem" />
+          </div>
+          <p-skeleton height="1.25rem" width="4rem" borderRadius="999px" />
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      [icon]="emptyIcon()"
+      iconClass="text-5xl"
+      [title]="emptyTitle()"
+      [description]="emptyDescription()"
+    />
+  } @else {
+    <div class="divide-y divide-gray-100">
+      @for (target of items(); track target.id) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex flex-col gap-0.5 min-w-0">
+            <span class="text-sm font-medium text-gray-900 truncate">{{ target.name }}</span>
+            <span class="text-xs text-gray-400">{{ getTypeLabel(target.targetType) }}</span>
+            @if (target.amountGoal) {
+              <span class="text-xs font-mono text-gray-500">
+                S/ {{ target.amountRaised | number:'1.2-2' }} / S/ {{ target.amountGoal | number:'1.2-2' }}
+              </span>
+            }
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <p-tag
+              [value]="getStatusLabel(target.status)"
+              [severity]="getStatusSeverity(target.status)"
+            />
+            <p-button
+              icon="ti ti-dots-vertical"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="openMenu($event, target)"
+            />
+          </div>
+        </div>
+      }
+    </div>
+    <div class="border-t border-gray-200">
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="total()"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [showPageLinks]="false"
+        [showFirstLastIcon]="false"
+        appendTo="body"
+        currentPageReportTemplate="{first} – {last} de {totalRecords}"
+        class="flex! justify-between!"
+      />
+    </div>
+  }
+</div>

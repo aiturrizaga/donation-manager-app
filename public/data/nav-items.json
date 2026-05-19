@@ -67,8 +67,15 @@
         "id": "0303-settings",
         "label": "Configuración",
         "icon": "ti ti-settings-2",
-        "routerLink": "/settings",
-        "title": "Tipos de doc., gateways, SMTP"
+        "title": "Tipos de doc., gateways, SMTP",
+        "items": [
+          {
+            "id": "030301-targets",
+            "label": "Objetivos",
+            "routerLink": "/settings/targets",
+            "title": "Configuración de objetivos"
+          }
+        ]
       }
     ]
   }

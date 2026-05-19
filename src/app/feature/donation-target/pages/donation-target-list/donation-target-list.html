@@ -1,0 +1,83 @@
+<div class="card">
+
+  <!-- Tabs desktop -->
+  <div class="hidden sm:flex items-center border-b border-gray-200">
+    <p-tabs [value]="activeStatus" (valueChange)="onStatusChange($event)">
+      <p-tablist>
+        @for (tab of statusTabs; track $index) {
+          <p-tab [value]="tab.value">
+            <div class="flex items-center gap-2">
+              {{ tab.label }}
+              @if (activeStatus === tab.value) {
+                <p-badge [value]="store.total()" severity="secondary" />
+              }
+            </div>
+          </p-tab>
+        }
+      </p-tablist>
+    </p-tabs>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <app-donation-target-filters
+      class="flex-1"
+      [organizations]="organizations()"
+      (filtersChange)="onFiltersChange($event)"
+    />
+    <div class="toolbar__actions">
+      <button pButton (click)="openDialog()">
+        <i class="ti ti-plus" pButtonIcon></i>
+        <span pButtonLabel class="hidden sm:inline">Nuevo objetivo</span>
+        <span pButtonLabel class="inline sm:hidden">Nuevo</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chips mobile -->
+  <div class="sm:hidden border-b border-gray-200" style="overflow-x: auto; overflow-y: visible;">
+    <div class="flex gap-2 px-3 py-2 scrollbar-none" style="width: max-content; min-width: 100%;">
+      @for (tab of statusTabs; track $index) {
+        <p-chip
+          [unstyled]="true"
+          class="chip-btn"
+          [class.chip-btn--active]="activeStatus === tab.value"
+          (click)="onStatusChange(tab.value)"
+        >
+          <span class="chip-btn__label">{{ tab.label }}</span>
+          @if (activeStatus === tab.value) {
+            <p-badge
+              [unstyled]="true"
+              [value]="store.total()"
+              class="chip-btn__badge"
+            />
+          }
+        </p-chip>
+      }
+    </div>
+  </div>
+
+  <!-- Empty state cuando no hay org seleccionada -->
+  @if (!store.organizationId()) {
+    <div class="py-12 text-center">
+      <i class="ti ti-building-community text-5xl text-gray-300"></i>
+      <p class="text-sm text-gray-400 mt-3">Selecciona una organización para ver sus objetivos</p>
+    </div>
+  } @else {
+    <app-donation-target-data-view
+      [items]="store.items()"
+      [isLoading]="store.loading()"
+      [total]="store.total()"
+      [rows]="store.query().size"
+      [first]="store.first()"
+      emptyIcon="ti-target"
+      emptyTitle="No se encontraron objetivos"
+      emptyDescription="Crea un nuevo objetivo para esta organización"
+      (edit)="openDialog($event)"
+      (setStatus)="onSetStatus($event)"
+      (delete)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    />
+  }
+
+</div>
