@@ -1,0 +1,57 @@
+<p-table
+  [value]="items()"
+  [loading]="loading()"
+  [tableStyle]="{ 'min-width': '480px' }"
+>
+  <ng-template #header>
+    <tr>
+      <th>Monto</th>
+      <th>Frecuencia</th>
+      <th>Próximo cobro</th>
+      <th>Último cobro</th>
+      <th>Estado</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-sub>
+    <tr>
+      <td>
+        <span class="font-semibold text-gray-900">
+          {{ sub.currency }} {{ sub.amount | number:'1.2-2' }}
+        </span>
+      </td>
+      <td>
+        <span class="text-sm text-gray-600">{{ getFrequencyLabel(sub.frequency) }}</span>
+      </td>
+      <td>
+        <span class="text-sm text-gray-600">
+          {{ sub.nextChargeDate ? (sub.nextChargeDate | date:'dd MMM yyyy') : '—' }}
+        </span>
+      </td>
+      <td>
+        <span class="text-sm text-gray-600">
+          {{ sub.lastChargeDate ? (sub.lastChargeDate | date:'dd MMM yyyy') : '—' }}
+        </span>
+      </td>
+      <td>
+        <p-tag
+          [value]="getStatusLabel(sub.status)"
+          [severity]="getStatusSeverity(sub.status)"
+        />
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5" class="py-0 text-center">
+        <app-empty-state
+          icon="ti-repeat-off"
+          iconClass="text-5xl"
+          title="Sin suscripciones"
+          description="Este donante no tiene suscripciones recurrentes."
+        />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

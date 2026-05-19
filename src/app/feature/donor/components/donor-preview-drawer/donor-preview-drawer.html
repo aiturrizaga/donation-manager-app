@@ -1,0 +1,164 @@
+<p-drawer
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  position="right"
+  styleClass="!w-full sm:!w-[480px]"
+>
+  <ng-template #header>
+    <div class="flex items-center gap-3">
+      <p-avatar
+        [label]="donor().partner.name.charAt(0).toUpperCase()"
+        shape="circle"
+        size="large"
+      />
+      <div class="flex flex-col gap-0.5">
+        <span class="font-semibold text-gray-900">{{ donor().partner.name }}</span>
+        <span class="text-xs text-gray-400">{{ donor().partner.email ?? 'Sin correo' }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col gap-5">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-0.5 bg-gray-50 rounded-lg p-3">
+        <span class="text-xs text-gray-400">Total donado</span>
+        @if (loadingDonations()) {
+          <p-skeleton height="1.25rem" width="6rem" />
+        } @else {
+          <span class="font-semibold text-gray-900">
+            S/ {{ totalDonated() | number:'1.2-2' }}
+          </span>
+        }
+      </div>
+      <div class="flex flex-col gap-0.5 bg-gray-50 rounded-lg p-3">
+        <span class="text-xs text-gray-400">Donaciones</span>
+        @if (loadingDonations()) {
+          <p-skeleton height="1.25rem" width="3rem" />
+        } @else {
+          <span class="font-semibold text-gray-900">{{ donationCount() }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Info básica -->
+    <div class="flex flex-col gap-2">
+      <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+        Información
+      </span>
+      <div class="flex flex-col divide-y divide-gray-100">
+
+        @if (donor().partner.documentNumber) {
+          <div class="flex justify-between py-2">
+            <span class="text-sm text-gray-500">Documento</span>
+            <span class="text-sm font-mono text-gray-900">
+              {{ donor().partner.documentNumber }}
+            </span>
+          </div>
+        }
+
+        @if (donor().partner.phone) {
+          <div class="flex justify-between py-2">
+            <span class="text-sm text-gray-500">Teléfono</span>
+            <span class="text-sm text-gray-900">{{ donor().partner.phone }}</span>
+          </div>
+        }
+
+        @if (donor().partner.address) {
+          <div class="flex justify-between py-2">
+            <span class="text-sm text-gray-500">Dirección</span>
+            <span class="text-sm text-gray-900 text-right max-w-48">
+              {{ donor().partner.address }}
+            </span>
+          </div>
+        }
+
+        <div class="flex justify-between py-2">
+          <span class="text-sm text-gray-500">Estado</span>
+          <p-tag
+            [value]="donor().isActive ? 'Activo' : 'Inactivo'"
+            [severity]="donor().isActive ? 'success' : 'secondary'"
+          />
+        </div>
+
+        <div class="flex justify-between py-2">
+          <span class="text-sm text-gray-500">Cuenta portal</span>
+          <p-tag
+            [value]="donor().hasAccount ? 'Vinculada' : 'Sin cuenta'"
+            [severity]="donor().hasAccount ? 'info' : 'secondary'"
+          />
+        </div>
+
+      </div>
+    </div>
+
+    <p-divider class="my-0" />
+
+    <!-- Donaciones -->
+    <div class="flex flex-col gap-3">
+      <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+        Historial de donaciones
+      </span>
+
+      @if (loadingDonations()) {
+        <div class="flex flex-col gap-3">
+          @for (_ of [1,2,3]; track $index) {
+            <div class="flex justify-between items-center">
+              <div class="flex flex-col gap-1">
+                <p-skeleton height="0.875rem" width="8rem" />
+                <p-skeleton height="0.75rem" width="5rem" />
+              </div>
+              <p-skeleton height="1.25rem" width="4rem" borderRadius="999px" />
+            </div>
+          }
+        </div>
+      } @else if (donations().length === 0) {
+        <p class="text-sm text-gray-400 text-center py-4">
+          Este donante no tiene donaciones registradas.
+        </p>
+      } @else {
+        <div class="flex flex-col divide-y divide-gray-100">
+          @for (donation of donations(); track donation.id) {
+            <div class="flex items-center justify-between py-3 gap-3">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-sm font-semibold text-gray-900">
+                  {{ donation.currency }} {{ donation.amount | number:'1.2-2' }}
+                </span>
+                <span class="text-xs text-gray-400">
+                  {{ donation.createdAt | date:'dd MMM yyyy' }}
+                </span>
+              </div>
+              <p-tag
+                [value]="getStatusLabel(donation.status)"
+                [severity]="getStatusSeverity(donation.status)"
+              />
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <ng-template #footer>
+    <div class="flex justify-between items-center">
+      <p-button
+        label="Ver perfil completo"
+        icon="ti ti-arrow-right"
+        iconPos="right"
+        severity="secondary"
+        [outlined]="true"
+        [routerLink]="['/donors', donor().id]"
+        (click)="close()"
+      />
+      <p-button
+        label="Cerrar"
+        severity="secondary"
+        [text]="true"
+        (click)="close()"
+      />
+    </div>
+  </ng-template>
+
+</p-drawer>

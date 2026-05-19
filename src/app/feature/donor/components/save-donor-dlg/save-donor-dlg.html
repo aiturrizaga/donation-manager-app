@@ -1,0 +1,160 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full">
+
+  <!-- Tipo y número de documento -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="selDocType" class="font-medium">Tipo de documento</label>
+      <p-select
+        id="selDocType"
+        formControlName="documentType"
+        [options]="documentTypes"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="txtDocNumber" class="font-medium">Número de documento</label>
+      <input
+        pInputText
+        type="text"
+        id="txtDocNumber"
+        formControlName="documentNumber"
+        [placeholder]="isIndividual() ? '12345678' : '20512345678'"
+        [maxlength]="isIndividual() ? 8 : 11"
+        [invalid]="formValidator.hasError('documentNumber')"
+      />
+      @if (formValidator.hasError('documentNumber')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('documentNumber') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <p-divider class="my-0" />
+
+  <!-- Campos individuales -->
+  @if (isIndividual()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label for="txtFirstName" class="font-medium">Nombres</label>
+        <input
+          pInputText
+          type="text"
+          id="txtFirstName"
+          formControlName="firstName"
+          placeholder="Ej. Juan"
+          [invalid]="formValidator.hasError('firstName')"
+        />
+        @if (formValidator.hasError('firstName')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('firstName') }}
+          </p-message>
+        }
+      </div>
+      <div class="flex flex-col gap-1">
+        <label for="txtLastName" class="font-medium">Apellidos</label>
+        <input
+          pInputText
+          type="text"
+          id="txtLastName"
+          formControlName="lastName"
+          placeholder="Ej. Pérez García"
+          [invalid]="formValidator.hasError('lastName')"
+        />
+        @if (formValidator.hasError('lastName')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('lastName') }}
+          </p-message>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-1">
+      <label for="txtBusinessName" class="font-medium">Razón social</label>
+      <input
+        pInputText
+        type="text"
+        id="txtBusinessName"
+        formControlName="businessName"
+        placeholder="Ej. Empresa S.A.C."
+        [invalid]="formValidator.hasError('businessName')"
+      />
+      @if (formValidator.hasError('businessName')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('businessName') }}
+        </p-message>
+      }
+    </div>
+  }
+
+  <!-- Contacto -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="txtEmail" class="font-medium">
+        Correo electrónico
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        type="email"
+        id="txtEmail"
+        formControlName="email"
+        placeholder="donante@correo.com"
+        [invalid]="formValidator.hasError('email')"
+      />
+      @if (formValidator.hasError('email')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('email') }}
+        </p-message>
+      }
+    </div>
+    <div class="flex flex-col gap-1">
+      <label for="txtPhone" class="font-medium">
+        Teléfono
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        id="txtPhone"
+        formControlName="phone"
+        placeholder="987 654 321"
+        maxlength="20"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtAddress" class="font-medium">
+      Dirección
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+    </label>
+    <input
+      pInputText
+      type="text"
+      id="txtAddress"
+      formControlName="address"
+      placeholder="Av. ejemplo 123, Lima"
+      maxlength="500"
+    />
+  </div>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [outlined]="true"
+      type="button"
+      (click)="close()"
+    />
+    <p-button
+      type="submit"
+      label="Crear donante"
+      [loading]="isSaving()"
+    />
+  </div>
+
+</form>

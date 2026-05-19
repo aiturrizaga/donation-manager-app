@@ -1,0 +1,59 @@
+<p-table
+  [value]="items()"
+  [loading]="loading()"
+  [tableStyle]="{ 'min-width': '480px' }"
+>
+  <ng-template #header>
+    <tr>
+      <th>Fecha</th>
+      <th>Monto</th>
+      <th>Tipo</th>
+      <th>Método</th>
+      <th>Estado</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-donation>
+    <tr>
+      <td>
+        <span class="text-sm text-gray-600">
+          {{ donation.createdAt | date:'dd MMM yyyy' }}
+        </span>
+      </td>
+      <td>
+        <span class="font-semibold text-gray-900">
+          {{ donation.currency }} {{ donation.amount | number:'1.2-2' }}
+        </span>
+      </td>
+      <td>
+        <span class="text-sm text-gray-600 capitalize">
+          {{ donation.donationType === 'one_time' ? 'Única' : 'Recurrente' }}
+        </span>
+      </td>
+      <td>
+        <span class="text-sm text-gray-600">
+          {{ donation.paymentMethod ?? '—' }}
+        </span>
+      </td>
+      <td>
+        <p-tag
+          [value]="getStatusLabel(donation.status)"
+          [severity]="getStatusSeverity(donation.status)"
+        />
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5" class="py-0 text-center">
+        <app-empty-state
+          icon="ti-cash-off"
+          iconClass="text-5xl"
+          title="Sin donaciones"
+          description="Este donante no tiene donaciones registradas."
+        />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

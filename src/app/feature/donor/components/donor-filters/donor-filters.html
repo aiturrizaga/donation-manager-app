@@ -1,0 +1,33 @@
+<form [formGroup]="form" class="flex flex-col sm:flex-row gap-2 w-full">
+
+  <p-multi-select
+    formControlName="organizationIds"
+    [options]="organizations()"
+    optionLabel="tradeName"
+    optionValue="id"
+    placeholder="Todas las organizaciones"
+    display="chip"
+    [showClear]="true"
+    class="w-full sm:w-64"
+    appendTo="body"
+  />
+
+  <p-iconfield class="flex-1">
+    <p-inputicon class="ti ti-search" />
+    <input
+      pInputText
+      type="text"
+      placeholder="Buscar por nombre, email o documento"
+      maxlength="100"
+      class="w-full"
+      [formControl]="form.controls.search"
+    />
+    @if (form.controls.search.value) {
+      <p-inputicon
+        class="ti ti-x cursor-pointer"
+        (click)="form.controls.search.reset()"
+      />
+    }
+  </p-iconfield>
+
+</form>

@@ -1,0 +1,198 @@
+<p-menu #menu [model]="menuItems()" [popup]="true" appendTo="body" />
+
+<!-- Desktop -->
+<div class="hidden sm:block">
+  <p-table
+    [value]="items()"
+    [loading]="isLoading()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="rows()"
+    [first]="first()"
+    [totalRecords]="total()"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    paginatorDropdownAppendTo="body"
+    currentPageReportTemplate="{first} – {last} de {totalRecords}"
+    paginatorStyleClass="flex! justify-end!"
+    [tableStyle]="{ 'min-width': '640px' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Donante</th>
+        <th>Contacto</th>
+        <th>Documento</th>
+        <th>Estado</th>
+        <th class="w-16"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-donor>
+      <tr>
+        <td>
+          <div class="flex items-center gap-3">
+            <p-avatar
+              [label]="getInitials(donor.partner.name)"
+              shape="circle"
+              size="normal"
+            />
+            <div class="flex flex-col gap-0.5">
+              <a
+                [routerLink]="['/donors', donor.id]"
+                class="font-medium text-gray-900 hover:underline cursor-pointer"
+              >
+                {{ donor.partner.name }}
+              </a>
+              @if (donor.hasAccount) {
+                <span class="text-xs text-blue-500 flex items-center gap-1">
+                  <i class="ti ti-circle-check text-[11px]"></i> Cuenta portal
+                </span>
+              }
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="flex flex-col gap-0.5">
+            @if (donor.partner.email) {
+              <span class="text-xs text-gray-500 flex items-center gap-1.5">
+                <i class="ti ti-mail text-gray-400"></i>{{ donor.partner.email }}
+              </span>
+            }
+            @if (donor.partner.phone) {
+              <span class="text-xs text-gray-500 flex items-center gap-1.5">
+                <i class="ti ti-phone text-gray-400"></i>{{ donor.partner.phone }}
+              </span>
+            }
+            @if (!donor.partner.email && !donor.partner.phone) {
+              <span class="text-gray-400">—</span>
+            }
+          </div>
+        </td>
+        <td>
+          @if (donor.partner.documentNumber) {
+            <span class="font-mono text-sm text-gray-700">
+              {{ donor.partner.documentNumber }}
+            </span>
+          } @else {
+            <span class="text-gray-400">—</span>
+          }
+        </td>
+        <td>
+          <p-toggle-switch
+            [ngModel]="donor.isActive"
+            (onChange)="toggleActive.emit(donor)"
+          />
+        </td>
+        <td>
+          <p-button
+            icon="ti ti-dots-vertical"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="openMenu($event, donor)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5" class="text-center py-0">
+          <app-empty-state
+            [icon]="emptyIcon()"
+            iconClass="text-5xl"
+            [title]="emptyTitle()"
+            [description]="emptyDescription()"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Mobile -->
+<div class="sm:hidden">
+  @if (isLoading()) {
+    <div class="divide-y divide-gray-100">
+      @for (_ of skeletonRows; track $index) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex items-center gap-3">
+            <p-skeleton shape="circle" size="2.25rem" />
+            <div class="flex flex-col gap-1.5">
+              <p-skeleton height="0.875rem" width="8rem" />
+              <p-skeleton height="0.75rem" width="5rem" />
+            </div>
+          </div>
+          <p-skeleton height="1.5rem" width="2.5rem" borderRadius="999px" />
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      [icon]="emptyIcon()"
+      iconClass="text-5xl"
+      [title]="emptyTitle()"
+      [description]="emptyDescription()"
+    />
+  } @else {
+    <div class="divide-y divide-gray-100">
+      @for (donor of items(); track donor.id) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <p-avatar
+              [label]="getInitials(donor.partner.name)"
+              shape="circle"
+              size="normal"
+              class="shrink-0"
+            />
+            <div class="flex flex-col gap-0.5 min-w-0">
+              <a
+                [routerLink]="['/donors', donor.id]"
+                class="text-sm font-medium text-gray-900 truncate hover:underline"
+              >
+                {{ donor.partner.name }}
+              </a>
+              <span class="text-xs text-gray-400 truncate">
+                {{ donor.partner.email ?? donor.partner.phone ?? '—' }}
+              </span>
+              @if (donor.partner.documentNumber) {
+                <span class="text-xs font-mono text-gray-400">
+                  {{ donor.partner.documentNumber }}
+                </span>
+              }
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <p-toggle-switch
+              [ngModel]="donor.isActive"
+              (onChange)="toggleActive.emit(donor)"
+            />
+            <p-button
+              icon="ti ti-dots-vertical"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="openMenu($event, donor)"
+            />
+          </div>
+        </div>
+      }
+    </div>
+    <div class="border-t border-gray-200">
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="total()"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [showPageLinks]="false"
+        [showFirstLastIcon]="false"
+        appendTo="body"
+        currentPageReportTemplate="{first} – {last} de {totalRecords}"
+        class="flex! justify-between!"
+      />
+    </div>
+  }
+</div>
