@@ -37,6 +37,12 @@ export const routes: Routes = [
         data: { breadcrumb: 'Donantes' },
         loadChildren: () => import('./feature/donor/donor.routes').then((m) => m.routes),
       },
+      {
+        title: 'Donaciones',
+        path: 'donations',
+        data: { breadcrumb: 'Donaciones' },
+        loadChildren: () => import('./feature/donation/donation.routes').then((m) => m.routes),
+      },
     ],
   },
 ];

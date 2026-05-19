@@ -1,0 +1,54 @@
+<form [formGroup]="form" class="flex flex-wrap gap-2 w-full">
+
+  <p-multi-select
+    formControlName="organizationId"
+    [options]="organizations()"
+    optionLabel="tradeName"
+    optionValue="id"
+    placeholder="Todas las organizaciones"
+    [showClear]="true"
+    class="w-full sm:w-52"
+    appendTo="body"
+  />
+
+  <p-multi-select
+    formControlName="status"
+    [options]="statusOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Todos los estados"
+    [showClear]="true"
+    class="w-full sm:w-44"
+    appendTo="body"
+  />
+
+  <p-select
+    formControlName="donationType"
+    [options]="typeOptions"
+    optionLabel="label"
+    optionValue="value"
+    placeholder="Todos los tipos"
+    [showClear]="true"
+    class="w-full sm:w-40"
+    appendTo="body"
+  />
+
+  <p-date-picker
+    formControlName="dateFrom"
+    placeholder="Desde"
+    [showClear]="true"
+    dateFormat="dd/mm/yy"
+    class="w-full sm:w-36"
+    appendTo="body"
+  />
+
+  <p-date-picker
+    formControlName="dateTo"
+    placeholder="Hasta"
+    [showClear]="true"
+    dateFormat="dd/mm/yy"
+    class="w-full sm:w-36"
+    appendTo="body"
+  />
+
+</form>
