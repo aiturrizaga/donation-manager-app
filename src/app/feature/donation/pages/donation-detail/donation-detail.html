@@ -1,0 +1,191 @@
+<div class="flex flex-col gap-4">
+
+  <!-- Header -->
+  <div class="card">
+    <div class="mb-4">
+      <p-button
+        icon="ti ti-arrow-left"
+        label="Volver a donaciones"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        (onClick)="goBack()"
+      />
+    </div>
+
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-lg font-semibold text-gray-900 font-mono">
+            #{{ donation().id | slice:0:8 }}...
+          </span>
+          <p-tag
+            [value]="getStatusLabel(donation().status)"
+            [severity]="getStatusSeverity(donation().status)"
+          />
+        </div>
+        <span class="text-sm text-gray-400">
+          {{ donation().createdAt | date:'dd MMM yyyy, HH:mm' }}
+        </span>
+      </div>
+
+      @if (isRefundable()) {
+        <p-button
+          icon="ti ti-receipt-refund"
+          label="Reembolsar"
+          severity="danger"
+          [outlined]="true"
+          size="small"
+          [loading]="refunding()"
+          styleClass="shrink-0"
+          (onClick)="onRefund()"
+        />
+      }
+    </div>
+  </div>
+
+  <!-- Body: detail panel + tabs -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+
+    <!-- Left panel — donation details -->
+    <div class="card lg:col-span-1 flex flex-col gap-0">
+
+      <!-- Amount highlight -->
+      <div class="flex flex-col gap-0.5 bg-gray-50 rounded-lg px-4 py-4 mb-4">
+        <span class="text-xs text-gray-400 uppercase tracking-wide font-medium">Monto</span>
+        <span class="text-3xl font-bold text-gray-900">
+          {{ donation().currency }} {{ donation().amount | number:'1.2-2' }}
+        </span>
+      </div>
+
+      <!-- Field rows -->
+      <div class="flex flex-col divide-y divide-gray-100">
+
+        <div class="flex justify-between items-start py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Donante</span>
+          @if (donation().donor) {
+            <a
+              [routerLink]="['/donors', donation().donorId]"
+              class="text-sm font-medium text-gray-900 hover:underline text-right"
+            >
+              {{ donation().donor!.name }}
+            </a>
+          } @else {
+            <span class="text-sm text-gray-400">—</span>
+          }
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Organización</span>
+          <span class="text-sm text-gray-900 text-right">{{ orgName() }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Página</span>
+          <span class="text-sm text-gray-900 text-right">
+            {{ donation().donationPage?.name ?? '—' }}
+          </span>
+        </div>
+
+        @if (donation().donationTarget) {
+          <div class="flex justify-between py-3 gap-3">
+            <span class="text-sm text-gray-400 shrink-0">Target</span>
+            <span class="text-sm text-gray-900 text-right">
+              {{ donation().donationTarget!.name }}
+            </span>
+          </div>
+        }
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Tipo</span>
+          <span class="text-sm text-gray-900">{{ getTypeLabel(donation().donationType) }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Método de pago</span>
+          <span class="text-sm text-gray-900 capitalize">
+            {{ donation().paymentMethod ?? '—' }}
+          </span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Moneda</span>
+          <span class="text-sm text-gray-900">{{ donation().currency }}</span>
+        </div>
+
+        @if (donation().culqiChargeId) {
+          <div class="flex justify-between py-3 gap-3">
+            <span class="text-sm text-gray-400 shrink-0">Charge ID</span>
+            <span class="text-xs font-mono text-gray-600 text-right break-all">
+              {{ donation().culqiChargeId }}
+            </span>
+          </div>
+        }
+
+        @if (donation().culqiOrderId) {
+          <div class="flex justify-between py-3 gap-3">
+            <span class="text-sm text-gray-400 shrink-0">Order ID</span>
+            <span class="text-xs font-mono text-gray-600 text-right break-all">
+              {{ donation().culqiOrderId }}
+            </span>
+          </div>
+        }
+
+        @if (donation().failureReason) {
+          <div class="flex flex-col gap-1 py-3">
+            <span class="text-sm text-gray-400">Motivo de fallo</span>
+            <span class="text-sm text-red-600">{{ donation().failureReason }}</span>
+          </div>
+        }
+
+        @if (donation().refundedAt) {
+          <div class="flex justify-between py-3 gap-3">
+            <span class="text-sm text-gray-400 shrink-0">Reembolsado el</span>
+            <span class="text-sm text-gray-900">
+              {{ donation().refundedAt | date:'dd MMM yyyy' }}
+            </span>
+          </div>
+        }
+
+        @if (donation().refundReason) {
+          <div class="flex flex-col gap-1 py-3">
+            <span class="text-sm text-gray-400">Motivo de reembolso</span>
+            <span class="text-sm text-gray-700">{{ donation().refundReason }}</span>
+          </div>
+        }
+
+      </div>
+    </div>
+
+    <!-- Right panel — tabs -->
+    <div class="card p-0! overflow-hidden lg:col-span-2">
+      <p-tabs value="certificate">
+        <p-tablist class="px-4">
+          <p-tab value="certificate">
+            <div class="flex items-center gap-2">
+              <i class="ti ti-certificate"></i>
+              <span>Certificado</span>
+            </div>
+          </p-tab>
+          <p-tab value="webhooks">
+            <div class="flex items-center gap-2">
+              <i class="ti ti-webhook"></i>
+              <span>Eventos webhook</span>
+            </div>
+          </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+          <p-tabpanel value="certificate">
+            <app-donation-detail-certificate [donationId]="donation().id" />
+          </p-tabpanel>
+          <p-tabpanel value="webhooks">
+            <app-donation-detail-webhooks [donationId]="donation().id" />
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+
+  </div>
+
+</div>

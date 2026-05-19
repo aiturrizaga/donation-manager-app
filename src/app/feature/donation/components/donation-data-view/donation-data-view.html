@@ -34,9 +34,12 @@
     <ng-template #body let-donation>
       <tr>
         <td>
-          <span class="text-sm text-gray-600">
+          <a
+            [routerLink]="['/donations', donation.id]"
+            class="text-sm text-gray-600 hover:underline"
+          >
             {{ donation.createdAt | date:'dd MMM yyyy' }}
-          </span>
+          </a>
         </td>
         <td>
           @if (donation.donor) {

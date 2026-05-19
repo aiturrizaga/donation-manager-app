@@ -2,8 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiPagedResponse, PageContent } from '@shared/models/api-response.model';
-import { PageQuery } from '@shared/models/pagination.model';
+import { ApiPagedResponse, ApiResponse, PageContent, PageQuery } from '@shared/models';
 import { buildHttpParams } from '@shared/utils/http.util';
 import { Donation, DonationFilterParams } from '../models/donation.model';
 import { environment } from '@env/environment';
@@ -17,6 +16,16 @@ export class DonationApi {
     const params = buildHttpParams({ ...query, ...filters });
     return this.#http
       .get<ApiPagedResponse<Donation>>(this.#base, { params })
+      .pipe(map((r) => r.data));
+  }
+
+  getById(id: string): Observable<Donation> {
+    return this.#http.get<ApiResponse<Donation>>(id).pipe(map((r) => r.data));
+  }
+
+  refund(id: string, payload: { refundReason: string }): Observable<Donation> {
+    return this.#http
+      .post<ApiResponse<Donation>>(`${this.#base}/${id}/refund`, payload)
       .pipe(map((r) => r.data));
   }
 

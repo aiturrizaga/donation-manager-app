@@ -1,0 +1,83 @@
+@if (loading()) {
+  <div class="flex flex-col gap-3 p-2">
+    <p-skeleton height="1rem" width="8rem" />
+    <p-skeleton height="0.875rem" width="12rem" />
+    <p-skeleton height="0.875rem" width="10rem" />
+  </div>
+} @else if (certificate()) {
+  <div class="flex flex-col gap-4">
+
+    <div class="flex flex-col divide-y divide-gray-100">
+      <div class="flex justify-between py-3 gap-3">
+        <span class="text-sm text-gray-400">Número</span>
+        <span class="text-sm font-mono font-medium text-gray-900">
+          {{ certificate().certificateNumber }}
+        </span>
+      </div>
+      <div class="flex justify-between py-3 gap-3">
+        <span class="text-sm text-gray-400">Fecha de emisión</span>
+        <span class="text-sm text-gray-900">
+          {{ certificate().issuedAt | date:'dd MMM yyyy, HH:mm' }}
+        </span>
+      </div>
+      <div class="flex justify-between py-3 gap-3">
+        <span class="text-sm text-gray-400">Donante en cert.</span>
+        <span class="text-sm text-gray-900">{{ certificate().donorNameOnCert }}</span>
+      </div>
+      <div class="flex justify-between py-3 gap-3">
+        <span class="text-sm text-gray-400">Documento en cert.</span>
+        <span class="text-sm font-mono text-gray-900">{{ certificate().donorDocumentOnCert }}</span>
+      </div>
+      <div class="flex justify-between py-3 gap-3">
+        <span class="text-sm text-gray-400">Monto en cert.</span>
+        <span class="text-sm font-semibold text-gray-900">
+          {{ certificate().currencyOnCert }} {{ certificate().amountOnCert | number:'1.2-2' }}
+        </span>
+      </div>
+      <div class="flex justify-between py-3 gap-3">
+        <span class="text-sm text-gray-400">Enviado por email</span>
+        <p-tag
+          [value]="certificate().sentByEmail ? 'Enviado' : 'Pendiente'"
+          [severity]="certificate().sentByEmail ? 'success' : 'secondary'"
+        />
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <p-button
+        icon="ti ti-download"
+        label="Descargar PDF"
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        (onClick)="download()"
+      />
+      <p-button
+        icon="ti ti-refresh"
+        label="Regenerar"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        [loading]="generating()"
+        (onClick)="generate()"
+      />
+    </div>
+
+  </div>
+} @else {
+  <div class="flex flex-col items-center gap-3 py-6">
+    <app-empty-state
+      icon="ti-certificate-off"
+      iconClass="text-5xl"
+      title="Sin certificado"
+      description="Esta donación no tiene un certificado generado."
+    />
+    <p-button
+      icon="ti ti-certificate"
+      label="Generar certificado"
+      size="small"
+      [loading]="generating()"
+      (onClick)="generate()"
+    />
+  </div>
+}

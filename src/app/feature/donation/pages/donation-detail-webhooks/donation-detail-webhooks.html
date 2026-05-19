@@ -1,0 +1,45 @@
+@if (loading()) {
+  <div class="flex flex-col gap-3">
+    @for (_ of [1, 2, 3]; track $index) {
+      <div class="flex justify-between items-center">
+        <p-skeleton height="0.875rem" width="8rem" />
+        <p-skeleton height="1.25rem" width="4rem" borderRadius="999px" />
+      </div>
+    }
+  </div>
+} @else if (items().length === 0) {
+  <app-empty-state
+    icon="ti-webhook"
+    iconClass="text-5xl"
+    title="Sin eventos"
+    description="No se han registrado eventos webhook para esta donación."
+  />
+} @else {
+  <p-table [value]="items()" [tableStyle]="{ 'min-width': '400px' }">
+    <ng-template #header>
+      <tr>
+        <th>Evento</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-event>
+      <tr>
+        <td>
+          <span class="text-sm font-mono text-gray-700">{{ event.eventType }}</span>
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">
+            {{ event.createdAt | date:'dd MMM yyyy, HH:mm' }}
+          </span>
+        </td>
+        <td>
+          <p-tag
+            [value]="event.status"
+            [severity]="event.status === 'processed' ? 'success' : 'warn'"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
