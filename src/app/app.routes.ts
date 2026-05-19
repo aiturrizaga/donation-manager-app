@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 import { ShellLayout } from '@core/layout/shell/shell-layout';
+import { authGuard } from '@core/guards';
 import { Dashboard } from './feature/dashboard/dashboard';
 
 export const routes: Routes = [
   {
     path: '',
     component: ShellLayout,
+    canActivate: [authGuard],
     children: [
       {
         path: '',
