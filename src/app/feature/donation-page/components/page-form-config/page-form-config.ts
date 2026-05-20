@@ -24,6 +24,7 @@ import { FormValidator } from '@shared/utils/form-validator.util';
 import { FormConfigGatewayApi } from '../../api/form-config-gateway.api';
 import { FormConfigGateway } from '../../models/payment-gateway.model';
 import { RouterLink } from '@angular/router';
+import { AutoComplete } from 'primeng/autocomplete';
 
 const CURRENCY_OPTIONS = [
   { label: 'PEN — Sol peruano', value: 'PEN' },
@@ -31,9 +32,12 @@ const CURRENCY_OPTIONS = [
 ];
 
 const FREQUENCY_OPTIONS = [
-  { label: 'Única', value: 'one_time' },
-  { label: 'Mensual', value: 'monthly' },
-  { label: 'Anual', value: 'annual' },
+  { label: 'Única vez', value: 'one_time' },
+  { label: 'Mensual', value: '1' },
+  { label: '3 meses', value: '3' },
+  { label: '6 meses', value: '6' },
+  { label: '9 meses', value: '9' },
+  { label: 'Anual', value: '12' },
 ];
 
 interface FormConfigForm {
@@ -53,6 +57,7 @@ interface FormConfigForm {
   confirmQuoteAuthor: FormControl<string | null>;
   gatewayIds: FormControl<number[]>;
   defaultGatewayId: FormControl<number | null>;
+  suggestedAmounts: FormControl<string[]>;
 }
 
 @Component({
@@ -68,6 +73,7 @@ interface FormConfigForm {
     MultiSelect,
     ToggleSwitch,
     InputNumber,
+    AutoComplete,
     RouterLink,
   ],
   templateUrl: './page-form-config.html',
@@ -115,6 +121,7 @@ export class PageFormConfig implements OnInit {
     confirmQuoteAuthor: this.#fb.control<string | null>(null),
     gatewayIds: this.#fb.control<number[]>([], { nonNullable: true }),
     defaultGatewayId: this.#fb.control<number | null>(null),
+    suggestedAmounts: this.#fb.control<string[]>([], { nonNullable: true }),
   });
 
   readonly formValidator = new FormValidator(this.form);
@@ -124,7 +131,10 @@ export class PageFormConfig implements OnInit {
     if (config) {
       this.hasExisting.set(true);
       this.formConfigId.set(config.id);
-      this.form.patchValue(config);
+      this.form.patchValue({
+        ...config,
+        suggestedAmounts: config.suggestedAmounts?.map(String) ?? [],
+      });
       this.#loadGateways(config.id);
     }
     this.#loadAvailableGateways();
@@ -147,14 +157,30 @@ export class PageFormConfig implements OnInit {
     });
   }
 
+  onAmountAdd(event: { value: string[] }): void {
+    const added = event.value.at(-1);
+    if (!added) return;
+
+    if (!/^\d+(\.\d{1,2})?$/.test(added) || Number(added) <= 0) {
+      this.form.controls.suggestedAmounts.setValue(
+        this.form.controls.suggestedAmounts.value.filter((v) => v !== added),
+      );
+    }
+  }
+
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
     this.isSaving.set(true);
     const raw = this.form.getRawValue();
 
+    const suggestedAmounts =
+      raw.suggestedAmounts.length > 0
+        ? raw.suggestedAmounts.map(Number).filter((v) => !isNaN(v) && v > 0)
+        : null;
+
     const request$ = this.hasExisting()
-      ? this.#api.updateFormConfig(this.pageId(), raw)
-      : this.#api.createFormConfig(this.pageId(), raw);
+      ? this.#api.updateFormConfig(this.pageId(), { ...raw, suggestedAmounts })
+      : this.#api.createFormConfig(this.pageId(), { ...raw, suggestedAmounts });
 
     request$.pipe(finalize(() => this.isSaving.set(false))).subscribe({
       next: (config) => {

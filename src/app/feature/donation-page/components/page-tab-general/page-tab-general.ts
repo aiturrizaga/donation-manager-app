@@ -5,7 +5,6 @@ import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
-import { ToggleSwitch } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { Tag } from 'primeng/tag';
 import { DonationPage, DonationPageGeneralForm } from '../../models/donation-page.model';
@@ -21,7 +20,6 @@ import { FormValidator } from '@shared/utils/form-validator.util';
     Textarea,
     Button,
     Message,
-    ToggleSwitch,
     Tag,
   ],
   templateUrl: './page-tab-general.html',
@@ -52,8 +50,6 @@ export class PageTabGeneral {
     welcomeText: this.#fb.control<string | null>(null),
     thankYouText: this.#fb.control<string | null>(null),
     domain: this.#fb.control<string | null>(null),
-    allowsRecurring: this.#fb.control(false, { nonNullable: true }),
-    suggestedAmounts: this.#fb.control<string | null>(null),
   });
 
   readonly formValidator = new FormValidator(this.form);
@@ -68,8 +64,6 @@ export class PageTabGeneral {
         welcomeText: p.welcomeText,
         thankYouText: p.thankYouText,
         domain: p.domain,
-        allowsRecurring: p.allowsRecurring,
-        suggestedAmounts: p.suggestedAmounts?.join(', ') ?? null,
       });
     });
   }
@@ -97,15 +91,8 @@ export class PageTabGeneral {
     this.isSaving.set(true);
     const raw = this.form.getRawValue();
 
-    const suggestedAmounts = raw.suggestedAmounts
-      ? raw.suggestedAmounts
-          .split(',')
-          .map((v) => parseFloat(v.trim()))
-          .filter((v) => !isNaN(v))
-      : null;
-
     this.#api
-      .update(this.page().id, { ...raw, suggestedAmounts })
+      .update(this.page().id, { ...raw })
       .pipe(finalize(() => this.isSaving.set(false)))
       .subscribe({
         next: (updated) => this.saved.emit(updated),

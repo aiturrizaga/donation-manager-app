@@ -10,7 +10,6 @@ import { PageTabGeneral } from '../../components/page-tab-general/page-tab-gener
 import { PageTabBranding } from '../../components/page-tab-branding/page-tab-branding';
 import { PageFormConfig } from '../../components/page-form-config/page-form-config';
 import { PageTabTargets } from '../../components/page-tab-targets/page-tab-targets';
-import { PageTabGateway } from '../../components/page-tab-gateway/page-tab-gateway';
 
 @Component({
   selector: 'app-donation-page-detail',
@@ -26,7 +25,6 @@ import { PageTabGateway } from '../../components/page-tab-gateway/page-tab-gatew
     PageTabBranding,
     PageFormConfig,
     PageTabTargets,
-    PageTabGateway,
   ],
   providers: [ConfirmationService],
   templateUrl: './donation-page-detail.html',

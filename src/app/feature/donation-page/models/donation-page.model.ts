@@ -11,8 +11,6 @@ export interface DonationPage {
   domain: string | null;
   domainStatus: 'pending' | 'verified' | 'error';
   isActive: boolean;
-  suggestedAmounts: number[] | null;
-  allowsRecurring: boolean;
   metadata: Record<string, unknown> | null;
   branding: PageBranding | null;
   formConfig: FormConfig | null;
@@ -46,6 +44,7 @@ export interface FormConfig {
   amountLocked: boolean;
   amountAllowCustom: boolean;
   amountMinCustom: number | null;
+  suggestedAmounts: number[] | null;
   frequencyOptions: string[];
   frequencyDefault: string;
   frequencyVisible: boolean;
@@ -99,7 +98,6 @@ export interface DonationPageSummary {
   domain: string | null;
   domainStatus: string;
   isActive: boolean;
-  allowsRecurring: boolean;
   hasBranding: boolean;
   hasFormConfig: boolean;
   organization?: PageOrganization;
@@ -113,8 +111,6 @@ export interface DonationPageGeneralForm {
   welcomeText: FormControl<string | null>;
   thankYouText: FormControl<string | null>;
   domain: FormControl<string | null>;
-  allowsRecurring: FormControl<boolean>;
-  suggestedAmounts: FormControl<string | null>;
 }
 
 export interface PageBrandingForm {

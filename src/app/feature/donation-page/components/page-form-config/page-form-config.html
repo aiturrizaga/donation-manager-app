@@ -72,6 +72,28 @@
         <p-toggleswitch formControlName="amountAllowCustom" />
         <span class="text-sm">Permitir monto libre</span>
       </div>
+
+      <div class="flex flex-col gap-1 col-span-2">
+        <label class="font-medium text-sm">
+          Montos sugeridos
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <p-auto-complete
+          formControlName="suggestedAmounts"
+          [multiple]="true"
+          [typeahead]="false"
+          [addOnTab]="true"
+          [addOnBlur]="true"
+          separator=","
+          placeholder="Ej. 50"
+          class="w-full"
+          (onSelect)="onAmountAdd($event)"
+          (keydown.enter)="$event.preventDefault()"
+        />
+        <span class="text-xs text-gray-400">
+          Escribe un monto y presiona Enter, Tab o coma para agregarlo
+        </span>
+      </div>
     </div>
   </div>
 
