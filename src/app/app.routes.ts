@@ -64,6 +64,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./feature/donation-target/donation-target.routes').then((m) => m.routes),
       },
+      {
+        path: 'settings/payment-gateways',
+        loadChildren: () =>
+          import('./feature/payment-gateway/payment-gateway.routes').then((r) => r.routes),
+      },
     ],
   },
 ];

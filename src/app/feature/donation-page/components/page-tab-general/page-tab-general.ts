@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
@@ -59,20 +59,17 @@ export class PageTabGeneral {
   readonly formValidator = new FormValidator(this.form);
 
   constructor() {
-    // patch when page input changes
-    import('@angular/core').then(({ effect }) => {
-      effect(() => {
-        const p = this.page();
-        this.form.patchValue({
-          name: p.name,
-          slug: p.slug,
-          description: p.description,
-          welcomeText: p.welcomeText,
-          thankYouText: p.thankYouText,
-          domain: p.domain,
-          allowsRecurring: p.allowsRecurring,
-          suggestedAmounts: p.suggestedAmounts?.join(', ') ?? null,
-        });
+    effect(() => {
+      const p = this.page();
+      this.form.patchValue({
+        name: p.name,
+        slug: p.slug,
+        description: p.description,
+        welcomeText: p.welcomeText,
+        thankYouText: p.thankYouText,
+        domain: p.domain,
+        allowsRecurring: p.allowsRecurring,
+        suggestedAmounts: p.suggestedAmounts?.join(', ') ?? null,
       });
     });
   }

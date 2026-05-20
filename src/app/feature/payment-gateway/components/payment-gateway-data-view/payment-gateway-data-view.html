@@ -1,0 +1,65 @@
+<p-menu #menu [model]="menuItems()" [popup]="true" appendTo="body" />
+
+@if (isLoading()) {
+  <div class="divide-y divide-gray-100">
+    @for (_ of skeletonRows; track $index) {
+      <div class="flex items-center justify-between gap-4 px-4 py-4">
+        <div class="flex items-center gap-3">
+          <p-skeleton shape="circle" size="2.25rem" />
+          <div class="flex flex-col gap-1.5">
+            <p-skeleton height="0.875rem" width="7rem" />
+            <p-skeleton height="0.75rem" width="10rem" />
+          </div>
+        </div>
+        <p-skeleton height="1.25rem" width="4rem" borderRadius="999px" />
+      </div>
+    }
+  </div>
+} @else if (items().length === 0) {
+  <app-empty-state
+    icon="ti-credit-card-off"
+    iconClass="text-5xl"
+    title="Sin pasarelas configuradas"
+    description="Agrega una pasarela de pago para esta organización"
+  />
+} @else {
+  <div class="divide-y divide-gray-100">
+    @for (gw of items(); track gw.id) {
+      <div class="flex items-center justify-between gap-4 px-4 py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+            <i [class]="getProviderIcon(gw.provider) + ' text-lg text-gray-600'"></i>
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-medium text-gray-900">
+              {{ getProviderLabel(gw.provider) }}
+            </span>
+            <div class="flex items-center gap-2">
+              @if (gw.publicKeyMasked) {
+                <span class="text-xs font-mono text-gray-400">•••• {{ gw.publicKeyMasked }}</span>
+              }
+              @if (gw.testMode) {
+                <span class="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                  Sandbox
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <p-tag
+            [value]="gw.isActive ? 'Activo' : 'Inactivo'"
+            [severity]="gw.isActive ? 'success' : 'secondary'"
+          />
+          <p-button
+            icon="ti ti-dots-vertical"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="openMenu($event, gw)"
+          />
+        </div>
+      </div>
+    }
+  </div>
+}

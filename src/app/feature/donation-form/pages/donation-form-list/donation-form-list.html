@@ -62,6 +62,7 @@
       } @else {
         <app-page-form-config
           [pageId]="selectedPageId()!"
+          [organizationId]="selectedPage()!.organizationId"
           [initialConfig]="formConfig()"
           (saved)="onFormSaved($event)"
         />

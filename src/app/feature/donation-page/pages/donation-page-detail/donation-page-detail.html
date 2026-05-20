@@ -99,12 +99,6 @@
             <span>Targets</span>
           </div>
         </p-tab>
-        <p-tab value="pasarela">
-          <div class="flex items-center gap-2">
-            <i class="ti ti-credit-card" aria-hidden="true"></i>
-            <span>Pasarela</span>
-          </div>
-        </p-tab>
       </p-tablist>
 
       <p-tabpanels class="p-5">
@@ -125,16 +119,13 @@
         <p-tabpanel value="formulario">
           <app-page-form-config
             [pageId]="resolvedPage().id"
+            [organizationId]="resolvedPage().organizationId"
             [initialConfig]="resolvedPage().formConfig"
           />
         </p-tabpanel>
 
         <p-tabpanel value="targets">
           <app-page-tab-targets [page]="resolvedPage()" />
-        </p-tabpanel>
-
-        <p-tabpanel value="pasarela">
-          <app-page-tab-gateway [page]="resolvedPage()" />
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

@@ -1,0 +1,130 @@
+<form [formGroup]="form" class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Proveedor</label>
+    <p-select
+      formControlName="provider"
+      [options]="providerOptions"
+      optionLabel="label"
+      optionValue="value"
+      class="w-full"
+      appendTo="body"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Clave pública
+        @if (gateway()) {
+          <span class="text-gray-400 font-normal text-xs ml-1">(dejar vacío para no cambiar)</span>
+        }
+      </label>
+      <input
+        pInputText
+        type="text"
+        formControlName="publicKey"
+        placeholder="pk_live_..."
+        [invalid]="formValidator.hasError('publicKey')"
+      />
+      @if (formValidator.hasError('publicKey')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('publicKey') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Clave secreta
+        @if (gateway()) {
+          <span class="text-gray-400 font-normal text-xs ml-1">(dejar vacío para no cambiar)</span>
+        }
+      </label>
+      <input
+        pInputText
+        type="password"
+        formControlName="secretKey"
+        placeholder="sk_live_..."
+        [invalid]="formValidator.hasError('secretKey')"
+      />
+      @if (formValidator.hasError('secretKey')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('secretKey') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">
+      Webhook secret
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+    </label>
+    <input
+      pInputText
+      type="password"
+      formControlName="webhookSecret"
+      placeholder="whs_..."
+    />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        RSA ID
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input pInputText type="text" formControlName="rsaId" placeholder="ID de llave RSA" />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        RSA Public Key
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <textarea
+        pTextarea
+        formControlName="rsaPublicKey"
+        placeholder="-----BEGIN PUBLIC KEY-----"
+        rows="3"
+        class="w-full font-mono text-xs"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3 pt-1">
+    <div class="flex items-center gap-3">
+      <p-toggleswitch formControlName="testMode" />
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm font-medium">Modo sandbox</span>
+        <span class="text-xs text-gray-400">Activo durante pruebas. Desactivar en producción real.</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <p-toggleswitch formControlName="isActive" />
+      <div class="flex flex-col gap-0.5">
+        <span class="text-sm font-medium">Activo</span>
+        <span class="text-xs text-gray-400">Solo las pasarelas activas pueden vincularse a formularios.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [outlined]="true"
+      type="button"
+      (click)="close()"
+    />
+    <p-button
+      type="submit"
+      [label]="gateway() ? 'Actualizar' : 'Agregar pasarela'"
+      [loading]="isSaving()"
+      (onClick)="save()"
+    />
+  </div>
+
+</form>

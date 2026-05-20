@@ -1,0 +1,12 @@
+<form [formGroup]="form" class="flex flex-wrap gap-2 w-full">
+  <p-select
+    formControlName="organizationId"
+    [options]="organizations()"
+    optionLabel="tradeName"
+    optionValue="id"
+    placeholder="Selecciona una organización"
+    [showClear]="true"
+    class="w-full sm:w-64"
+    appendTo="body"
+  />
+</form>

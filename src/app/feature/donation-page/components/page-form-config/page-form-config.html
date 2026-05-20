@@ -173,6 +173,76 @@
     </div>
   </div>
 
+  <!-- Pasarelas de pago -->
+  <div class="flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+      Pasarelas de pago
+    </div>
+
+    @if (availableGateways().length === 0) {
+      <div class="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+        <i class="ti ti-alert-triangle text-base"></i>
+        <span>
+        No hay pasarelas activas configuradas para esta organización.
+        <a routerLink="/settings/payment-gateways" class="underline font-medium">
+          Configurar pasarelas
+        </a>
+      </span>
+      </div>
+    } @else {
+      <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm">Pasarelas habilitadas</label>
+            <p-multi-select
+              formControlName="gatewayIds"
+              [options]="availableGateways()"
+              optionLabel="provider"
+              optionValue="id"
+              [showClear]="true"
+              placeholder="Selecciona pasarelas"
+              display="chip"
+              class="w-full"
+              appendTo="body"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="font-medium text-sm">Pasarela por defecto</label>
+            <p-select
+              formControlName="defaultGatewayId"
+              [options]="availableGateways().filter(g => form.getRawValue().gatewayIds.includes(g.id))"
+              optionLabel="provider"
+              optionValue="id"
+              [showClear]="true"
+              placeholder="Selecciona una"
+              class="w-full"
+              appendTo="body"
+            />
+          </div>
+        </div>
+
+        @if (!hasExisting()) {
+          <p class="text-xs text-gray-400">
+            Guarda primero el formulario para poder vincular pasarelas.
+          </p>
+        } @else {
+          <div class="flex justify-end">
+            <p-button
+              label="Guardar pasarelas"
+              icon="ti ti-credit-card"
+              severity="secondary"
+              [outlined]="true"
+              [loading]="isSavingGateways()"
+              type="button"
+              (onClick)="saveGateways()"
+            />
+          </div>
+        }
+      </div>
+    }
+  </div>
+
   <div class="flex justify-end">
     <p-button
       type="submit"

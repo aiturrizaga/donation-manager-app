@@ -74,6 +74,12 @@
             "label": "Objetivos",
             "routerLink": "/settings/targets",
             "title": "Configuración de objetivos"
+          },
+          {
+            "id": "030302-payment-gateway",
+            "label": "Pasarela de pagos",
+            "routerLink": "/settings/payment-gateways",
+            "title": "Pasarela de pagos"
           }
         ]
       }
