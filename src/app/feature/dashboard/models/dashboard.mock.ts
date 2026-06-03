@@ -1,0 +1,110 @@
+import {
+  DashboardStats,
+  DonorsByMonth,
+  OrganizationOption,
+  RecentDonation,
+} from './dashboard.models';
+
+export const MOCK_ORGANIZATIONS: OrganizationOption[] = [
+  { id: 'adeu', name: 'ADEU' },
+];
+
+export const MOCK_STATS: DashboardStats = {
+  totalCollected: 48750.0,
+  totalDonations: 312,
+  activeDonors: 187,
+  avgDonation: 156.25,
+  collectedDelta: 12.4,
+  donationsDelta: 8.1,
+  donorsDelta: 5.3,
+  avgDonationDelta: -2.1,
+};
+
+export const MOCK_RECENT_DONATIONS: RecentDonation[] = [
+  {
+    id: 'd001',
+    donorName: 'Carlos Mendoza Ríos',
+    donorDocument: '45123789',
+    amount: 250.0,
+    currency: 'PEN',
+    campaignName: 'Beca Educativa 2025',
+    frequency: 'monthly',
+    status: 'completed',
+    createdAt: new Date('2025-06-03T10:32:00'),
+  },
+  {
+    id: 'd002',
+    donorName: 'Ana Lucía Torres',
+    donorDocument: '38901234',
+    amount: 500.0,
+    currency: 'PEN',
+    campaignName: 'Fondo Emergencia',
+    frequency: 'one_time',
+    status: 'completed',
+    createdAt: new Date('2025-06-03T09:15:00'),
+  },
+  {
+    id: 'd003',
+    donorName: 'Roberto Chávez',
+    donorDocument: '20601234567',
+    amount: 1200.0,
+    currency: 'PEN',
+    campaignName: 'Infraestructura Escolar',
+    frequency: 'quarterly',
+    status: 'completed',
+    createdAt: new Date('2025-06-02T16:45:00'),
+  },
+  {
+    id: 'd004',
+    donorName: 'Lucía Fernández Paz',
+    donorDocument: '47890123',
+    amount: 100.0,
+    currency: 'PEN',
+    campaignName: 'Beca Educativa 2025',
+    frequency: 'monthly',
+    status: 'pending',
+    createdAt: new Date('2025-06-02T14:20:00'),
+  },
+  {
+    id: 'd005',
+    donorName: 'Mario Salinas',
+    donorDocument: '32456789',
+    amount: 80.0,
+    currency: 'PEN',
+    campaignName: 'Fondo Emergencia',
+    frequency: 'one_time',
+    status: 'failed',
+    createdAt: new Date('2025-06-01T11:05:00'),
+  },
+  {
+    id: 'd006',
+    donorName: 'Patricia Huanca',
+    donorDocument: '43210987',
+    amount: 300.0,
+    currency: 'PEN',
+    campaignName: 'Programa Salud',
+    frequency: 'monthly',
+    status: 'completed',
+    createdAt: new Date('2025-06-01T09:30:00'),
+  },
+  {
+    id: 'd007',
+    donorName: 'Eduardo Paredes',
+    donorDocument: '36540012',
+    amount: 150.0,
+    currency: 'PEN',
+    campaignName: 'Infraestructura Escolar',
+    frequency: 'one_time',
+    status: 'completed',
+    createdAt: new Date('2025-05-31T17:00:00'),
+  },
+];
+
+export const MOCK_DONORS_BY_MONTH: DonorsByMonth[] = [
+  { month: 'Ene', newDonors: 14, recurringDonors: 22 },
+  { month: 'Feb', newDonors: 18, recurringDonors: 28 },
+  { month: 'Mar', newDonors: 22, recurringDonors: 31 },
+  { month: 'Abr', newDonors: 17, recurringDonors: 35 },
+  { month: 'May', newDonors: 25, recurringDonors: 40 },
+  { month: 'Jun', newDonors: 12, recurringDonors: 43 },
+];

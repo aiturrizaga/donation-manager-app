@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { ShellLayout } from '@core/layout/shell/shell-layout';
 import { authGuard } from '@core/guards';
-import { Dashboard } from './feature/dashboard/dashboard';
 
 export const routes: Routes = [
   {
@@ -18,7 +17,8 @@ export const routes: Routes = [
         title: 'Dashboard',
         path: 'dashboard',
         data: { breadcrumb: 'Dashboard' },
-        component: Dashboard,
+        loadChildren: () =>
+          import('./feature/dashboard/dashboard.routes').then((m) => m.routes),
       },
       {
         title: 'Organizaciones',

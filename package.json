@@ -21,6 +21,7 @@
     "@primeuix/themes": "^2.0.3",
     "@tabler/icons-angular": "^3.41.1",
     "@tabler/icons-webfont": "^3.41.1",
+    "chart.js": "^4.5.1",
     "keycloak-angular": "^21.0.0",
     "keycloak-js": "^26.2.4",
     "primeng": "^21.1.4",

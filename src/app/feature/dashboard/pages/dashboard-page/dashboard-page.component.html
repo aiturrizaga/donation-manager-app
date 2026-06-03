@@ -1,0 +1,91 @@
+<div class="app-page">
+
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900 mb-0.5">Dashboard</h1>
+      <p class="text-sm text-gray-400">Resumen de actividad de donaciones</p>
+    </div>
+  </div>
+
+  <!-- Filters bar -->
+  <div class="flex flex-wrap items-center gap-3 mb-6 p-4 bg-white rounded-xl border border-gray-100">
+    <p-select
+      [options]="organizations"
+      optionLabel="name"
+      optionValue="id"
+      [(ngModel)]="selectedOrgId"
+      placeholder="Todas las organizaciones"
+      class="w-52"
+    />
+
+    <div class="flex items-center gap-2">
+      <p-date-picker
+        [(ngModel)]="dateFrom"
+        dateFormat="dd/mm/yy"
+        placeholder="Desde"
+        [maxDate]="dateTo"
+        class="w-36"
+      />
+      <span class="text-gray-300 font-light">–</span>
+      <p-date-picker
+        [(ngModel)]="dateTo"
+        dateFormat="dd/mm/yy"
+        placeholder="Hasta"
+        [minDate]="dateFrom"
+        class="w-36"
+      />
+    </div>
+
+    <button pButton type="button" (click)="applyFilters()">
+      <i class="ti ti-filter"></i>
+      Aplicar
+    </button>
+
+    <button pButton type="button" severity="secondary" (click)="resetFilters()">
+      <i class="ti ti-refresh"></i>
+    </button>
+  </div>
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    <app-stats-card
+      label="Monto recaudado"
+      [value]="stats.totalCollected"
+      icon="ti-coin"
+      [delta]="stats.collectedDelta"
+      prefix="S/ "
+      [decimals]="2"
+    />
+    <app-stats-card
+      label="Total donaciones"
+      [value]="stats.totalDonations"
+      icon="ti-receipt"
+      [delta]="stats.donationsDelta"
+    />
+    <app-stats-card
+      label="Donantes activos"
+      [value]="stats.activeDonors"
+      icon="ti-users"
+      [delta]="stats.donorsDelta"
+    />
+    <app-stats-card
+      label="Donación promedio"
+      [value]="stats.avgDonation"
+      icon="ti-chart-bar"
+      [delta]="stats.avgDonationDelta"
+      prefix="S/ "
+      [decimals]="2"
+    />
+  </div>
+
+  <!-- Chart + table -->
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+    <div class="lg:col-span-2">
+      <app-donors-summary [data]="donorsByMonth" />
+    </div>
+    <div class="lg:col-span-3">
+      <app-recent-donations [donations]="filteredDonations()" />
+    </div>
+  </div>
+
+</div>
