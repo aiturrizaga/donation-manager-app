@@ -25,4 +25,10 @@ export class DonationCertificateApi {
   resendEmail(donationId: string): Observable<void> {
     return this.#http.post<void>(`${this.#base}/${donationId}/certificate/resend-email`, {});
   }
+
+  downloadCertificate(certificateNumber: string): Observable<Blob> {
+    return this.#http.get(`${environment.apiUrl}/v1/portal/certificates/${certificateNumber}/download`, {
+      responseType: 'blob',
+    });
+  }
 }

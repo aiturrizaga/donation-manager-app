@@ -5,6 +5,7 @@ import { Tag } from 'primeng/tag';
 import { Skeleton } from 'primeng/skeleton';
 import { EmptyState } from '@shared/components';
 import { DonationCertificateApi } from '../../api/donation-certificate.api';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-donation-detail-certificate',
@@ -48,7 +49,16 @@ export class DonationDetailCertificate implements OnInit {
     });
   }
 
-  download(): void {
-    window.open(this.certificate()?.fileUrl, '_blank');
+  async download(): Promise<void> {
+    const result = this.certificate();
+    if (!result?.certificateNumber) return;
+
+    const blob = await firstValueFrom(this.#api.downloadCertificate(result.certificateNumber));
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${result.certificateNumber}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
