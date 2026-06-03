@@ -5,7 +5,7 @@ import { computed } from '@angular/core';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 import { UserApi } from '../api/user.api';
 import { User, UserFilterParams } from '../models/user.model';
-import { DEFAULT_PAGE_QUERY, PageQuery } from '@shared/models/pagination.model';
+import { DEFAULT_PAGE_QUERY, PageQuery } from '@shared/models';
 
 interface UserListState {
   items: User[];

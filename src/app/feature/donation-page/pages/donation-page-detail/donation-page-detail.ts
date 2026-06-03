@@ -26,7 +26,6 @@ import { PageTabTargets } from '../../components/page-tab-targets/page-tab-targe
     PageFormConfig,
     PageTabTargets,
   ],
-  providers: [ConfirmationService],
   templateUrl: './donation-page-detail.html',
 })
 export class DonationPageDetail {
@@ -69,9 +68,12 @@ export class DonationPageDetail {
     });
   }
 
-  saveBranding(): void {};
+  saveBranding(): void {}
 
-  openLink(link: string): void {}
+  openLink(): void {
+    const link = `https://${this.resolvedPage().domain}/${this.resolvedPage().slug}`;
+    window.open(link, '_blank', 'noopener,noreferrer');
+  }
 
   goBack(): void {
     this.#router.navigate(['/pages']).then();

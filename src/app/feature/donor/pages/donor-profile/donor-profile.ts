@@ -54,7 +54,7 @@ export class DonorProfilePage implements OnInit {
 
   private _loadStats(): void {
     this.#donationApi
-      .getAll({ page: 1, size: 1000 }, { donorId: this.donor().id, status: 'completed' })
+      .getAll({ page: 1, size: 100 }, { donorId: this.donor().id, status: 'completed' })
       .subscribe((data) => {
         this.donationCount.set(data.total);
         this.totalDonated.set(data.items.reduce((sum, d) => sum + Number(d.amount), 0));

@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Drawer } from 'primeng/drawer';
 import { Avatar } from 'primeng/avatar';
@@ -12,20 +12,10 @@ import { DonationApi } from '../../../donation/api/donation.api';
 
 @Component({
   selector: 'app-donor-preview-drawer',
-  imports: [
-    Drawer,
-    Avatar,
-    Tag,
-    Skeleton,
-    Divider,
-    Button,
-    RouterLink,
-    DatePipe,
-    DecimalPipe,
-  ],
+  imports: [Drawer, Avatar, Tag, Skeleton, Divider, Button, RouterLink, DatePipe, DecimalPipe],
   templateUrl: './donor-preview-drawer.html',
 })
-export class DonorPreviewDrawer implements OnInit {
+export class DonorPreviewDrawer {
   readonly donor = input.required<Donor>();
   readonly visible = input.required<boolean>();
   readonly visibleChange = output<boolean>();
@@ -37,8 +27,12 @@ export class DonorPreviewDrawer implements OnInit {
   readonly totalDonated = signal(0);
   readonly donationCount = signal(0);
 
-  ngOnInit(): void {
-    this._loadDonations();
+  constructor() {
+    effect(() => {
+      if (this.visible()) {
+        this._loadDonations();
+      }
+    });
   }
 
   private _loadDonations(): void {
