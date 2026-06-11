@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://donation-manager-api.onrender.com/api',
+  apiUrl: 'https://api.adeu.org.pe/api',
   keycloak: {
     config: {
-      url: 'https://identity.medgama.com',
+      url: 'https://identity.adeu.org.pe',
       realm: 'donation-manager',
       clientId: 'donation-manager-app',
     },

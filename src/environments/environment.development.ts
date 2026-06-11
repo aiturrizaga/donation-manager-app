@@ -3,7 +3,7 @@ export const environment = {
   apiUrl: 'http://localhost:8085/api',
   keycloak: {
     config: {
-      url: 'https://identity.medgama.com',
+      url: 'https://identity.adeu.org.pe',
       realm: 'donation-manager',
       clientId: 'donation-manager-app',
     },
