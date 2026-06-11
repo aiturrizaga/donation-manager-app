@@ -4,7 +4,7 @@ export const environment = {
   keycloak: {
     config: {
       url: 'https://identity.adeu.org.pe',
-      realm: 'donation-manager',
+      realm: 'donation-hub-staging',
       clientId: 'donation-manager-app',
     },
     initOptions: {
