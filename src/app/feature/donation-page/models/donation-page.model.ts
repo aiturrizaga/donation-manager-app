@@ -11,6 +11,7 @@ export interface DonationPage {
   domain: string | null;
   domainStatus: 'pending' | 'verified' | 'error';
   isActive: boolean;
+  isDefault: boolean;
   metadata: Record<string, unknown> | null;
   branding: PageBranding | null;
   formConfig: FormConfig | null;
@@ -98,6 +99,7 @@ export interface DonationPageSummary {
   domain: string | null;
   domainStatus: string;
   isActive: boolean;
+  isDefault: boolean;
   hasBranding: boolean;
   hasFormConfig: boolean;
   organization?: PageOrganization;

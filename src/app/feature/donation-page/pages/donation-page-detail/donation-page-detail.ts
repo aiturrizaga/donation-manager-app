@@ -68,6 +68,23 @@ export class DonationPageDetail {
     });
   }
 
+  setAsDefault(): void {
+    const p = this.resolvedPage();
+    if (p.isDefault) return;
+
+    this.#confirm.confirm({
+      message:
+        'Esta página se mostrará en la raíz del dominio cuando no se especifique un slug. ¿Deseas continuar?',
+      header: 'Establecer como principal',
+      icon: 'ti ti-home',
+      rejectLabel: 'No',
+      acceptLabel: 'Sí, establecer',
+      accept: () => {
+        this.#api.setDefault(p.id).subscribe((updated) => this.currentPage.set(updated));
+      },
+    });
+  }
+
   saveBranding(): void {}
 
   openLink(): void {

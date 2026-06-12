@@ -63,6 +63,12 @@ export class DonationPageApi {
     return this.#http.delete<void>(`${this.#base}/${id}`);
   }
 
+  setDefault(id: string): Observable<DonationPage> {
+    return this.#http
+      .patch<ApiResponse<DonationPage>>(`${this.#base}/${id}/set-default`, {})
+      .pipe(map((r) => r.data));
+  }
+
   // Branding
   getBranding(pageId: string): Observable<PageBranding> {
     return this.#http
