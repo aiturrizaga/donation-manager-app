@@ -3,8 +3,16 @@ import { MenuItem, PrimeTemplate } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Skeleton } from 'primeng/skeleton';
 import { ProfileCard } from '@shared/components';
-import Keycloak, { KeycloakProfile } from 'keycloak-js';
+import Keycloak from 'keycloak-js';
+import { CurrentUserService } from '@core/services/current-user.service';
 import { getInitials } from '@shared/utils/string.util';
+
+interface BasicProfileClaims {
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  email?: string;
+}
 
 @Component({
   selector: 'app-user-menu',
@@ -14,19 +22,25 @@ import { getInitials } from '@shared/utils/string.util';
 })
 export class UserMenu {
   readonly #keycloak = inject(Keycloak);
+  readonly #currentUser = inject(CurrentUserService);
 
-  readonly loading = signal(true);
-  readonly #profile = signal<KeycloakProfile | null>(null);
+  // Sin loading real: el nombre/correo salen del propio access token
+  // (ya decodificado en memoria por keycloak-js), no de una llamada a la
+  // Account REST API de Keycloak — esa API exige el scope/rol "account",
+  // que este realm ya no otorga por defecto a donation-manager-app, así que
+  // keycloak.loadUserProfile() ahora devuelve 401 en vez de datos.
+  readonly loading = signal(false);
   protected readonly menu = viewChild.required<Menu>('menu');
 
   readonly user = computed(() => {
-    const profile = this.#profile();
-    const fullName = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ');
+    const token = this.#keycloak.tokenParsed as BasicProfileClaims | undefined;
+    const fullName =
+      token?.name || [token?.given_name, token?.family_name].filter(Boolean).join(' ');
 
     return {
       fullName,
-      role: 'Admin',
-      email: profile?.email ?? '',
+      role: this.#currentUser.role()?.displayName ?? '',
+      email: token?.email ?? '',
       initials: getInitials(fullName, true),
     };
   });
@@ -43,25 +57,8 @@ export class UserMenu {
     },
   ];
 
-  constructor() {
-    this.#loadProfile();
-  }
-
   onToggle(event: MouseEvent): void {
     this.menu().toggle(event);
-  }
-
-  #loadProfile(): void {
-    this.#keycloak
-      .loadUserProfile()
-      .then((profile) => {
-        this.#profile.set(profile);
-        this.loading.set(false);
-      })
-      .catch(() => {
-        this.#profile.set(null);
-        this.loading.set(false);
-      });
   }
 
   #logout(): void {

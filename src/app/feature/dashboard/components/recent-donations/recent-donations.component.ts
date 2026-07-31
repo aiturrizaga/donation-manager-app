@@ -1,37 +1,38 @@
-import { Component, input } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { RecentDonation } from '../../models/dashboard.models';
 import { TagModule } from 'primeng/tag';
-import { TableModule } from 'primeng/table';
 
 type DonationStatus = RecentDonation['status'];
-type DonationFrequency = RecentDonation['frequency'];
+type DonationType = RecentDonation['donationType'];
 
 const STATUS_CONFIG: Record<
   DonationStatus,
-  { label: string; severity: 'success' | 'warn' | 'danger' }
+  { label: string; severity: 'success' | 'warn' | 'danger' | 'info' | 'secondary' }
 > = {
   completed: { label: 'Completado', severity: 'success' },
   pending: { label: 'Pendiente', severity: 'warn' },
+  processing: { label: 'Procesando', severity: 'info' },
   failed: { label: 'Fallido', severity: 'danger' },
+  refunded: { label: 'Reembolsado', severity: 'secondary' },
+  expired: { label: 'Expirado', severity: 'secondary' },
+  cancelled: { label: 'Cancelado', severity: 'secondary' },
 };
 
-const FREQUENCY_LABELS: Record<DonationFrequency, string> = {
+const DONATION_TYPE_LABELS: Record<DonationType, string> = {
   one_time: 'Único',
-  monthly: 'Mensual',
-  quarterly: 'Trimestral',
+  recurring: 'Recurrente',
 };
 
-const FREQUENCY_CLASSES: Record<DonationFrequency, string> = {
+const DONATION_TYPE_CLASSES: Record<DonationType, string> = {
   one_time: 'bg-gray-100 text-gray-600',
-  monthly: 'bg-blue-50 text-blue-700',
-  quarterly: 'bg-purple-50 text-purple-700',
+  recurring: 'bg-blue-50 text-blue-700',
 };
 
 @Component({
   selector: 'app-recent-donations',
-  standalone: true,
-  imports: [CommonModule, DatePipe, TagModule, TableModule],
+  imports: [DatePipe, DecimalPipe, TagModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -44,63 +45,51 @@ const FREQUENCY_CLASSES: Record<DonationFrequency, string> = {
         </span>
       </div>
 
-      <div class="overflow-x-auto">
-        <p-table [value]="donations()" class="app-table">
-          <ng-template #header>
-            <tr>
-              <th>Donante</th>
-              <th>Campaña</th>
-              <th>Monto</th>
-              <th>Frecuencia</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-donation>
-              <tr>
-                <td>
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-8 h-8 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold flex items-center justify-center shrink-0"
+      @if (donations().length === 0) {
+        <p class="text-sm text-gray-400 text-center py-8">No hay donaciones recientes.</p>
+      } @else {
+        <div class="flex flex-col divide-y divide-gray-100 px-5">
+          @for (donation of donations(); track donation.id) {
+            <div class="flex items-center justify-between gap-4 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  class="w-9 h-9 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold flex items-center justify-center shrink-0"
+                >
+                  {{ initials(donation.donorName) }}
+                </div>
+                <div class="flex flex-col min-w-0 gap-0.5">
+                  <span class="text-sm font-medium text-gray-800 truncate">{{ donation.donorName }}</span>
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="text-xs text-gray-400 truncate">{{ donation.campaignName }}</span>
+                    <span
+                      class="text-xs px-1.5 py-0.5 rounded-full font-medium shrink-0 {{
+                        donationTypeClasses(donation.donationType)
+                      }}"
                     >
-                      {{ initials(donation.donorName) }}
-                    </div>
-                    <div class="flex flex-col">
-                      <span class="text-sm font-medium text-gray-800">{{
-                        donation.donorName
-                      }}</span>
-                      <span class="text-xs text-gray-400">{{ donation.donorDocument }}</span>
-                    </div>
+                      {{ donationTypeLabel(donation.donationType) }}
+                    </span>
                   </div>
-                </td>
-                <td class="text-sm text-gray-600 max-w-40 truncate">
-                  {{ donation.campaignName }}
-                </td>
-                <td class="text-sm font-semibold text-gray-800 whitespace-nowrap">
+                </div>
+              </div>
+
+              <div class="flex flex-col items-end gap-1 shrink-0">
+                <span class="text-sm font-semibold text-gray-800 whitespace-nowrap">
                   {{ donation.currency }} {{ donation.amount | number: '1.2-2' }}
-                </td>
-                <td>
-                  <span
-                    class="text-xs px-2 py-0.5 rounded-full font-medium {{
-                      frequencyClasses(donation.frequency)
-                    }}"
-                  >
-                    {{ frequencyLabel(donation.frequency) }}
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-gray-400 whitespace-nowrap">
+                    {{ donation.createdAt | date: 'dd MMM, HH:mm' : '' : 'es-PE' }}
                   </span>
-                </td>
-                <td>
                   <p-tag
                     [value]="statusConfig(donation.status).label"
                     [severity]="statusConfig(donation.status).severity"
                   />
-                </td>
-                <td class="text-xs text-gray-400 whitespace-nowrap">
-                  {{ donation.createdAt | date: 'dd MMM, HH:mm' : '' : 'es-PE' }}
-                </td>
-              </tr>
-          </ng-template>
-        </p-table>
-      </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
     </div>
   `,
 })
@@ -120,11 +109,11 @@ export class RecentDonationsComponent {
     return STATUS_CONFIG[status];
   }
 
-  frequencyLabel(frequency: DonationFrequency): string {
-    return FREQUENCY_LABELS[frequency];
+  donationTypeLabel(donationType: DonationType): string {
+    return DONATION_TYPE_LABELS[donationType];
   }
 
-  frequencyClasses(frequency: DonationFrequency): string {
-    return FREQUENCY_CLASSES[frequency];
+  donationTypeClasses(donationType: DonationType): string {
+    return DONATION_TYPE_CLASSES[donationType];
   }
 }

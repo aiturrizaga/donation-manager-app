@@ -1,8 +1,20 @@
 import { Routes } from '@angular/router';
 import { ShellLayout } from '@core/layout/shell/shell-layout';
-import { authGuard } from '@core/guards';
+import { authGuard, permissionGuard } from '@core/guards';
 
 export const routes: Routes = [
+  {
+    path: 'mantenimiento',
+    loadComponent: () =>
+      import('./feature/maintenance/maintenance-page').then((m) => m.MaintenancePage),
+  },
+  {
+    // Fuera del shell a propósito — ver el comentario en AccessDeniedPage
+    // sobre por qué esta ruta NO puede llevar authGuard.
+    path: 'acceso-denegado',
+    loadComponent: () =>
+      import('./feature/access-denied/access-denied-page').then((m) => m.AccessDeniedPage),
+  },
   {
     path: '',
     component: ShellLayout,
@@ -53,11 +65,11 @@ export const routes: Routes = [
           import('./feature/donation-page/donation-page.routes').then((m) => m.routes),
       },
       {
-        title: 'Formularios',
-        path: 'forms',
-        data: { breadcrumb: 'Formularios' },
-        loadChildren: () =>
-          import('./feature/donation-form/donation-form.routes').then((m) => m.routes),
+        title: 'Roles y permisos',
+        path: 'roles',
+        canActivate: [permissionGuard('rbac:read')],
+        data: { breadcrumb: 'Roles y permisos' },
+        loadChildren: () => import('./feature/role/role.routes').then((m) => m.routes),
       },
       {
         path: 'settings/targets',
@@ -68,6 +80,16 @@ export const routes: Routes = [
         path: 'settings/payment-gateways',
         loadChildren: () =>
           import('./feature/payment-gateway/payment-gateway.routes').then((r) => r.routes),
+      },
+      {
+        // Debe ser el último hijo — el router prueba las rutas en orden y
+        // esta matchea cualquier cosa. Angular no cambia la URL al matchear
+        // un wildcard: la barra de direcciones queda tal cual la escribió el
+        // usuario, solo se reemplaza el contenido (sin skipLocationChange).
+        path: '**',
+        title: 'Página no encontrada',
+        loadComponent: () =>
+          import('./feature/not-found/not-found-page').then((m) => m.NotFoundPage),
       },
     ],
   },

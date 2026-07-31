@@ -9,13 +9,18 @@ import {
   DonationPage,
   DonationPageFilterParams,
   DonationPageSummary,
-  FormConfig,
+  DonationPageGateway,
   FormConfigTarget,
   PageBranding,
-  PaymentGateway,
-} from '../models/donation-page.model';
+} from '@domain/donation-page';
 import { environment } from '@env/environment';
 
+/**
+ * Ciclo de vida de una DonationPage: CRUD, branding y su pasarela propia.
+ * La lectura de listado + FormConfig usados también por `donation-form` viven
+ * en `@shared/api/donation-page-form-config.api` (Interface Segregation:
+ * solo se comparte la porción que otra feature realmente necesita).
+ */
 @Injectable({ providedIn: 'root' })
 export class DonationPageApi {
   readonly #http = inject(HttpClient);
@@ -88,22 +93,27 @@ export class DonationPageApi {
       .pipe(map((r) => r.data));
   }
 
-  // Form config
-  getFormConfig(pageId: string): Observable<FormConfig> {
+  uploadBrandingLogo(pageId: string, file: File): Observable<PageBranding> {
+    const formData = new FormData();
+    formData.append('file', file);
     return this.#http
-      .get<ApiResponse<FormConfig>>(`${this.#base}/${pageId}/form-config`)
+      .post<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/logo`, formData)
       .pipe(map((r) => r.data));
   }
 
-  createFormConfig(pageId: string, payload: any): Observable<FormConfig> {
+  uploadBrandingHero(pageId: string, file: File): Observable<PageBranding> {
+    const formData = new FormData();
+    formData.append('file', file);
     return this.#http
-      .post<ApiResponse<FormConfig>>(`${this.#base}/${pageId}/form-config`, payload)
+      .post<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/hero`, formData)
       .pipe(map((r) => r.data));
   }
 
-  updateFormConfig(pageId: string, payload: any): Observable<FormConfig> {
+  uploadBrandingFavicon(pageId: string, file: File): Observable<PageBranding> {
+    const formData = new FormData();
+    formData.append('file', file);
     return this.#http
-      .patch<ApiResponse<FormConfig>>(`${this.#base}/${pageId}/form-config`, payload)
+      .post<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/favicon`, formData)
       .pipe(map((r) => r.data));
   }
 
@@ -132,34 +142,38 @@ export class DonationPageApi {
     return this.#http.delete<void>(`${this.#base}/${pageId}/form-config/targets/${targetId}`);
   }
 
-  // Payment gateway
-  getGateway(pageId: string): Observable<PaymentGateway> {
+  // Payment gateway (propio de la página, distinto del de la organización)
+  getGateway(pageId: string): Observable<DonationPageGateway> {
     return this.#http
-      .get<ApiResponse<PaymentGateway>>(`${this.#base}/${pageId}/payment-gateway`)
+      .get<ApiResponse<DonationPageGateway>>(`${this.#base}/${pageId}/payment-gateway`)
       .pipe(map((r) => r.data));
   }
 
-  createGateway(pageId: string, payload: any): Observable<PaymentGateway> {
+  createGateway(pageId: string, payload: any): Observable<DonationPageGateway> {
     return this.#http
-      .post<ApiResponse<PaymentGateway>>(`${this.#base}/${pageId}/payment-gateway`, payload)
+      .post<ApiResponse<DonationPageGateway>>(`${this.#base}/${pageId}/payment-gateway`, payload)
       .pipe(map((r) => r.data));
   }
 
-  updateGateway(pageId: string, payload: any): Observable<PaymentGateway> {
+  updateGateway(pageId: string, payload: any): Observable<DonationPageGateway> {
     return this.#http
-      .patch<ApiResponse<PaymentGateway>>(`${this.#base}/${pageId}/payment-gateway`, payload)
+      .patch<ApiResponse<DonationPageGateway>>(`${this.#base}/${pageId}/payment-gateway`, payload)
       .pipe(map((r) => r.data));
   }
 
-  activateGateway(pageId: string): Observable<PaymentGateway> {
+  activateGateway(pageId: string): Observable<DonationPageGateway> {
     return this.#http
-      .patch<ApiResponse<PaymentGateway>>(`${this.#base}/${pageId}/payment-gateway/activate`, {})
+      .patch<
+        ApiResponse<DonationPageGateway>
+      >(`${this.#base}/${pageId}/payment-gateway/activate`, {})
       .pipe(map((r) => r.data));
   }
 
-  deactivateGateway(pageId: string): Observable<PaymentGateway> {
+  deactivateGateway(pageId: string): Observable<DonationPageGateway> {
     return this.#http
-      .patch<ApiResponse<PaymentGateway>>(`${this.#base}/${pageId}/payment-gateway/deactivate`, {})
+      .patch<
+        ApiResponse<DonationPageGateway>
+      >(`${this.#base}/${pageId}/payment-gateway/deactivate`, {})
       .pipe(map((r) => r.data));
   }
 

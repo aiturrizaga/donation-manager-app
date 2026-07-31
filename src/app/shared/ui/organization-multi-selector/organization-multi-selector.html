@@ -1,0 +1,11 @@
+<p-multiSelect
+  [ngModel]="context.selectedIds()"
+  (ngModelChange)="context.select($event)"
+  [options]="catalog.items()"
+  optionLabel="tradeName"
+  optionValue="id"
+  placeholder="Todas las organizaciones"
+  [showClear]="true"
+  appendTo="body"
+  class="w-full sm:w-64"
+/>

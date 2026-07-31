@@ -27,44 +27,44 @@
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-xl font-semibold text-gray-900">
-              {{ donor().partner.name }}
+              {{ currentDonor().partner.name }}
             </span>
             <p-tag
-              [value]="donor().isActive ? 'Activo' : 'Inactivo'"
-              [severity]="donor().isActive ? 'success' : 'secondary'"
+              [value]="currentDonor().isActive ? 'Activo' : 'Inactivo'"
+              [severity]="currentDonor().isActive ? 'success' : 'secondary'"
             />
-            @if (donor().hasAccount) {
+            @if (currentDonor().hasAccount) {
               <p-tag value="Cuenta portal" severity="info" />
             }
           </div>
           <div class="flex flex-wrap gap-x-4 gap-y-1">
-            @if (donor().partner.email) {
+            @if (currentDonor().partner.email) {
               <span class="flex items-center gap-1.5 text-sm text-gray-500">
                 <i class="ti ti-mail text-gray-400 text-xs"></i>
-                {{ donor().partner.email }}
+                {{ currentDonor().partner.email }}
               </span>
             }
-            @if (donor().partner.phone) {
+            @if (currentDonor().partner.phone) {
               <span class="flex items-center gap-1.5 text-sm text-gray-500">
                 <i class="ti ti-phone text-gray-400 text-xs"></i>
-                {{ donor().partner.phone }}
+                {{ currentDonor().partner.phone }}
               </span>
             }
-            @if (donor().partner.documentNumber) {
+            @if (currentDonor().partner.documentNumber) {
               <span class="flex items-center gap-1.5 text-sm text-gray-500 font-mono">
                 <i class="ti ti-id-badge-2 text-gray-400 text-xs"></i>
-                {{ donor().partner.documentNumber }}
+                {{ currentDonor().partner.documentNumber }}
               </span>
             }
-            @if (donor().partner.address) {
+            @if (currentDonor().partner.address) {
               <span class="flex items-center gap-1.5 text-sm text-gray-500">
                 <i class="ti ti-map-pin text-gray-400 text-xs"></i>
-                {{ donor().partner.address }}
+                {{ currentDonor().partner.address }}
               </span>
             }
           </div>
           <span class="text-xs text-gray-400">
-            {{ donor().partner.partnerType === 'individual' ? 'Persona natural' : 'Persona jurídica' }}
+            {{ currentDonor().partner.partnerType === 'individual' ? 'Persona natural' : 'Persona jurídica' }}
           </span>
         </div>
       </div>
@@ -104,7 +104,7 @@
           Miembro desde
         </span>
         <span class="text-xl font-bold text-gray-900">
-          {{ donor().createdAt | date:'MMM yyyy' }}
+          {{ currentDonor().createdAt | date:'MMM yyyy' }}
         </span>
       </div>
     </div>
@@ -137,13 +137,13 @@
 
       <p-tabpanels>
         <p-tabpanel value="donations">
-          <app-donor-profile-donations [donorId]="donor().id" />
+          <app-donor-profile-donations [donorId]="currentDonor().id" />
         </p-tabpanel>
         <p-tabpanel value="subscriptions">
-          <app-donor-profile-subscriptions [donorId]="donor().id" />
+          <app-donor-profile-subscriptions [donorId]="currentDonor().id" />
         </p-tabpanel>
         <p-tabpanel value="certificates">
-          <app-donor-profile-certificates [donorId]="donor().id" />
+          <app-donor-profile-certificates [donorId]="currentDonor().id" />
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

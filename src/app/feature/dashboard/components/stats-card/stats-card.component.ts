@@ -20,15 +20,17 @@ import { CommonModule } from '@angular/common';
         {{ formattedValue() }}
       </div>
 
-      <div
-        class="flex items-center gap-1.5 text-sm font-medium"
-        [class.text-emerald-600]="delta() >= 0"
-        [class.text-red-500]="delta() < 0"
-      >
-        <i class="ti {{ deltaIcon() }}" style="font-size: 0.9rem"></i>
-        <span>{{ deltaLabel() }}</span>
-        <span class="text-gray-400 font-normal ml-0.5">vs. mes anterior</span>
-      </div>
+      @if (delta() !== null) {
+        <div
+          class="flex items-center gap-1.5 text-sm font-medium"
+          [class.text-emerald-600]="delta()! >= 0"
+          [class.text-red-500]="delta()! < 0"
+        >
+          <i class="ti {{ deltaIcon() }}" style="font-size: 0.9rem"></i>
+          <span>{{ deltaLabel() }}</span>
+          <span class="text-gray-400 font-normal ml-0.5">vs. periodo anterior</span>
+        </div>
+      }
     </div>
   `,
 })
@@ -36,7 +38,8 @@ export class StatsCardComponent {
   label = input.required<string>();
   value = input.required<number>();
   icon = input.required<string>();
-  delta = input.required<number>();
+  /** null oculta el bloque de comparación — el dato sigue disponible en el backend, solo no se muestra. */
+  delta = input<number | null>(null);
   prefix = input<string>('');
   suffix = input<string>('');
   decimals = input<number>(0);
@@ -50,11 +53,11 @@ export class StatsCardComponent {
   }
 
   deltaIcon(): string {
-    return this.delta() >= 0 ? 'ti-trending-up' : 'ti-trending-down';
+    return (this.delta() ?? 0) >= 0 ? 'ti-trending-up' : 'ti-trending-down';
   }
 
   deltaLabel(): string {
-    const abs = Math.abs(this.delta());
-    return `${this.delta() >= 0 ? '+' : '-'}${abs.toFixed(1)}%`;
+    const abs = Math.abs(this.delta() ?? 0);
+    return `${(this.delta() ?? 0) >= 0 ? '+' : '-'}${abs.toFixed(1)}%`;
   }
 }

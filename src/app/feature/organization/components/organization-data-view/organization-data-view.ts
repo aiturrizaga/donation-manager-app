@@ -1,17 +1,19 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { Skeleton } from 'primeng/skeleton';
 import { EmptyState } from '@shared/components';
-import { Organization } from '../../models/organization.model';
+import { Organization } from '@domain/organization';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 
 @Component({
   selector: 'app-organization-data-view',
-  imports: [TableModule, Tag, Button, Tooltip, Skeleton, Paginator, EmptyState],
+  imports: [RouterLink, TableModule, Tag, Button, Tooltip, Skeleton, Paginator, EmptyState],
   templateUrl: './organization-data-view.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrganizationDataView {
   readonly items = input.required<Organization[]>();
@@ -23,6 +25,7 @@ export class OrganizationDataView {
   readonly emptyTitle = input<string>('');
   readonly emptyDescription = input<string>('');
 
+  readonly edit = output<Organization>();
   readonly delete = output<Organization>();
   readonly pageChange = output<{ first: number; rows: number }>();
 

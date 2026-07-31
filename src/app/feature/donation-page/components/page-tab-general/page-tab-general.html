@@ -59,52 +59,30 @@
   <div class="flex flex-col gap-1">
     <label class="font-medium">
       Descripción
-      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional, uso interno)</span>
     </label>
     <textarea
       pTextarea
       formControlName="description"
-      placeholder="Describe la causa visible al donante..."
+      placeholder="Nota interna sobre esta página/campaña..."
       rows="3"
       class="w-full"
     ></textarea>
+    <span class="text-xs text-gray-400">
+      Solo visible aquí, en el panel admin — el donante nunca ve este texto.
+      El copy que sí se muestra en la página pública se edita en la pestaña Branding.
+    </span>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div class="flex flex-col gap-1">
-      <label class="font-medium">
-        Texto de bienvenida
-        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
-      </label>
-      <textarea
-        pTextarea
-        formControlName="welcomeText"
-        placeholder="Mensaje de bienvenida en la página pública..."
-        rows="3"
-        class="w-full"
-      ></textarea>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <label class="font-medium">
-        Texto post-donación
-        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
-      </label>
-      <textarea
-        pTextarea
-        formControlName="thankYouText"
-        placeholder="Mensaje de agradecimiento..."
-        rows="3"
-        class="w-full"
-      ></textarea>
-    </div>
-  </div>
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
 
   <div class="flex justify-end">
     <p-button
       type="submit"
       label="Guardar cambios"
-      [loading]="isSaving()"
+      [loading]="saveOp.isPending()"
     />
   </div>
 

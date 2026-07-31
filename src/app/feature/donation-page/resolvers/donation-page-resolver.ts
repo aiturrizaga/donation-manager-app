@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { ResolveFn, Router } from '@angular/router';
-import { catchError, EMPTY, tap } from 'rxjs';
+import { catchError, EMPTY } from 'rxjs';
 import { DonationPageApi } from '../api/donation-page.api';
-import { DonationPage } from '../models/donation-page.model';
+import { DonationPage } from '@domain/donation-page';
 
 export const donationPageResolver: ResolveFn<DonationPage> = (route) => {
   const api = inject(DonationPageApi);
@@ -10,13 +10,6 @@ export const donationPageResolver: ResolveFn<DonationPage> = (route) => {
   const id = route.paramMap.get('id')!;
 
   return api.getById(id).pipe(
-    tap((page) => {
-      route.data = {
-        ...route.data,
-        title: page.name,
-        breadcrumb: page.name,
-      }
-    }),
     catchError(() => {
       router.navigate(['/pages']).then();
       return EMPTY;

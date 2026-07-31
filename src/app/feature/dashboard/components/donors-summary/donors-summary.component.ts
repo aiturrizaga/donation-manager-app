@@ -38,7 +38,7 @@ export class DonorsSummaryComponent {
   data = input.required<DonorsByMonth[]>();
 
   chartData = computed(() => ({
-    labels: this.data().map((d) => d.month),
+    labels: this.data().map((d) => d.label),
     datasets: [
       {
         label: 'Nuevos',

@@ -1,12 +1,10 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { DatePicker } from 'primeng/datepicker';
-import { DonationFilterParams } from '../../models/donation.model';
-import { Organization } from '../../../organization/models/organization.model';
 
 const STATUS_OPTIONS = [
   { label: 'Completado', value: 'completed' },
@@ -25,17 +23,20 @@ const TYPE_OPTIONS = [
   selector: 'app-donation-filters',
   imports: [ReactiveFormsModule, Select, MultiSelect, DatePicker],
   templateUrl: './donation-filters.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonationFilters {
-  readonly organizations = input.required<Organization[]>();
-  readonly filtersChange = output<DonationFilterParams>();
+  readonly filtersChange = output<{
+    status: string | null;
+    donationType: string | null;
+    dateFrom: string | null;
+    dateTo: string | null;
+  }>();
 
   readonly statusOptions = STATUS_OPTIONS;
   readonly typeOptions = TYPE_OPTIONS;
 
   readonly form = new FormGroup({
-    organizationId: new FormControl<number | null>(null),
-    search: new FormControl<string | null>(null),
     status: new FormControl<string | null>(null),
     donationType: new FormControl<string | null>(null),
     dateFrom: new FormControl<Date | null>(null),
@@ -47,7 +48,6 @@ export class DonationFilters {
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed())
       .subscribe((value) => {
         this.filtersChange.emit({
-          organizationId: value.organizationId ?? null,
           status: value.status ?? null,
           donationType: value.donationType ?? null,
           dateFrom: value.dateFrom?.toISOString() ?? null,

@@ -1,17 +1,6 @@
 <form [formGroup]="form" class="flex flex-wrap gap-2 w-full">
 
   <p-multi-select
-    formControlName="organizationId"
-    [options]="organizations()"
-    optionLabel="tradeName"
-    optionValue="id"
-    placeholder="Todas las organizaciones"
-    [showClear]="true"
-    class="w-full sm:w-52"
-    appendTo="body"
-  />
-
-  <p-multi-select
     formControlName="status"
     [options]="statusOptions"
     optionLabel="label"

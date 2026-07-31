@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "donation-manager-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["ng", "serve"],
+      "port": 4200
+    },
+    {
+      "name": "donation-portal-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "D:\\info\\Documents\\Development\\workspaces\\adeu\\frontend\\donation-portal-app",
+        "run",
+        "start",
+        "--",
+        "--port",
+        "4201"
+      ],
+      "port": 4201
+    }
+  ]
+}

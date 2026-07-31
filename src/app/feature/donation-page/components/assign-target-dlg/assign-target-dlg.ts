@@ -1,14 +1,15 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { Button } from 'primeng/button';
+import { Message } from 'primeng/message';
 import { Skeleton } from 'primeng/skeleton';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { EmptyState } from '@shared/components';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DonationPageApi } from '../../api/donation-page.api';
-import { DonationTargetApi } from '../../../donation-target/api/donation-target.api';
-import { DonationTarget } from '../../../donation/models/donation.model';
+import { DonationTargetApi } from '@shared/api/donation-target.api';
+import { DonationTarget } from '@domain/donation-target';
+import { operationState } from '@shared/utils/operation-state';
 
 interface TargetSelection {
   target: DonationTarget;
@@ -19,8 +20,9 @@ interface TargetSelection {
 
 @Component({
   selector: 'app-assign-target-dlg',
-  imports: [FormsModule, Button, Skeleton, ToggleSwitch, EmptyState],
+  imports: [FormsModule, Button, Message, Skeleton, ToggleSwitch, EmptyState],
   templateUrl: './assign-target-dlg.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignTargetDlg implements OnInit {
   readonly #dialogRef = inject(DynamicDialogRef);
@@ -30,7 +32,7 @@ export class AssignTargetDlg implements OnInit {
 
   readonly availableTargets = signal<DonationTarget[]>([]);
   readonly loading = signal(true);
-  readonly isSaving = signal(false);
+  protected readonly assignOp = operationState();
   selected = signal<TargetSelection | null>(null);
 
   #pageId = '';
@@ -68,18 +70,17 @@ export class AssignTargetDlg implements OnInit {
     const sel = this.selected();
     if (!sel) return;
 
-    this.isSaving.set(true);
-    this.#pageApi
-      .assignTarget(this.#pageId, {
-        targetId: sel.target.id,
-        isDefault: sel.isDefault,
-        isLocked: sel.isLocked,
-        isVisible: sel.isVisible,
-      })
-      .pipe(finalize(() => this.isSaving.set(false)))
+    this.assignOp
+      .run(
+        this.#pageApi.assignTarget(this.#pageId, {
+          targetId: sel.target.id,
+          isDefault: sel.isDefault,
+          isLocked: sel.isLocked,
+          isVisible: sel.isVisible,
+        }),
+      )
       .subscribe({
         next: (result) => this.#dialogRef.close(result),
-        error: (err) => console.error('[AssignTargetDlg]', err),
       });
   }
 

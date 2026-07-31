@@ -1,25 +1,30 @@
-import { Component, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InputText } from 'primeng/inputtext';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
-import { UserFilterParams } from '../../models/user.model';
 
 @Component({
   selector: 'app-user-filters',
   imports: [ReactiveFormsModule, InputText, IconField, InputIcon],
   templateUrl: './user-filters.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserFilters {
-  readonly filtersChange = output<Omit<UserFilterParams, 'isActive'>>();
+  readonly search = input<string | null>(null);
+  readonly filtersChange = output<{ search: string | null }>();
 
   readonly form = new FormGroup({
     search: new FormControl<string | null>(null),
   });
 
   constructor() {
+    effect(() => {
+      this.form.patchValue({ search: this.search() }, { emitEvent: false });
+    });
+
     this.form.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed())
       .subscribe((value) => {

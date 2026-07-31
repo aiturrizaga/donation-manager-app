@@ -1,27 +1,28 @@
-import { Component, computed, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Menu } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { Tag } from 'primeng/tag';
 import { Skeleton } from 'primeng/skeleton';
 import { EmptyState } from '@shared/components';
-import { PaymentGateway } from '../../models/payment-gateway.model';
+import { OrganizationPaymentGateway } from '@domain/payment-gateway';
 
 @Component({
   selector: 'app-payment-gateway-data-view',
   imports: [Button, Menu, Tag, Skeleton, EmptyState],
   templateUrl: './payment-gateway-data-view.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentGatewayDataView {
-  readonly items = input.required<PaymentGateway[]>();
+  readonly items = input.required<OrganizationPaymentGateway[]>();
   readonly isLoading = input<boolean>(false);
 
-  readonly edit = output<PaymentGateway>();
-  readonly test = output<PaymentGateway>();
-  readonly toggle = output<PaymentGateway>();
+  readonly edit = output<OrganizationPaymentGateway>();
+  readonly test = output<OrganizationPaymentGateway>();
+  readonly toggle = output<OrganizationPaymentGateway>();
 
   readonly menu = viewChild.required<Menu>('menu');
-  readonly selected = signal<PaymentGateway | null>(null);
+  readonly selected = signal<OrganizationPaymentGateway | null>(null);
 
   readonly skeletonRows = Array(3).fill({});
 
@@ -48,7 +49,7 @@ export class PaymentGatewayDataView {
     ];
   });
 
-  openMenu(event: MouseEvent, gw: PaymentGateway): void {
+  openMenu(event: MouseEvent, gw: OrganizationPaymentGateway): void {
     this.selected.set(gw);
     this.menu().toggle(event);
   }

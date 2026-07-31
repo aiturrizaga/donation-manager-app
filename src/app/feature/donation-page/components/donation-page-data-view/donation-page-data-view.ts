@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TableModule, TablePageEvent } from 'primeng/table';
@@ -11,7 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { Tooltip } from 'primeng/tooltip';
 import { EmptyState } from '@shared/components';
-import { DonationPageSummary } from '../../models/donation-page.model';
+import { DonationPageSummary } from '@domain/donation-page';
 
 @Component({
   selector: 'app-donation-page-data-view',
@@ -28,6 +28,7 @@ import { DonationPageSummary } from '../../models/donation-page.model';
     Tooltip,
     EmptyState,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './donation-page-data-view.html',
 })
 export class DonationPageDataView {

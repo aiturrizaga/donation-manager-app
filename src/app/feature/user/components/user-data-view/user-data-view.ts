@@ -1,4 +1,5 @@
-import { Component, computed, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
@@ -8,7 +9,8 @@ import { Menu } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { EmptyState } from '@shared/components';
-import { User } from '../../models/user.model';
+import { User } from '@domain/user';
+import { RoleSummary } from '@domain/rbac';
 import { AvatarModule } from 'primeng/avatar';
 import { FormsModule } from '@angular/forms';
 
@@ -27,8 +29,11 @@ import { FormsModule } from '@angular/forms';
     AvatarModule,
   ],
   templateUrl: './user-data-view.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDataView {
+  readonly #router = inject(Router);
+
   readonly items = input.required<User[]>();
   readonly isLoading = input<boolean>(false);
   readonly total = input<number>(0);
@@ -52,6 +57,11 @@ export class UserDataView {
     const user = this.selectedUser();
     if (!user) return [];
     return [
+      {
+        label: 'Ver detalle',
+        icon: 'ti ti-eye',
+        command: () => this.#router.navigate(['/users', user.id]),
+      },
       {
         label: 'Restablecer contraseña',
         icon: 'ti ti-lock-open',
@@ -78,12 +88,12 @@ export class UserDataView {
       .toUpperCase();
   }
 
-  getRoleLabel(role: string): string {
-    return role === 'super_admin' ? 'Super Admin' : 'Admin';
+  getRoleLabel(role: RoleSummary): string {
+    return role.displayName;
   }
 
-  getRoleSeverity(role: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
-    return role === 'super_admin' ? 'danger' : 'secondary';
+  getRoleSeverity(role: RoleSummary): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
+    return role.name === 'super_admin' ? 'danger' : 'secondary';
   }
 
   openMenu(event: MouseEvent, user: User): void {

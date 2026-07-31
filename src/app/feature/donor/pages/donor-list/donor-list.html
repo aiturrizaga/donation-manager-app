@@ -1,15 +1,15 @@
 <div class="card">
 
   <!-- Tabs desktop -->
-  <div class="hidden sm:flex items-center border-b border-gray-200">
-    <p-tabs [value]="activeStatus" (valueChange)="onStatusChange($event)">
+  <div class="hidden sm:flex items-center border-b border-gray-200 status-tabs-bar">
+    <p-tabs [value]="activeStatus()" (valueChange)="onStatusChange($event)">
       <p-tablist>
         @for (tab of statusTabs; track $index) {
           <p-tab [value]="tab.value">
             <div class="flex items-center gap-2">
               {{ tab.label }}
-              @if (activeStatus === tab.value) {
-                <p-badge [value]="store.total()" severity="secondary" />
+              @if (activeStatus() === tab.value) {
+                <p-badge [value]="facade.total()" severity="secondary" />
               }
             </div>
           </p-tab>
@@ -20,9 +20,10 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
+    <app-organization-multi-selector />
     <app-donor-filters
       class="flex-1"
-      [organizations]="organizations()"
+      [search]="search()"
       (filtersChange)="onFiltersChange($event)"
     />
     <div class="toolbar__actions">
@@ -41,14 +42,14 @@
         <p-chip
           [unstyled]="true"
           class="chip-btn"
-          [class.chip-btn--active]="activeStatus === tab.value"
+          [class.chip-btn--active]="activeStatus() === tab.value"
           (click)="onStatusChange(tab.value)"
         >
           <span class="chip-btn__label">{{ tab.label }}</span>
-          @if (activeStatus === tab.value) {
+          @if (activeStatus() === tab.value) {
             <p-badge
               [unstyled]="true"
-              [value]="store.total()"
+              [value]="facade.total()"
               class="chip-btn__badge"
             />
           }
@@ -58,20 +59,28 @@
   </div>
 
   <!-- Data view -->
-  <app-donor-data-view
-    [items]="store.items()"
-    [isLoading]="store.loading()"
-    [total]="store.total()"
-    [rows]="store.query().size"
-    [first]="store.first()"
-    emptyIcon="ti-users"
-    emptyTitle="No se encontraron donantes"
-    emptyDescription="Intenta ajustar los filtros o crea un nuevo donante"
-    (toggleActive)="onToggleActive($event)"
-    (preview)="onPreview($event)"
-    (delete)="onDelete($event)"
-    (pageChange)="onPageChange($event)"
-  />
+  @if (facade.error(); as err) {
+    <app-inline-error
+      message="No se pudo cargar la lista de donantes."
+      (retry)="facade.reload()"
+    />
+  } @else {
+    <app-donor-data-view
+      [items]="facade.items()"
+      [isLoading]="facade.loading()"
+      [total]="facade.total()"
+      [rows]="50"
+      [first]="facade.first()"
+      emptyIcon="ti-users"
+      [emptyTitle]="emptyText()?.title ?? ''"
+      [emptyDescription]="emptyText()?.description ?? ''"
+      (toggleActive)="onToggleActive($event)"
+      (preview)="onPreview($event)"
+      (edit)="openEditDialog($event)"
+      (delete)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    />
+  }
 
 </div>
 

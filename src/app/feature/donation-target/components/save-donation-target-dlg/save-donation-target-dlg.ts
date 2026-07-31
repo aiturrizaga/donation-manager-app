@@ -1,6 +1,5 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { Button } from 'primeng/button';
@@ -11,10 +10,12 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { InputNumber } from 'primeng/inputnumber';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormsModule } from '@angular/forms';
-import { DonationTargetApi } from '../../api/donation-target.api';
-import { DonationTarget, DonationTargetForm } from '../../models/donation-target.model';
+import { DonationTargetApi } from '@shared/api/donation-target.api';
+import { DonationTarget } from '@domain/donation-target';
+import { DonationTargetForm } from '../../donation-target.forms';
 import { FormValidator } from '@shared/utils/form-validator.util';
-import { Organization } from '../../../organization/models/organization.model';
+import { operationState } from '@shared/utils/operation-state';
+import { AppError } from '@shared/models';
 
 const TYPE_OPTIONS = [
   { label: 'Causa', value: 'cause' },
@@ -23,6 +24,13 @@ const TYPE_OPTIONS = [
   { label: 'Meta', value: 'goal' },
 ];
 
+/**
+ * `organizationId` ya no se elige aquí: la organización sale de la
+ * selección global (`SelectedOrganizationContext`) — el diálogo solo se
+ * puede abrir con una ya elegida (ver DonationTargetListPage), así que no
+ * tiene sentido dejar que el usuario cree un objetivo para otra distinta a
+ * la que está viendo.
+ */
 @Component({
   selector: 'app-save-donation-target-dlg',
   imports: [
@@ -38,6 +46,7 @@ const TYPE_OPTIONS = [
     InputNumber,
   ],
   templateUrl: './save-donation-target-dlg.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveDonationTargetDlg implements OnInit, OnDestroy {
   readonly #dialogRef = inject(DynamicDialogRef);
@@ -45,16 +54,13 @@ export class SaveDonationTargetDlg implements OnInit, OnDestroy {
   readonly #fb = inject(FormBuilder);
   readonly #api = inject(DonationTargetApi);
 
-  readonly isSaving = signal(false);
+  protected readonly saveOp = operationState();
   readonly typeOptions = TYPE_OPTIONS;
 
-  readonly organizations = signal<Organization[]>([]);
   readonly target = signal<DonationTarget | null>(null);
+  #organizationId = 0;
 
   readonly form: FormGroup<DonationTargetForm> = this.#fb.group({
-    organizationId: this.#fb.control<number | null>(null, {
-      validators: [Validators.required],
-    }),
     targetType: this.#fb.control('cause', { nonNullable: true, validators: [Validators.required] }),
     name: this.#fb.control('', {
       nonNullable: true,
@@ -71,14 +77,12 @@ export class SaveDonationTargetDlg implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const instance = this.#dialogService.getInstance(this.#dialogRef);
-    if (instance?.data?.organizations) {
-      this.organizations.set(instance.data.organizations);
-    }
+    this.#organizationId = instance?.data?.organizationId ?? 0;
+
     if (instance?.data?.target) {
       const t: DonationTarget = instance.data.target;
       this.target.set(t);
       this.form.patchValue({
-        organizationId: t.organizationId,
         targetType: t.targetType,
         name: t.name,
         description: t.description,
@@ -87,16 +91,13 @@ export class SaveDonationTargetDlg implements OnInit, OnDestroy {
         endsAt: t.endsAt ? new Date(t.endsAt) : null,
         isPublic: t.isPublic,
       });
-      this.form.controls.organizationId.disable();
     }
   }
 
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
-    this.isSaving.set(true);
     const raw = this.form.getRawValue();
-    const orgId = raw.organizationId!;
 
     const payload = {
       targetType: raw.targetType,
@@ -110,12 +111,14 @@ export class SaveDonationTargetDlg implements OnInit, OnDestroy {
 
     const target = this.target();
     const request$ = target
-      ? this.#api.update(orgId, target.id, payload)
-      : this.#api.create(orgId, payload);
+      ? this.#api.update(this.#organizationId, target.id, payload)
+      : this.#api.create(this.#organizationId, payload);
 
-    request$.pipe(finalize(() => this.isSaving.set(false))).subscribe({
+    this.saveOp.run(request$).subscribe({
       next: (result) => this.#dialogRef.close(result),
-      error: (err) => console.error('[SaveDonationTargetDlg]', err),
+      error: (err: AppError) => {
+        if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
+      },
     });
   }
 

@@ -1,15 +1,17 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { FormsModule } from '@angular/forms';
 import { Tag } from 'primeng/tag';
-import { DonationPage, DonationPageGeneralForm } from '../../models/donation-page.model';
+import { DonationPage } from '@domain/donation-page';
+import { DonationPageGeneralForm } from '../../donation-page.forms';
 import { DonationPageApi } from '../../api/donation-page.api';
 import { FormValidator } from '@shared/utils/form-validator.util';
+import { operationState } from '@shared/utils/operation-state';
+import { AppError } from '@shared/models';
 
 @Component({
   selector: 'app-page-tab-general',
@@ -23,6 +25,7 @@ import { FormValidator } from '@shared/utils/form-validator.util';
     Tag,
   ],
   templateUrl: './page-tab-general.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageTabGeneral {
   readonly page = input.required<DonationPage>();
@@ -31,7 +34,7 @@ export class PageTabGeneral {
   readonly #api = inject(DonationPageApi);
   readonly #fb = inject(FormBuilder);
 
-  readonly isSaving = signal(false);
+  protected readonly saveOp = operationState();
 
   readonly form: FormGroup<DonationPageGeneralForm> = this.#fb.group({
     name: this.#fb.control('', {
@@ -47,8 +50,6 @@ export class PageTabGeneral {
       ],
     }),
     description: this.#fb.control<string | null>(null),
-    welcomeText: this.#fb.control<string | null>(null),
-    thankYouText: this.#fb.control<string | null>(null),
     domain: this.#fb.control<string | null>(null),
   });
 
@@ -61,8 +62,6 @@ export class PageTabGeneral {
         name: p.name,
         slug: p.slug,
         description: p.description,
-        welcomeText: p.welcomeText,
-        thankYouText: p.thankYouText,
         domain: p.domain,
       });
     });
@@ -88,15 +87,13 @@ export class PageTabGeneral {
 
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
-    this.isSaving.set(true);
     const raw = this.form.getRawValue();
 
-    this.#api
-      .update(this.page().id, { ...raw })
-      .pipe(finalize(() => this.isSaving.set(false)))
-      .subscribe({
-        next: (updated) => this.saved.emit(updated),
-        error: (err) => console.error('[PageTabGeneral]', err),
-      });
+    this.saveOp.run(this.#api.update(this.page().id, { ...raw })).subscribe({
+      next: (updated) => this.saved.emit(updated),
+      error: (err: AppError) => {
+        if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
+      },
+    });
   }
 }

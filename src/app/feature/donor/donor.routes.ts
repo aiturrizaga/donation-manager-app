@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import { donorResolver } from './resolvers/donor-resolver';
 
 export const routes: Routes = [
@@ -9,6 +9,8 @@ export const routes: Routes = [
   {
     path: ':id',
     resolve: { donor: donorResolver },
+    // Título de pestaña seteado desde DonorProfilePage (ver nota en donation-page.routes.ts).
+    data: { breadcrumb: (route: ActivatedRouteSnapshot) => route.data['donor']?.partner?.name },
     loadComponent: () =>
       import('./pages/donor-profile/donor-profile').then((c) => c.DonorProfilePage),
   },

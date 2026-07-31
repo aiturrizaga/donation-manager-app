@@ -56,18 +56,36 @@
     </div>
   </div>
 
-  <div class="flex flex-col gap-1">
-    <label class="font-medium">
-      Webhook secret
-      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
-    </label>
-    <input
-      pInputText
-      type="password"
-      formControlName="webhookSecret"
-      placeholder="whs_..."
-    />
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Webhook usuario
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        type="text"
+        formControlName="webhookUsername"
+        placeholder="Usuario para Basic Auth"
+      />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">
+        Webhook contraseña
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <input
+        pInputText
+        type="password"
+        formControlName="webhookSecret"
+        placeholder="Contraseña para Basic Auth"
+      />
+    </div>
   </div>
+  <p class="text-xs text-gray-400 -mt-2">
+    Usuario y contraseña que debes registrar en el panel de Culqi al configurar el webhook
+    (autenticación Basic Auth).
+  </p>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div class="flex flex-col gap-1">
@@ -93,6 +111,31 @@
     </div>
   </div>
 
+  <div class="flex flex-col gap-2">
+    <label class="font-medium">Métodos de pago habilitados en el checkout de Culqi</label>
+    <span class="text-xs text-gray-400">
+      Solo "Tarjeta" tiene integración verificada de punta a punta. Habilitar otro método muestra
+      la pestaña en el checkout, pero el resultado no se ha probado contra nuestro backend.
+    </span>
+    <div class="grid grid-cols-2 gap-2">
+      @for (opt of paymentMethodOptions; track opt.value) {
+        <div class="flex items-center gap-2">
+          <p-checkbox
+            [inputId]="'pm-' + opt.value"
+            formControlName="enabledPaymentMethods"
+            [value]="opt.value"
+          />
+          <label [for]="'pm-' + opt.value" class="text-sm cursor-pointer">
+            {{ opt.label }}
+            @if (!opt.verified) {
+              <span class="text-amber-500 text-xs">(sin verificar)</span>
+            }
+          </label>
+        </div>
+      }
+    </div>
+  </div>
+
   <div class="flex flex-col gap-3 pt-1">
     <div class="flex items-center gap-3">
       <p-toggleswitch formControlName="testMode" />
@@ -111,6 +154,10 @@
     </div>
   </div>
 
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
+
   <div class="flex justify-end gap-2 mt-2">
     <p-button
       label="Cancelar"
@@ -122,7 +169,7 @@
     <p-button
       type="submit"
       [label]="gateway() ? 'Actualizar' : 'Agregar pasarela'"
-      [loading]="isSaving()"
+      [loading]="saveOp.isPending()"
       (onClick)="save()"
     />
   </div>

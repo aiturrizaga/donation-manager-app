@@ -1,0 +1,75 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1">
+    <label for="txtName" class="font-medium">
+      Slug
+      @if (isSystem) {
+        <span class="text-gray-400 font-normal text-xs ml-1">(rol del sistema, no editable)</span>
+      }
+    </label>
+    <input
+      pInputText
+      type="text"
+      id="txtName"
+      formControlName="name"
+      placeholder="Ej. fundraiser"
+      [invalid]="formValidator.hasError('name')"
+    />
+    @if (formValidator.hasError('name')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('name') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtDisplayName" class="font-medium">Nombre visible</label>
+    <input
+      pInputText
+      type="text"
+      id="txtDisplayName"
+      formControlName="displayName"
+      placeholder="Ej. Encargado de recaudación"
+      [invalid]="formValidator.hasError('displayName')"
+    />
+    @if (formValidator.hasError('displayName')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('displayName') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtDescription" class="font-medium">
+      Descripción
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+    </label>
+    <textarea
+      pTextarea
+      id="txtDescription"
+      formControlName="description"
+      rows="2"
+      class="w-full"
+    ></textarea>
+  </div>
+
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [outlined]="true"
+      type="button"
+      (click)="close()"
+    />
+    <p-button
+      type="submit"
+      label="Guardar"
+      [loading]="saveOp.isPending()"
+    />
+  </div>
+
+</form>

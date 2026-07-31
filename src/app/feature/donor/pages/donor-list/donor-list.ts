@@ -1,18 +1,37 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, numberAttribute, signal } from '@angular/core';
+import { input } from '@angular/core';
+import { Router } from '@angular/router';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
-import { DonorStore } from '../../store/donor.store';
+import { DonorsListFacade } from '../../facade/donors-list.facade';
 import { DonorFilters } from '../../components/donor-filters/donor-filters';
 import { DonorDataView } from '../../components/donor-data-view/donor-data-view';
 import { DonorPreviewDrawer } from '../../components/donor-preview-drawer/donor-preview-drawer';
 import { SaveDonorDlg } from '../../components/save-donor-dlg/save-donor-dlg';
-import { Donor, DonorFilterParams } from '../../models/donor.model';
-import { OrganizationApi } from '../../../organization/api/organization.api';
-import { Organization } from '../../../organization/models/organization.model';
+import { Donor } from '@domain/donor';
+import { SelectedOrganizationsFilterContext } from '@shared/context/selected-organizations-filter.context';
+import { OrganizationMultiSelector } from '@shared/ui/organization-multi-selector/organization-multi-selector';
+import { InlineError } from '@shared/ui/inline-error/inline-error';
+import { rowOperation } from '@shared/utils/row-operation';
+
+const EMPTY_TEXT: Record<'no-records' | 'filtered' | 'search', { title: string; description: string }> = {
+  'no-records': {
+    title: 'Aún no hay donantes',
+    description: 'Los donantes aparecerán aquí a medida que se registren o se creen manualmente.',
+  },
+  filtered: {
+    title: 'Ningún donante coincide',
+    description: 'Prueba a cambiar el filtro de estado.',
+  },
+  search: {
+    title: 'Sin resultados',
+    description: 'Ningún donante coincide con tu búsqueda.',
+  },
+};
 
 const STATUS_TABS = [
   { value: 'all', label: 'Todos' },
@@ -25,9 +44,11 @@ type DonorTabValue = (typeof STATUS_TABS)[number]['value'];
 @Component({
   selector: 'app-donor-list-page',
   imports: [
+    OrganizationMultiSelector,
     DonorFilters,
     DonorDataView,
     DonorPreviewDrawer,
+    InlineError,
     Tabs,
     TabList,
     Tab,
@@ -37,54 +58,67 @@ type DonorTabValue = (typeof STATUS_TABS)[number]['value'];
     ButtonIcon,
     ButtonLabel,
   ],
-  providers: [DonorStore, ConfirmationService, DialogService],
+  providers: [DonorsListFacade, DialogService],
   templateUrl: './donor-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DonorListPage implements OnInit {
-  readonly store = inject(DonorStore);
+export class DonorListPage {
+  readonly search = input<string | null>(null);
+  readonly status = input<DonorTabValue>('all');
+  readonly page = input(1, { transform: (v: unknown) => numberAttribute(v, 1) });
+
+  protected readonly facade = inject(DonorsListFacade);
   readonly #confirm = inject(ConfirmationService);
+  readonly #message = inject(MessageService);
   readonly #dialog = inject(DialogService);
-  readonly #orgApi = inject(OrganizationApi);
+  readonly #router = inject(Router);
+  readonly #orgContext = inject(SelectedOrganizationsFilterContext);
 
   readonly statusTabs = STATUS_TABS;
-  activeStatus: DonorTabValue = 'all';
 
-  readonly organizations = signal<Organization[]>([]);
+  // El router deja `status()` en `undefined` (no en su valor por defecto)
+  // cuando la URL no trae `?status=...` — este signal normaliza ambos casos.
+  protected readonly activeStatus = computed<DonorTabValue>(() => this.status() ?? 'all');
+
+  protected readonly toggleOp = rowOperation<string>();
+  protected readonly deleteOp = rowOperation<string>();
+
   readonly previewVisible = signal(false);
   readonly previewDonor = signal<Donor | null>(null);
 
-  ngOnInit(): void {
-    this.store.load();
-    this._loadOrganizations();
-  }
+  protected readonly emptyText = computed(() => {
+    const reason = this.facade.emptyReason();
+    return reason ? EMPTY_TEXT[reason] : null;
+  });
 
-  private _loadOrganizations(): void {
-    this.#orgApi
-      .getAll({ page: 1, size: 100 }, {})
-      .subscribe((data) => this.organizations.set(data.items));
+  constructor() {
+    this.facade.connect(() => {
+      const orgIds = this.#orgContext.selectedIds();
+      return {
+        organizationIds: orgIds.length ? orgIds : null,
+        search: this.search(),
+        isActive: this.activeStatus() === 'active' ? true : this.activeStatus() === 'inactive' ? false : null,
+        page: this.page(),
+        size: 50,
+      };
+    });
   }
 
   onStatusChange(tab: string | number | undefined): void {
-    this.activeStatus = (tab as DonorTabValue) ?? 'all';
-    const isActive = tab === 'active' ? true : tab === 'inactive' ? false : null;
-    this.store.setFilters({ isActive });
-    this.store.load();
+    this.#navigate({ status: (tab as DonorTabValue) ?? 'all', page: 1 });
   }
 
-  onFiltersChange(filters: Omit<DonorFilterParams, 'isActive'>): void {
-    const isActive =
-      this.activeStatus === 'active' ? true : this.activeStatus === 'inactive' ? false : null;
-    this.store.setFilters({ ...filters, isActive });
-    this.store.load();
+  onFiltersChange(filters: { search: string | null }): void {
+    this.#navigate({ search: filters.search, page: 1 });
   }
 
   onPageChange(event: { first: number; rows: number }): void {
     const page = Math.floor(event.first / event.rows) + 1;
-    this.store.changePage(page, event.rows);
-    this.store.load();
+    this.#navigate({ page });
   }
 
   onToggleActive(donor: Donor): void {
+    if (this.toggleOp.isActive(donor.id)) return;
     const deactivating = donor.isActive;
     this.#confirm.confirm({
       message: `¿Deseas ${deactivating ? 'desactivar' : 'activar'} a ${donor.partner.name}?`,
@@ -93,8 +127,12 @@ export class DonorListPage implements OnInit {
       rejectLabel: 'No',
       acceptLabel: deactivating ? 'Sí, desactivar' : 'Sí, activar',
       acceptButtonProps: deactivating ? { severity: 'danger' } : {},
-      accept: () => this.store.toggleActive(donor),
-      reject: () => this.store.revertItem(donor),
+      accept: () => {
+        this.toggleOp.run(donor.id, this.facade.toggleActive(donor)).subscribe({
+          next: () => this.facade.reload(),
+          error: () => this.#notifyError(`No se pudo ${deactivating ? 'desactivar' : 'activar'} al donante.`),
+        });
+      },
     });
   }
 
@@ -104,6 +142,7 @@ export class DonorListPage implements OnInit {
   }
 
   onDelete(donor: Donor): void {
+    if (this.deleteOp.isActive(donor.id)) return;
     this.#confirm.confirm({
       message: `¿Eliminar a ${donor.partner.name}? Esta acción no se puede deshacer.`,
       header: 'Eliminar donante',
@@ -111,8 +150,17 @@ export class DonorListPage implements OnInit {
       rejectLabel: 'No',
       acceptLabel: 'Sí, eliminar',
       acceptButtonProps: { severity: 'danger' },
-      accept: () => this.store.remove(donor.id),
+      accept: () => {
+        this.deleteOp.run(donor.id, this.facade.remove(donor.id)).subscribe({
+          next: () => this.facade.reload(),
+          error: () => this.#notifyError('No se pudo eliminar al donante.'),
+        });
+      },
     });
+  }
+
+  #notifyError(detail: string): void {
+    this.#message.add({ severity: 'error', summary: 'Error', detail });
   }
 
   openCreateDialog(): void {
@@ -123,7 +171,24 @@ export class DonorListPage implements OnInit {
       closable: true,
     });
     ref?.onClose.subscribe((result: Donor) => {
-      if (result) this.store.load();
+      if (result) this.facade.reload();
     });
+  }
+
+  openEditDialog(donor: Donor): void {
+    const ref = this.#dialog.open(SaveDonorDlg, {
+      header: 'Editar donante',
+      width: '560px',
+      modal: true,
+      closable: true,
+      data: { donor },
+    });
+    ref?.onClose.subscribe((result) => {
+      if (result) this.facade.reload();
+    });
+  }
+
+  #navigate(queryParams: Record<string, unknown>): void {
+    this.#router.navigate([], { queryParams, queryParamsHandling: 'merge' });
   }
 }

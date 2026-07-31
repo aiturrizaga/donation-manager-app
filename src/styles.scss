@@ -125,3 +125,21 @@ body {
 .chip-btn--active:hover .p-chip {
   background-color: var(--p-gray-800) !important;
 }
+
+/*
+ * Tabs de filtro de estado (desktop): PrimeNG marca el tab activo con DOS
+ * mecanismos independientes — una barra deslizante calculada por JS/medición
+ * del DOM (poco confiable: no se recalcula tras cambiar de tab o recargar la
+ * tabla) y un borde inferior nativo por tab, ya reactivo vía [data-p-active]
+ * sin depender de ninguna medición. Ocultamos la barra JS; el borde nativo
+ * (1px, en todos los tabs e inactivo) se deja tal cual para que la línea siga
+ * delgada en todo el ancho del contenedor, y solo engrosamos el tramo del tab
+ * que está activo.
+ */
+.status-tabs-bar .p-tablist-active-bar {
+  display: none;
+}
+
+.status-tabs-bar p-tab[data-p-active='true'] {
+  border-bottom-width: 3px;
+}

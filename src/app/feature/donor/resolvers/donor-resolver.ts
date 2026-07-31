@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { ResolveFn, Router } from '@angular/router';
-import { catchError, EMPTY, tap } from 'rxjs';
+import { catchError, EMPTY } from 'rxjs';
 import { DonorApi } from '../api/donor.api';
-import { Donor } from '../models/donor.model';
+import { Donor } from '@domain/donor';
 
 export const donorResolver: ResolveFn<Donor> = (route) => {
   const api = inject(DonorApi);
@@ -10,13 +10,6 @@ export const donorResolver: ResolveFn<Donor> = (route) => {
   const id = route.paramMap.get('id')!;
 
   return api.getById(id).pipe(
-    tap((donor) => {
-      route.data = {
-        ...route.data,
-        title: donor.partner.name,
-        breadcrumb: donor.partner.name,
-      }
-    }),
     catchError(() => {
       router.navigate(['/donors']).then();
       return EMPTY;

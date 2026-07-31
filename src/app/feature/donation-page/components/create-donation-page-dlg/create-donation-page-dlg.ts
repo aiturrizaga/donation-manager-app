@@ -1,20 +1,22 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { DonationPageApi } from '../../api/donation-page.api';
-import { Organization } from '../../../organization/models/organization.model';
+import { Organization } from '@domain/organization';
 import { FormValidator } from '@shared/utils/form-validator.util';
+import { operationState } from '@shared/utils/operation-state';
+import { AppError } from '@shared/models';
 
 @Component({
   selector: 'app-create-donation-page-dlg',
   imports: [ReactiveFormsModule, InputText, Button, Message, Select],
   templateUrl: './create-donation-page-dlg.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateDonationPageDlg implements OnInit, OnDestroy {
   readonly #dialogRef = inject(DynamicDialogRef);
@@ -23,7 +25,7 @@ export class CreateDonationPageDlg implements OnInit, OnDestroy {
   readonly #api = inject(DonationPageApi);
   readonly #router = inject(Router);
 
-  readonly isSaving = signal(false);
+  protected readonly saveOp = operationState();
   readonly organizations = signal<Organization[]>([]);
 
   readonly form: FormGroup = this.#fb.group({
@@ -50,18 +52,16 @@ export class CreateDonationPageDlg implements OnInit, OnDestroy {
 
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
-    this.isSaving.set(true);
 
-    this.#api
-      .create(this.form.getRawValue())
-      .pipe(finalize(() => this.isSaving.set(false)))
-      .subscribe({
-        next: (page) => {
-          this.#dialogRef.close(page);
-          this.#router.navigate(['/pages', page.id]).then();
-        },
-        error: (err) => console.error('[CreateDonationPageDlg]', err),
-      });
+    this.saveOp.run(this.#api.create(this.form.getRawValue())).subscribe({
+      next: (page) => {
+        this.#dialogRef.close(page);
+        this.#router.navigate(['/pages', page.id]).then();
+      },
+      error: (err: AppError) => {
+        if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
+      },
+    });
   }
 
   close(): void {

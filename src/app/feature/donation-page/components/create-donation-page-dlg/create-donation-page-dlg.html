@@ -56,9 +56,13 @@
     Después de crear la página podrás configurar el branding, formulario, targets y pasarela.
   </p-message>
 
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
+
   <div class="flex justify-end gap-2 mt-2">
     <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" (click)="close()" />
-    <p-button type="submit" label="Crear y configurar" [loading]="isSaving()" />
+    <p-button type="submit" label="Crear y configurar" [loading]="saveOp.isPending()" />
   </div>
 
 </form>

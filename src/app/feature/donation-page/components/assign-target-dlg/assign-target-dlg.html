@@ -79,6 +79,10 @@
     }
   }
 
+  @if (assignOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
+
   <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
     <p-button
       label="Cancelar"
@@ -89,7 +93,7 @@
     <p-button
       label="Asignar"
       [disabled]="!selected()"
-      [loading]="isSaving()"
+      [loading]="assignOp.isPending()"
       (onClick)="assign()"
     />
   </div>

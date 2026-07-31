@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiPagedResponse, ApiResponse, PageContent, PageQuery } from '@shared/models';
 import { buildHttpParams } from '@shared/utils/http.util';
-import { User, UserCreateRequest, UserFilterParams } from '../models/user.model';
+import { User, UserCreateRequest, UserFilterParams, UserUpdateRequest } from '@domain/user';
 import { environment } from '@env/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -17,8 +17,16 @@ export class UserApi {
     return this.#http.get<ApiPagedResponse<User>>(this.#base, { params }).pipe(map((r) => r.data));
   }
 
+  getById(id: number): Observable<User> {
+    return this.#http.get<ApiResponse<User>>(`${this.#base}/${id}`).pipe(map((r) => r.data));
+  }
+
   create(payload: UserCreateRequest): Observable<User> {
     return this.#http.post<ApiResponse<User>>(this.#base, payload).pipe(map((r) => r.data));
+  }
+
+  update(id: number, payload: UserUpdateRequest): Observable<User> {
+    return this.#http.patch<ApiResponse<User>>(`${this.#base}/${id}`, payload).pipe(map((r) => r.data));
   }
 
   activate(id: number): Observable<User> {

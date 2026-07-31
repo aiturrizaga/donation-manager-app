@@ -9,4 +9,17 @@
   @if (description()) {
     <p class="text-xs text-gray-400 text-center max-w-xs">{{ description() }}</p>
   }
+  @if (actionLabel(); as label) {
+    <button
+      pButton
+      type="button"
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      class="mt-1"
+      (click)="action.emit()"
+    >
+      <span pButtonLabel>{{ label }}</span>
+    </button>
+  }
 </div>

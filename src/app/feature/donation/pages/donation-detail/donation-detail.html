@@ -113,20 +113,11 @@
           <span class="text-sm text-gray-900">{{ donation().currency }}</span>
         </div>
 
-        @if (donation().culqiChargeId) {
+        @if (donation().providerTransactionRef) {
           <div class="flex justify-between py-3 gap-3">
-            <span class="text-sm text-gray-400 shrink-0">Charge ID</span>
+            <span class="text-sm text-gray-400 shrink-0">Referencia de la pasarela</span>
             <span class="text-xs font-mono text-gray-600 text-right break-all">
-              {{ donation().culqiChargeId }}
-            </span>
-          </div>
-        }
-
-        @if (donation().culqiOrderId) {
-          <div class="flex justify-between py-3 gap-3">
-            <span class="text-sm text-gray-400 shrink-0">Order ID</span>
-            <span class="text-xs font-mono text-gray-600 text-right break-all">
-              {{ donation().culqiOrderId }}
+              {{ donation().providerTransactionRef }}
             </span>
           </div>
         }

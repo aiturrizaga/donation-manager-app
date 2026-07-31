@@ -1,14 +1,29 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, numberAttribute, signal } from '@angular/core';
+import { input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
 import { Button } from 'primeng/button';
-import { DonationStore } from '../../store/donation.store';
+import { finalize } from 'rxjs';
+import { DonationsListFacade } from '../../facade/donations-list.facade';
 import { DonationFilters } from '../../components/donation-filters/donation-filters';
 import { DonationDataView } from '../../components/donation-data-view/donation-data-view';
-import { DonationFilterParams } from '../../models/donation.model';
-import { OrganizationApi } from '../../../organization/api/organization.api';
-import { Organization } from '../../../organization/models/organization.model';
+import { SelectedOrganizationsFilterContext } from '@shared/context/selected-organizations-filter.context';
+import { OrganizationMultiSelector } from '@shared/ui/organization-multi-selector/organization-multi-selector';
+import { FileDownloadService } from '@shared/utils/file-download.service';
+import { InlineError } from '@shared/ui/inline-error/inline-error';
+
+const EMPTY_TEXT: Record<'no-records' | 'filtered', { title: string; description: string }> = {
+  'no-records': {
+    title: 'Aún no hay donaciones',
+    description: 'Las donaciones aparecerán aquí a medida que se registren.',
+  },
+  filtered: {
+    title: 'Ninguna donación coincide',
+    description: 'Prueba a cambiar los filtros de estado, tipo o fecha.',
+  },
+};
 
 const STATUS_TABS = [
   { value: 'all', label: 'Todos' },
@@ -22,54 +37,87 @@ type DonationTabValue = (typeof STATUS_TABS)[number]['value'];
 
 @Component({
   selector: 'app-donation-list-page',
-  imports: [DonationFilters, DonationDataView, Tabs, TabList, Tab, Badge, Chip, Button],
-  providers: [DonationStore],
+  imports: [
+    OrganizationMultiSelector,
+    DonationFilters,
+    DonationDataView,
+    InlineError,
+    Tabs,
+    TabList,
+    Tab,
+    Badge,
+    Chip,
+    Button,
+  ],
+  providers: [DonationsListFacade],
   templateUrl: './donation-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DonationListPage implements OnInit {
-  readonly store = inject(DonationStore);
-  readonly #orgApi = inject(OrganizationApi);
+export class DonationListPage {
+  readonly status = input<DonationTabValue>('all');
+  readonly donationType = input<string | null>(null);
+  readonly dateFrom = input<string | null>(null);
+  readonly dateTo = input<string | null>(null);
+  readonly page = input(1, { transform: (v: unknown) => numberAttribute(v, 1) });
+
+  protected readonly facade = inject(DonationsListFacade);
+  protected readonly orgContext = inject(SelectedOrganizationsFilterContext);
+  readonly #router = inject(Router);
+  readonly #fileDownload = inject(FileDownloadService);
 
   readonly statusTabs = STATUS_TABS;
-  activeStatus: DonationTabValue = 'all';
+  readonly exporting = signal(false);
 
-  readonly organizations = signal<Organization[]>([]);
+  // El router deja `status()` en `undefined` (no en su valor por defecto)
+  // cuando la URL no trae `?status=...` — este signal normaliza ambos casos.
+  protected readonly activeStatus = computed<DonationTabValue>(() => this.status() ?? 'all');
 
-  ngOnInit(): void {
-    this.store.load();
-    this._loadOrganizations();
-  }
+  protected readonly emptyText = computed(() => {
+    const reason = this.facade.emptyReason();
+    return reason ? EMPTY_TEXT[reason] : null;
+  });
 
-  private _loadOrganizations(): void {
-    this.#orgApi
-      .getAll({ page: 1, size: 100 }, {})
-      .subscribe((data) =>
-        this.organizations.set(
-          data.items.map((o) => ({ ...o, tradeName: o.tradeName ?? o.legalName })),
-        ),
-      );
+  constructor() {
+    this.facade.connect(() => ({
+      organizationIds: this.orgContext.selectedIds(),
+      status: this.activeStatus() === 'all' ? null : this.activeStatus(),
+      donationType: this.donationType(),
+      dateFrom: this.dateFrom(),
+      dateTo: this.dateTo(),
+      page: this.page(),
+      size: 50,
+    }));
   }
 
   onStatusChange(tab: string | number | undefined): void {
-    this.activeStatus = (tab as DonationTabValue) ?? 'all';
-    const status = tab === 'all' ? null : (tab as string);
-    this.store.setFilters({ ...this.store.filters(), status });
-    this.store.load();
+    this.#navigate({ status: (tab as DonationTabValue) ?? 'all', page: 1 });
   }
 
-  onFiltersChange(filters: DonationFilterParams): void {
-    const status = this.activeStatus === 'all' ? null : this.activeStatus;
-    this.store.setFilters({ ...filters, status });
-    this.store.load();
+  onFiltersChange(filters: {
+    status: string | null;
+    donationType: string | null;
+    dateFrom: string | null;
+    dateTo: string | null;
+  }): void {
+    this.#navigate({ ...filters, page: 1 });
   }
 
   onPageChange(event: { first: number; rows: number }): void {
     const page = Math.floor(event.first / event.rows) + 1;
-    this.store.changePage(page, event.rows);
-    this.store.load();
+    this.#navigate({ page });
   }
 
   onExport(): void {
-    this.store.exportCsv();
+    this.exporting.set(true);
+    this.facade
+      .exportCsv()
+      .pipe(finalize(() => this.exporting.set(false)))
+      .subscribe((blob) => {
+        this.#fileDownload.download(blob, `donaciones_${new Date().toISOString().slice(0, 10)}.csv`);
+      });
+  }
+
+  #navigate(queryParams: Record<string, unknown>): void {
+    this.#router.navigate([], { queryParams, queryParamsHandling: 'merge' });
   }
 }

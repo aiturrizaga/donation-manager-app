@@ -10,6 +10,8 @@ export const routes: Routes = [
   {
     path: ':id',
     resolve: { donation: donationResolver },
+    title: 'Detalle de donación',
+    data: { breadcrumb: 'Detalles' },
     loadComponent: () =>
       import('./pages/donation-detail/donation-detail').then((m) => m.DonationDetailPage),
   },

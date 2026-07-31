@@ -15,10 +15,11 @@
     description="No se han registrado eventos webhook para esta donación."
   />
 } @else {
-  <p-table [value]="items()" [tableStyle]="{ 'min-width': '400px' }">
+  <p-table [value]="items()" [tableStyle]="{ 'min-width': '500px' }">
     <ng-template #header>
       <tr>
         <th>Evento</th>
+        <th>Proveedor</th>
         <th>Fecha</th>
         <th>Estado</th>
       </tr>
@@ -29,15 +30,21 @@
           <span class="text-sm font-mono text-gray-700">{{ event.eventType }}</span>
         </td>
         <td>
+          <span class="text-sm text-gray-600 capitalize">{{ event.provider }}</span>
+        </td>
+        <td>
           <span class="text-sm text-gray-600">
             {{ event.createdAt | date:'dd MMM yyyy, HH:mm' }}
           </span>
         </td>
         <td>
           <p-tag
-            [value]="event.status"
-            [severity]="event.status === 'processed' ? 'success' : 'warn'"
+            [value]="getStatusLabel(event.status)"
+            [severity]="getStatusSeverity(event.status)"
           />
+          @if (event.status === 'failed' && event.errorMessage) {
+            <p class="text-xs text-red-500 mt-1">{{ event.errorMessage }}</p>
+          }
         </td>
       </tr>
     </ng-template>

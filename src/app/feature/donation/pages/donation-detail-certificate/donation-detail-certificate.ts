@@ -51,12 +51,14 @@ export class DonationDetailCertificate implements OnInit {
 
   async download(): Promise<void> {
     const result = this.certificate();
-    if (!result?.certificateNumber) return;
+    if (!result?.fileUrl) return;
 
-    const blob = await firstValueFrom(this.#api.downloadCertificate(result.certificateNumber));
+    const blob = await firstValueFrom(this.#api.downloadCertificate(result.fileUrl));
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
+    // The downloaded file keeps the sequential certificate number as its
+    // name — only the fetch URL uses the non-guessable identifier.
     a.download = `${result.certificateNumber}.pdf`;
     a.click();
     URL.revokeObjectURL(url);

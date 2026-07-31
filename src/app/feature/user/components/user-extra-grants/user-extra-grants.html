@@ -1,0 +1,71 @@
+<div class="flex flex-col gap-6">
+
+  <!-- Permisos extra -->
+  <div class="flex flex-col gap-3 border border-gray-200 rounded-lg p-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          Permisos extra
+        </h2>
+        <p class="text-xs text-gray-400">
+          Aditivos sobre los permisos del rol — no lo modifican.
+        </p>
+      </div>
+      <button pButton size="small" [loading]="savePermissionsOp.isPending()" (click)="savePermissions()">
+        <span pButtonLabel>Guardar</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      @for (group of moduleGroups(); track group.module) {
+        <div class="flex flex-col gap-1 border border-gray-100 rounded-md p-3">
+          <span class="font-medium text-sm text-gray-900">{{ moduleLabel(group.module) }}</span>
+          <div class="flex flex-col gap-1 pl-1">
+            @for (permission of group.permissions; track permission.id) {
+              <label class="flex items-center gap-2 text-sm text-gray-600">
+                <p-checkbox
+                  [binary]="true"
+                  [ngModel]="selectedPermissionIds().has(permission.id)"
+                  (onChange)="togglePermission(permission.id)"
+                />
+                {{ permission.displayName }}
+              </label>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Organizaciones extra -->
+  <div class="flex flex-col gap-3 border border-gray-200 rounded-lg p-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        Organizaciones extra
+      </h2>
+      <button
+        pButton
+        size="small"
+        [loading]="saveOrganizationsOp.isPending()"
+        (click)="saveOrganizations()"
+      >
+        <span pButtonLabel>Guardar</span>
+      </button>
+    </div>
+    <p class="text-xs text-gray-400">
+      Aditivas sobre las organizaciones del rol — no las reemplazan.
+    </p>
+    <p-multiSelect
+      [ngModel]="selectedOrganizationIds()"
+      (ngModelChange)="selectedOrganizationIds.set($event)"
+      [options]="organizationsCatalog.items()"
+      optionLabel="tradeName"
+      optionValue="id"
+      placeholder="Sin organizaciones extra"
+      [showClear]="true"
+      appendTo="body"
+      class="w-full"
+    />
+  </div>
+
+</div>

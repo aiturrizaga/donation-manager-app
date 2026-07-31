@@ -1,6 +1,17 @@
 <p-table
   [value]="items()"
   [loading]="loading()"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="rows()"
+  [first]="first()"
+  [totalRecords]="total()"
+  (onPage)="onPageChange($event)"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  [showCurrentPageReport]="true"
+  paginatorDropdownAppendTo="body"
+  currentPageReportTemplate="{first} – {last} de {totalRecords}"
+  paginatorStyleClass="flex! justify-end!"
   [tableStyle]="{ 'min-width': '480px' }"
 >
   <ng-template #header>

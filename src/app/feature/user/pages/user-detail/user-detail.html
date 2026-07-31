@@ -1,0 +1,37 @@
+<div class="flex flex-col gap-6 max-w-3xl">
+
+  <div class="flex items-center gap-3">
+    <button pButton [text]="true" severity="secondary" (click)="goBack()">
+      <i class="ti ti-arrow-left" pButtonIcon></i>
+    </button>
+    <p-avatar [label]="initials()" shape="circle" size="large" />
+    <div>
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-semibold text-gray-900">{{ resolvedUser().partner.name }}</h1>
+        <p-tag
+          [value]="resolvedUser().isActive ? 'Activo' : 'Inactivo'"
+          [severity]="resolvedUser().isActive ? 'success' : 'secondary'"
+        />
+      </div>
+      <span class="text-sm text-gray-500">{{ resolvedUser().partner.email ?? '—' }}</span>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1 border border-gray-200 rounded-lg p-4 max-w-sm">
+    <label for="selRole" class="font-medium text-sm text-gray-700">Rol</label>
+    <p-select
+      id="selRole"
+      [ngModel]="resolvedUser().role.id"
+      (ngModelChange)="onRoleChange($event)"
+      [options]="roles()"
+      optionLabel="displayName"
+      optionValue="id"
+      [loading]="savingRole()"
+      appendTo="body"
+      class="w-full"
+    />
+  </div>
+
+  <app-user-extra-grants [userId]="resolvedUser().id" />
+
+</div>

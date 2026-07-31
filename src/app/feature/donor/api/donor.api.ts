@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiPagedResponse, ApiResponse, PageContent, PageQuery } from '@shared/models';
 import { buildHttpParams } from '@shared/utils/http.util';
-import { Donor, DonorCreateRequest, DonorFilterParams } from '../models/donor.model';
+import { Donor, DonorCreateRequest, DonorFilterParams } from '@domain/donor';
 import { environment } from '@env/environment';
 
 @Injectable({ providedIn: 'root' })

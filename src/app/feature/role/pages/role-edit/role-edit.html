@@ -1,0 +1,87 @@
+<div class="flex flex-col gap-6 max-w-3xl">
+
+  <div class="flex items-center gap-3">
+    <button pButton [text]="true" severity="secondary" (click)="goBack()">
+      <i class="ti ti-arrow-left" pButtonIcon></i>
+    </button>
+    <div>
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-semibold text-gray-900">{{ resolvedRole().displayName }}</h1>
+        @if (resolvedRole().isSystem) {
+          <p-tag value="Rol del sistema" severity="secondary" />
+        }
+      </div>
+      <span class="text-xs text-gray-400 font-mono">{{ resolvedRole().name }}</span>
+    </div>
+  </div>
+
+  <!-- Permisos -->
+  <div class="flex flex-col gap-3 border border-gray-200 rounded-lg p-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Permisos</h2>
+      <button pButton size="small" [loading]="savePermissionsOp.isPending()" (click)="savePermissions()">
+        <span pButtonLabel>Guardar permisos</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      @for (group of moduleGroups(); track group.module) {
+        <div class="flex flex-col gap-1.5 border border-gray-100 rounded-md p-3">
+          <label class="flex items-center gap-2 font-medium text-sm text-gray-900">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="isModuleFullySelected(group)"
+              (onChange)="toggleModule(group)"
+            />
+            {{ moduleLabel(group.module) }}
+          </label>
+          <div class="flex flex-col gap-1 pl-6">
+            @for (permission of group.permissions; track permission.id) {
+              <label class="flex items-center gap-2 text-sm text-gray-600">
+                <p-checkbox
+                  [binary]="true"
+                  [ngModel]="selectedPermissionIds().has(permission.id)"
+                  (onChange)="togglePermission(permission.id)"
+                />
+                {{ permission.displayName }}
+              </label>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Organizaciones -->
+  <div class="flex flex-col gap-3 border border-gray-200 rounded-lg p-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        Organizaciones con acceso
+      </h2>
+      <button
+        pButton
+        size="small"
+        [loading]="saveOrganizationsOp.isPending()"
+        (click)="saveOrganizations()"
+      >
+        <span pButtonLabel>Guardar organizaciones</span>
+      </button>
+    </div>
+    <p class="text-xs text-gray-400">
+      Si no se asigna ninguna, este rol no verá ninguna organización (excepto super_admin, que
+      siempre ve todas).
+    </p>
+    <p-multiSelect
+      [ngModel]="selectedOrganizationIds()"
+      (ngModelChange)="selectedOrganizationIds.set($event)"
+      [options]="organizationsCatalog.items()"
+      optionLabel="tradeName"
+      optionValue="id"
+      placeholder="Ninguna organización asignada"
+      [showClear]="true"
+      appendTo="body"
+      class="w-full"
+    />
+  </div>
+
+</div>

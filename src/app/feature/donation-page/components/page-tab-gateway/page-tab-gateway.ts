@@ -1,6 +1,5 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
@@ -8,15 +7,18 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Tag } from 'primeng/tag';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { DonationPage, PaymentGateway, PaymentGatewayForm } from '../../models/donation-page.model';
+import { DonationPage, DonationPageGateway } from '@domain/donation-page';
+import { DonationPageGatewayForm } from '../../donation-page.forms';
 import { DonationPageApi } from '../../api/donation-page.api';
 import { FormValidator } from '@shared/utils/form-validator.util';
+import { operationState } from '@shared/utils/operation-state';
+import { AppError } from '@shared/models';
 
 @Component({
   selector: 'app-page-tab-gateway',
   imports: [ReactiveFormsModule, FormsModule, InputText, Button, Message, ToggleSwitch, Tag],
-  providers: [ConfirmationService],
   templateUrl: './page-tab-gateway.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageTabGateway implements OnInit {
   readonly page = input.required<DonationPage>();
@@ -25,14 +27,14 @@ export class PageTabGateway implements OnInit {
   readonly #fb = inject(FormBuilder);
   readonly #confirm = inject(ConfirmationService);
 
-  readonly isSaving = signal(false);
-  readonly isTesting = signal(false);
-  readonly isTogglingActive = signal(false);
-  readonly gateway = signal<PaymentGateway | null>(null);
+  protected readonly saveOp = operationState();
+  protected readonly testOp = operationState();
+  protected readonly toggleOp = operationState();
+  readonly gateway = signal<DonationPageGateway | null>(null);
   readonly testResult = signal<{ success: boolean; message: string } | null>(null);
   readonly showSecrets = signal(false);
 
-  readonly form: FormGroup<PaymentGatewayForm> = this.#fb.group({
+  readonly form: FormGroup<DonationPageGatewayForm> = this.#fb.group({
     publicKey: this.#fb.control('', {
       nonNullable: true,
       validators: [Validators.required],
@@ -58,7 +60,6 @@ export class PageTabGateway implements OnInit {
 
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
-    this.isSaving.set(true);
     const raw = this.form.getRawValue();
     const gw = this.gateway();
 
@@ -66,26 +67,24 @@ export class PageTabGateway implements OnInit {
       ? this.#api.updateGateway(this.page().id, raw)
       : this.#api.createGateway(this.page().id, raw);
 
-    request$.pipe(finalize(() => this.isSaving.set(false))).subscribe({
+    this.saveOp.run(request$).subscribe({
       next: (updated) => this.gateway.set(updated),
-      error: (err) => console.error('[PageTabGateway]', err),
+      error: (err: AppError) => {
+        if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
+      },
     });
   }
 
   testConnection(): void {
-    this.isTesting.set(true);
     this.testResult.set(null);
-    this.#api
-      .testGateway(this.page().id)
-      .pipe(finalize(() => this.isTesting.set(false)))
-      .subscribe({
-        next: (result) => this.testResult.set(result),
-        error: () =>
-          this.testResult.set({
-            success: false,
-            message: 'Error al conectar con Culqi.',
-          }),
-      });
+    this.testOp.run(this.#api.testGateway(this.page().id)).subscribe({
+      next: (result) => this.testResult.set(result),
+      error: () =>
+        this.testResult.set({
+          success: false,
+          message: 'Error al conectar con Culqi.',
+        }),
+    });
   }
 
   toggleActive(): void {
@@ -101,11 +100,10 @@ export class PageTabGateway implements OnInit {
       acceptLabel: `Sí, ${action}`,
       acceptButtonProps: gw.isActive ? { severity: 'danger' } : {},
       accept: () => {
-        this.isTogglingActive.set(true);
         const call$ = gw.isActive
           ? this.#api.deactivateGateway(this.page().id)
           : this.#api.activateGateway(this.page().id);
-        call$.pipe(finalize(() => this.isTogglingActive.set(false))).subscribe({
+        this.toggleOp.run(call$).subscribe({
           next: (updated) => this.gateway.set(updated),
         });
       },

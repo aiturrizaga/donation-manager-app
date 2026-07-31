@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule, TablePageEvent } from 'primeng/table';
@@ -9,7 +9,7 @@ import { Menu } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { EmptyState } from '@shared/components';
-import { Donation } from '../../models/donation.model';
+import { Donation } from '@domain/donation';
 
 @Component({
   selector: 'app-donation-data-view',
@@ -26,6 +26,7 @@ import { Donation } from '../../models/donation.model';
     EmptyState,
   ],
   templateUrl: './donation-data-view.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonationDataView {
   readonly items = input.required<Donation[]>();

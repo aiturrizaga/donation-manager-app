@@ -13,6 +13,7 @@ import {
 } from '@core/providers';
 import { routes } from './app.routes';
 import { includeBearerTokenInterceptor } from 'keycloak-angular';
+import { errorNormalizingInterceptor } from '@core/interceptors';
 
 registerLocaleData(localeEsPe);
 
@@ -21,7 +22,10 @@ export const appConfig: ApplicationConfig = {
     { provide: LOCALE_ID, useValue: 'es-PE' },
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding(), withPreloading(PreloadAllModules)),
-    provideHttpClient(withFetch(), withInterceptors([includeBearerTokenInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([includeBearerTokenInterceptor, errorNormalizingInterceptor]),
+    ),
     provideKeycloakAngular(),
     provideKeycloakTokenInterceptor(),
     providePrimeNG({

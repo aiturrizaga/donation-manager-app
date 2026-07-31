@@ -5,8 +5,8 @@ import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { ConfirmationService } from 'primeng/api';
-import { Donation } from '../../models/donation.model';
-import { DonationApi } from '../../api/donation.api';
+import { Donation } from '@domain/donation';
+import { DonationApi } from '@shared/api/donation.api';
 import { DonationDetailCertificate } from '../donation-detail-certificate/donation-detail-certificate';
 import { DonationDetailWebhooks } from '../donation-detail-webhooks/donation-detail-webhooks';
 
@@ -27,7 +27,6 @@ import { DonationDetailWebhooks } from '../donation-detail-webhooks/donation-det
     DonationDetailWebhooks,
     SlicePipe,
   ],
-  providers: [ConfirmationService],
   templateUrl: './donation-detail.html',
 })
 export class DonationDetailPage {
@@ -38,9 +37,7 @@ export class DonationDetailPage {
   readonly donation = input.required<Donation>();
   readonly refunding = signal(false);
 
-  readonly isRefundable = computed(
-    () => this.donation().status === 'completed' && this.donation().culqiChargeId !== null,
-  );
+  readonly isRefundable = computed(() => this.donation().status === 'completed');
 
   readonly orgName = computed(
     () =>

@@ -1,0 +1,15 @@
+<div class="flex flex-col items-center gap-3 py-10 text-center" role="alert">
+  <i class="ti ti-alert-triangle text-3xl text-red-400" aria-hidden="true"></i>
+  <p class="text-sm text-gray-500 max-w-xs">{{ message() }}</p>
+  <button
+    pButton
+    type="button"
+    severity="secondary"
+    [outlined]="true"
+    size="small"
+    (click)="retry.emit()"
+  >
+    <i class="ti ti-refresh" pButtonIcon></i>
+    <span pButtonLabel>Reintentar</span>
+  </button>
+</div>

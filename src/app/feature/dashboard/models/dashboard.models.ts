@@ -12,28 +12,29 @@ export interface DashboardStats {
 export interface RecentDonation {
   id: string;
   donorName: string;
-  donorDocument: string;
+  donorDocument: string | null;
   amount: number;
   currency: string;
   campaignName: string;
-  frequency: 'one_time' | 'monthly' | 'quarterly';
-  status: 'completed' | 'pending' | 'failed';
-  createdAt: Date;
+  donationType: 'one_time' | 'recurring';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'expired' | 'cancelled';
+  createdAt: string;
 }
 
 export interface DonorsByMonth {
-  month: string;
+  label: string;
   newDonors: number;
   recurringDonors: number;
 }
 
-export interface DashboardFilters {
-  organizationId: string | null;
-  dateFrom: Date;
-  dateTo: Date;
+export interface DashboardSummary {
+  stats: DashboardStats;
+  donorsByMonth: DonorsByMonth[];
+  recentDonations: RecentDonation[];
 }
 
-export interface OrganizationOption {
-  id: string;
-  name: string;
+export interface DashboardFilterParams {
+  organizationIds?: number[] | null;
+  dateFrom: string;
+  dateTo: string;
 }

@@ -1,28 +1,33 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { Organization, OrganizationForm } from '../../models/organization.model';
-import { OrganizationApi } from '../../api/organization.api';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { OrganizationForm } from '../../organization.forms';
+import { OrganizationApi } from '@shared/api/organization.api';
 import { FormValidator } from '@shared/utils/form-validator.util';
+import { operationState } from '@shared/utils/operation-state';
+import { AppError } from '@shared/models';
 
+/**
+ * Crea una organización nueva. Editar una ya existente se hace en su propia
+ * vista de detalle (OrganizationDetail) — una organización recién creada
+ * aún no tiene logo que subir ni datos adicionales que ver, así que un
+ * modal simple sigue teniendo sentido solo para este caso.
+ */
 @Component({
   selector: 'app-save-organization-dlg',
   imports: [ReactiveFormsModule, InputText, Button, Message],
   templateUrl: './save-organization-dlg.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SaveOrganizationDlg implements OnInit, OnDestroy {
+export class SaveOrganizationDlg implements OnDestroy {
   readonly #dialogRef = inject(DynamicDialogRef);
-  readonly #data: Organization | undefined = inject(DialogService).getInstance(this.#dialogRef)
-    ?.data;
   readonly #fb = inject(FormBuilder);
   readonly #organizationApi = inject(OrganizationApi);
 
-  readonly isSaving = signal(false);
-  readonly organization = signal<Organization | null>(null);
+  protected readonly saveOp = operationState();
 
   readonly form: FormGroup<OrganizationForm> = this.#fb.group({
     legalName: this.#fb.control('', { validators: [Validators.required], nonNullable: true }),
@@ -37,29 +42,14 @@ export class SaveOrganizationDlg implements OnInit, OnDestroy {
 
   readonly formValidator = new FormValidator(this.form);
 
-  ngOnInit(): void {
-    if (this.#data) {
-      this.organization.set(this.#data);
-      this.form.patchValue(this.#data);
-    }
-  }
-
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
-    this.isSaving.set(true);
-    const orgId = this.organization()?.id;
-    const rawValue = this.form.getRawValue();
-
-    const request$ = orgId
-      ? this.#organizationApi.update(orgId, rawValue)
-      : this.#organizationApi.create(rawValue);
-
-    request$.pipe(finalize(() => this.isSaving.set(false))).subscribe({
-      next: (res) => {
-        if (res?.status) this.#dialogRef.close(res.data);
+    this.saveOp.run(this.#organizationApi.create(this.form.getRawValue())).subscribe({
+      next: (organization) => this.#dialogRef.close(organization),
+      error: (err: AppError) => {
+        if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
       },
-      error: (err) => console.error('[SaveOrganizationDlg]', err),
     });
   }
 

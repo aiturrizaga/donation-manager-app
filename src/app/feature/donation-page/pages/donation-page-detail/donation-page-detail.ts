@@ -1,14 +1,15 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { ConfirmationService } from 'primeng/api';
-import { DonationPage } from '../../models/donation-page.model';
+import { DonationPage } from '@domain/donation-page';
 import { DonationPageApi } from '../../api/donation-page.api';
+import { PageTitleService } from '@core/services';
 import { PageTabGeneral } from '../../components/page-tab-general/page-tab-general';
 import { PageTabBranding } from '../../components/page-tab-branding/page-tab-branding';
-import { PageFormConfig } from '../../components/page-form-config/page-form-config';
+import { PageFormConfig } from '@shared/ui/donation-page-form-config-editor/page-form-config';
 import { PageTabTargets } from '../../components/page-tab-targets/page-tab-targets';
 
 @Component({
@@ -27,16 +28,24 @@ import { PageTabTargets } from '../../components/page-tab-targets/page-tab-targe
     PageTabTargets,
   ],
   templateUrl: './donation-page-detail.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonationPageDetail {
   readonly #router = inject(Router);
   readonly #api = inject(DonationPageApi);
   readonly #confirm = inject(ConfirmationService);
+  readonly #pageTitle = inject(PageTitleService);
 
   readonly page = input.required<DonationPage>();
   readonly currentPage = signal<DonationPage | null>(null);
 
   readonly resolvedPage = () => this.currentPage() ?? this.page();
+
+  constructor() {
+    // Route.title (función) no puede leer route.data de otro resolver (se
+    // resuelven en paralelo) — el título de pestaña se setea aquí en su lugar.
+    effect(() => this.#pageTitle.setPageTitle(this.resolvedPage().name));
+  }
 
   onPageSaved(updated: DonationPage): void {
     this.currentPage.set(updated);

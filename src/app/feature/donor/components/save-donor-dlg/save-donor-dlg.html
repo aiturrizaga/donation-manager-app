@@ -1,3 +1,8 @@
+@if (loadingPartner()) {
+  <div class="flex justify-center py-8">
+    <p-progress-spinner styleClass="w-10 h-10" strokeWidth="4" />
+  </div>
+} @else {
 <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full">
 
   <!-- Tipo y número de documento -->
@@ -142,6 +147,10 @@
     />
   </div>
 
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
+
   <div class="flex justify-end gap-2 mt-2">
     <p-button
       label="Cancelar"
@@ -152,9 +161,10 @@
     />
     <p-button
       type="submit"
-      label="Crear donante"
-      [loading]="isSaving()"
+      [label]="isEditing() ? 'Guardar cambios' : 'Crear donante'"
+      [loading]="saveOp.isPending()"
     />
   </div>
 
 </form>
+}

@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Drawer } from 'primeng/drawer';
 import { Avatar } from 'primeng/avatar';
@@ -7,13 +7,14 @@ import { Skeleton } from 'primeng/skeleton';
 import { Divider } from 'primeng/divider';
 import { Button } from 'primeng/button';
 import { RouterLink } from '@angular/router';
-import { Donor } from '../../models/donor.model';
-import { DonationApi } from '../../../donation/api/donation.api';
+import { Donor } from '@domain/donor';
+import { DonationApi } from '@shared/api/donation.api';
 
 @Component({
   selector: 'app-donor-preview-drawer',
   imports: [Drawer, Avatar, Tag, Skeleton, Divider, Button, RouterLink, DatePipe, DecimalPipe],
   templateUrl: './donor-preview-drawer.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonorPreviewDrawer {
   readonly donor = input.required<Donor>();

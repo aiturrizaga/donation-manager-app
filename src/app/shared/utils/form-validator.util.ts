@@ -54,9 +54,19 @@ export class FormValidator {
       return controlMessages?.['min'] || `El valor debe ser menor o igual a ${max}`;
     }
 
+    if (control.hasError('server')) {
+      return control.getError('server');
+    }
+
     return null;
   }
 
-
+  applyServerErrors(fieldErrors: Record<string, string[]>): void {
+    for (const [field, messages] of Object.entries(fieldErrors)) {
+      const control = this.form.get(field);
+      control?.setErrors({ server: messages[0] });
+      control?.markAsTouched();
+    }
+  }
 
 }

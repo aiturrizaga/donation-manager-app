@@ -26,8 +26,11 @@ export class DonationCertificateApi {
     return this.#http.post<void>(`${this.#base}/${donationId}/certificate/resend-email`, {});
   }
 
-  downloadCertificate(certificateNumber: string): Observable<Blob> {
-    return this.#http.get(`${environment.apiUrl}/v1/portal/certificates/${certificateNumber}/download`, {
+  // fileUrl comes from the certificate response (e.g. DonationCertificateResponse.fileUrl) —
+  // already the full download path, keyed by the certificate's UUID rather than its
+  // predictable sequential number (which must not be used as a public identifier).
+  downloadCertificate(fileUrl: string): Observable<Blob> {
+    return this.#http.get(`${environment.apiUrl}${fileUrl}`, {
       responseType: 'blob',
     });
   }

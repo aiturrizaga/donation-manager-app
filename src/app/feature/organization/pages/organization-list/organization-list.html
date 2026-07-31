@@ -1,15 +1,15 @@
 <div class="card">
 
   <!-- Tabs -->
-  <div class="hidden sm:flex items-center border-b border-gray-200">
-    <p-tabs [value]="activeStatus" (valueChange)="onStatusChange($event)">
+  <div class="hidden sm:flex items-center border-b border-gray-200 status-tabs-bar">
+    <p-tabs [value]="activeStatus()" (valueChange)="onStatusChange($event)">
       <p-tablist>
         @for (tab of statusTabs; track $index) {
           <p-tab [value]="tab.value">
             <div class="flex items-center gap-2">
               {{ tab.label }}
-              @if (activeStatus === tab.value) {
-                <p-badge [value]="store.total()" severity="secondary" />
+              @if (activeStatus() === tab.value) {
+                <p-badge [value]="facade.total()" severity="secondary" />
               }
             </div>
           </p-tab>
@@ -20,9 +20,9 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <app-organization-filters class="flex-1" (filtersChange)="onFiltersChange($event)" />
+    <app-organization-filters class="flex-1" [search]="search()" (filtersChange)="onFiltersChange($event)" />
     <div class="toolbar__actions">
-      <button pButton (click)="openSaveDialog()">
+      <button pButton (click)="openCreateDialog()">
         <i class="ti ti-plus" pButtonIcon></i>
         <span pButtonLabel class="hidden sm:inline">Nueva organización</span>
         <span pButtonLabel class="inline sm:hidden">Nuevo</span>
@@ -37,14 +37,14 @@
         <p-chip
           [unstyled]="true"
           class="chip-btn"
-          [class.chip-btn--active]="activeStatus === tab.value"
+          [class.chip-btn--active]="activeStatus() === tab.value"
           (click)="onStatusChange(tab.value)"
         >
           <span class="chip-btn__label">{{ tab.label }}</span>
-          @if (activeStatus === tab.value) {
+          @if (activeStatus() === tab.value) {
             <p-badge
               [unstyled]="true"
-              [value]="store.total()"
+              [value]="facade.total()"
               class="chip-btn__badge"
             />
           }
@@ -54,17 +54,25 @@
   </div>
 
   <!-- Data view -->
-  <app-organization-data-view
-    [items]="store.items()"
-    [isLoading]="store.loading()"
-    [total]="store.total()"
-    [rows]="store.query().size"
-    [first]="store.first()"
-    emptyIcon="ti-building-bank"
-    emptyTitle="No se encontraron organizaciones"
-    emptyDescription="Intenta ajustar los filtros o crea una nueva organización"
-    (delete)="onDelete($event)"
-    (pageChange)="onPageChange($event)"
-  />
+  @if (facade.error(); as err) {
+    <app-inline-error
+      message="No se pudo cargar la lista de organizaciones."
+      (retry)="facade.reload()"
+    />
+  } @else {
+    <app-organization-data-view
+      [items]="facade.items()"
+      [isLoading]="facade.loading()"
+      [total]="facade.total()"
+      [rows]="50"
+      [first]="facade.first()"
+      emptyIcon="ti-building-bank"
+      [emptyTitle]="emptyText()?.title ?? ''"
+      [emptyDescription]="emptyText()?.description ?? ''"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    />
+  }
 
 </div>

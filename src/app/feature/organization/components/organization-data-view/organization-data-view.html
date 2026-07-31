@@ -30,7 +30,12 @@
       <tr>
         <td>
           <div class="flex flex-col gap-0.5">
-            <span class="font-medium text-gray-900">{{ org.legalName }}</span>
+            <a
+              [routerLink]="['/organizations', org.id]"
+              class="font-medium text-gray-900 hover:underline cursor-pointer"
+            >
+              {{ org.legalName }}
+            </a>
             @if (org.tradeName) {
               <span class="text-xs text-gray-400">{{ org.tradeName }}</span>
             }
@@ -64,6 +69,15 @@
         </td>
         <td>
           <div class="flex items-center gap-1">
+            <p-button
+              icon="ti ti-pencil"
+              pTooltip="Editar"
+              tooltipPosition="top"
+              severity="secondary"
+              [text]="true"
+              size="small"
+              (onClick)="edit.emit(org)"
+            />
             <p-button
               icon="ti ti-trash"
               pTooltip="Eliminar"
@@ -127,7 +141,12 @@
 
           <div class="flex items-start justify-between gap-3">
             <div class="flex flex-col gap-0.5 min-w-0">
-              <span class="text-sm font-medium text-gray-900 truncate">{{ org.legalName }}</span>
+              <a
+                [routerLink]="['/organizations', org.id]"
+                class="text-sm font-medium text-gray-900 truncate hover:underline"
+              >
+                {{ org.legalName }}
+              </a>
               @if (org.tradeName) {
                 <span class="text-xs text-gray-400 truncate">{{ org.tradeName }}</span>
               }

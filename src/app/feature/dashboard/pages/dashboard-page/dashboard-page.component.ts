@@ -1,96 +1,90 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 import { ButtonModule } from 'primeng/button';
+import { DatePicker } from 'primeng/datepicker';
 
 import { StatsCardComponent } from '../../components/stats-card/stats-card.component';
 import { RecentDonationsComponent } from '../../components/recent-donations/recent-donations.component';
 import { DonorsSummaryComponent } from '../../components/donors-summary/donors-summary.component';
 
-import {
-  DashboardFilters,
-  OrganizationOption,
-  RecentDonation,
-} from '../../models/dashboard.models';
-import {
-  MOCK_DONORS_BY_MONTH,
-  MOCK_ORGANIZATIONS,
-  MOCK_RECENT_DONATIONS,
-  MOCK_STATS,
-} from '../../models/dashboard.mock';
-import { Select } from 'primeng/select';
-import { DatePicker } from 'primeng/datepicker';
+import { DashboardSummary, DonorsByMonth, RecentDonation } from '../../models/dashboard.models';
+import { ApiResponse } from '@shared/models';
+import { buildHttpParams } from '@shared/utils/http.util';
+import { SelectedOrganizationsFilterContext } from '@shared/context/selected-organizations-filter.context';
+import { OrganizationMultiSelector } from '@shared/ui/organization-multi-selector/organization-multi-selector';
+import { environment } from '@env/environment';
 
 function startOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), 1);
 }
 
 function endOfMonth(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0);
 }
+
+function toIsoDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+const EMPTY_STATS: DashboardSummary['stats'] = {
+  totalCollected: 0,
+  totalDonations: 0,
+  activeDonors: 0,
+  avgDonation: 0,
+  collectedDelta: 0,
+  donationsDelta: 0,
+  donorsDelta: 0,
+  avgDonationDelta: 0,
+};
 
 @Component({
   selector: 'app-dashboard-page',
-  standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ButtonModule,
     StatsCardComponent,
     RecentDonationsComponent,
     DonorsSummaryComponent,
-    Select,
+    OrganizationMultiSelector,
     DatePicker,
   ],
   templateUrl: './dashboard-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardPageComponent implements OnInit {
-  // ------- Filter state -------
-  organizations: OrganizationOption[] = [
-    { id: '', name: 'Todas las organizaciones' },
-    ...MOCK_ORGANIZATIONS,
-  ];
+export class DashboardPageComponent {
+  protected readonly orgContext = inject(SelectedOrganizationsFilterContext);
 
-  filters = signal<DashboardFilters>({
-    organizationId: null,
-    dateFrom: startOfMonth(new Date()),
-    dateTo: endOfMonth(new Date()),
-  });
+  readonly dateFrom = signal<Date>(startOfMonth(new Date()));
+  readonly dateTo = signal<Date>(endOfMonth(new Date()));
 
-  selectedOrgId: string | null = null;
-  dateFrom: Date = startOfMonth(new Date());
-  dateTo: Date = endOfMonth(new Date());
+  readonly #summaryResource = httpResource<ApiResponse<DashboardSummary>>(() => ({
+    url: `${environment.apiUrl}/v1/dashboard/summary`,
+    params: buildHttpParams({
+      organizationIds: this.orgContext.selectedIds(),
+      dateFrom: toIsoDate(this.dateFrom()),
+      dateTo: toIsoDate(this.dateTo()),
+    }),
+  }));
 
-  // ------- Data (mock) -------
-  stats = MOCK_STATS;
-  donorsByMonth = MOCK_DONORS_BY_MONTH;
+  readonly loading = this.#summaryResource.isLoading;
 
-  filteredDonations = computed<RecentDonation[]>(() => {
-    const { organizationId, dateFrom, dateTo } = this.filters();
-    return MOCK_RECENT_DONATIONS.filter((d) => {
-      const inDateRange = d.createdAt >= dateFrom && d.createdAt <= dateTo;
-      // In a real integration, filter by organizationId via the API call
-      return inDateRange;
-    });
-  });
+  readonly stats = computed<DashboardSummary['stats']>(
+    () => this.#summaryResource.value()?.data.stats ?? EMPTY_STATS,
+  );
 
-  ngOnInit(): void {
-    this.applyFilters();
-  }
+  readonly donorsByMonth = computed<DonorsByMonth[]>(
+    () => this.#summaryResource.value()?.data.donorsByMonth ?? [],
+  );
 
-  applyFilters(): void {
-    this.filters.set({
-      organizationId: this.selectedOrgId || null,
-      dateFrom: this.dateFrom,
-      dateTo: this.dateTo,
-    });
-  }
+  readonly recentDonations = computed<RecentDonation[]>(
+    () => this.#summaryResource.value()?.data.recentDonations ?? [],
+  );
 
   resetFilters(): void {
-    this.selectedOrgId = null;
-    this.dateFrom = startOfMonth(new Date());
-    this.dateTo = endOfMonth(new Date());
-    this.applyFilters();
+    this.dateFrom.set(startOfMonth(new Date()));
+    this.dateTo.set(endOfMonth(new Date()));
+    this.orgContext.select([]);
   }
 }

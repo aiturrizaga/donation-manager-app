@@ -1,15 +1,65 @@
 <p-table
   [value]="items()"
   [loading]="loading()"
-  [tableStyle]="{ 'min-width': '480px' }"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="rows()"
+  [first]="first()"
+  [totalRecords]="total()"
+  (onPage)="onPageChange($event)"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  [showCurrentPageReport]="true"
+  paginatorDropdownAppendTo="body"
+  currentPageReportTemplate="{first} – {last} de {totalRecords}"
+  paginatorStyleClass="flex! justify-end!"
+  [tableStyle]="{ 'min-width': '900px' }"
+  styleClass="p-datatable-sm"
 >
   <ng-template #header>
     <tr>
       <th>Monto</th>
-      <th>Frecuencia</th>
-      <th>Próximo cobro</th>
-      <th>Último cobro</th>
-      <th>Estado</th>
+      <th>Recurrencia</th>
+      <th>
+        <span class="inline-flex items-center gap-1">
+          Estado
+          <i
+            class="ti ti-info-circle text-gray-400 cursor-help"
+            pTooltip="Activa: cobrando con normalidad. Pausada: detenida temporalmente. Vencida: un cobro falló y el proveedor sigue reintentando. Finalizada: completó su plazo fijo (N meses) y se canceló sola. Cancelada: interrumpida manualmente antes de completar su plazo."
+            tooltipPosition="top"
+          ></i>
+        </span>
+      </th>
+      <th>Fecha inicio</th>
+      <th>
+        <span class="inline-flex items-center gap-1">
+          Próximo cobro
+          <i
+            class="ti ti-info-circle text-gray-400 cursor-help"
+            pTooltip="Estimado (último cobro + un periodo). Culqi cobra automáticamente según lo pactado y solo nos avisa por webhook una vez procesado — nosotros no ejecutamos ni programamos el cobro."
+            tooltipPosition="top"
+          ></i>
+        </span>
+      </th>
+      <th>
+        <span class="inline-flex items-center gap-1">
+          Último cobro
+          <i
+            class="ti ti-info-circle text-gray-400 cursor-help"
+            pTooltip="Fecha del cobro exitoso más reciente. Se actualiza en cada renovación."
+            tooltipPosition="top"
+          ></i>
+        </span>
+      </th>
+      <th>
+        <span class="inline-flex items-center gap-1">
+          Fecha fin
+          <i
+            class="ti ti-info-circle text-gray-400 cursor-help"
+            pTooltip="Cuándo se canceló o finalizó la suscripción. No es lo mismo que 'Último cobro': esta solo se llena una vez, al terminar; el último cobro se actualiza en cada ciclo mientras siga activa."
+            tooltipPosition="top"
+          ></i>
+        </span>
+      </th>
     </tr>
   </ng-template>
 
@@ -21,7 +71,18 @@
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600">{{ getFrequencyLabel(sub.frequency) }}</span>
+        <span class="text-sm text-gray-600">{{ getFrequencyLabel(sub) }}</span>
+      </td>
+      <td>
+        <p-tag
+          [value]="getStatusLabel(sub)"
+          [severity]="getStatusSeverity(sub)"
+        />
+      </td>
+      <td>
+        <span class="text-sm text-gray-600">
+          {{ sub.createdAt | date:'dd MMM yyyy' }}
+        </span>
       </td>
       <td>
         <span class="text-sm text-gray-600">
@@ -34,17 +95,16 @@
         </span>
       </td>
       <td>
-        <p-tag
-          [value]="getStatusLabel(sub.status)"
-          [severity]="getStatusSeverity(sub.status)"
-        />
+        <span class="text-sm text-gray-600">
+          {{ sub.cancelledAt ? (sub.cancelledAt | date:'dd MMM yyyy') : '—' }}
+        </span>
       </td>
     </tr>
   </ng-template>
 
   <ng-template #emptymessage>
     <tr>
-      <td colspan="5" class="py-0 text-center">
+      <td colspan="7" class="py-0 text-center">
         <app-empty-state
           icon="ti-repeat-off"
           iconClass="text-5xl"

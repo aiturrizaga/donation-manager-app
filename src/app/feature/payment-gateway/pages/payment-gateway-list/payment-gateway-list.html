@@ -2,13 +2,9 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <app-payment-gateway-filters
-      class="flex-1"
-      [organizations]="organizations()"
-      (filtersChange)="onFiltersChange($event)"
-    />
+    <app-organization-selector />
     <div class="toolbar__actions">
-      @if (store.organizationId()) {
+      @if (orgContext.selectedId()) {
         <button pButton (click)="openDialog()">
           <i class="ti ti-plus" pButtonIcon></i>
           <span pButtonLabel class="hidden sm:inline">Nueva pasarela</span>
@@ -19,17 +15,22 @@
   </div>
 
   <!-- Empty state sin org seleccionada -->
-  @if (!store.organizationId()) {
+  @if (!orgContext.selectedId()) {
     <div class="py-12 text-center">
       <i class="ti ti-building-community text-5xl text-gray-300"></i>
       <p class="text-sm text-gray-400 mt-3">
         Selecciona una organización para ver sus pasarelas
       </p>
     </div>
+  } @else if (facade.error(); as err) {
+    <app-inline-error
+      message="No se pudo cargar la lista de pasarelas."
+      (retry)="facade.reload()"
+    />
   } @else {
     <app-payment-gateway-data-view
-      [items]="store.items()"
-      [isLoading]="store.loading()"
+      [items]="facade.items()"
+      [isLoading]="facade.loading()"
       (edit)="onEdit($event)"
       (test)="onTest($event)"
       (toggle)="onToggle($event)"

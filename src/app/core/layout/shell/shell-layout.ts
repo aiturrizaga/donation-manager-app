@@ -7,6 +7,7 @@ import { Navbar } from '@core/layout/shell/components/navbar/navbar';
 import { Sidebar } from '@core/layout/shell/components/sidebar/sidebar';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
+import { GlobalLoadingService, NavigationLoadingService } from '@core/services';
 
 @Component({
   selector: 'app-shell-layout',
@@ -20,6 +21,8 @@ import { Toast } from 'primeng/toast';
 })
 export class ShellLayout {
   readonly #navApi = inject(NavApi);
+  protected readonly globalLoading = inject(GlobalLoadingService);
+  protected readonly navLoading = inject(NavigationLoadingService);
 
   sidebarCollapsed = signal(false);
 

@@ -29,7 +29,7 @@
           [severity]="gateway()!.isActive ? 'danger' : 'secondary'"
           [outlined]="true"
           size="small"
-          [loading]="isTogglingActive()"
+          [loading]="toggleOp.isPending()"
           (onClick)="toggleActive()"
         />
         <p-button
@@ -38,7 +38,7 @@
           severity="secondary"
           [outlined]="true"
           size="small"
-          [loading]="isTesting()"
+          [loading]="testOp.isPending()"
           (onClick)="testConnection()"
         />
       </div>
@@ -136,11 +136,15 @@
       </div>
     </div>
 
+    @if (saveOp.error(); as err) {
+      <p-message severity="error" size="small" [text]="err.message" />
+    }
+
     <div class="flex justify-end">
       <p-button
         type="submit"
         [label]="gateway() ? 'Actualizar credenciales' : 'Guardar credenciales'"
-        [loading]="isSaving()"
+        [loading]="saveOp.isPending()"
       />
     </div>
 

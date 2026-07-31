@@ -1,0 +1,42 @@
+<div class="flex flex-col gap-2">
+  <label class="font-medium">{{ label() }}</label>
+
+  <div class="flex items-center gap-3">
+    @if (imageUrl(); as url) {
+      <img [src]="url" [alt]="label()" class="w-16 h-16 rounded object-contain border border-gray-200 bg-white" />
+    } @else {
+      <div class="w-16 h-16 rounded border border-dashed border-gray-300 flex items-center justify-center text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-6 h-6">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5-9 9" />
+        </svg>
+      </div>
+    }
+
+    <input
+      #fileInput
+      type="file"
+      [accept]="accept"
+      (change)="onFileChange($event)"
+      class="hidden"
+    />
+    <p-button
+      type="button"
+      label="Subir imagen"
+      severity="secondary"
+      [outlined]="true"
+      [loading]="loading()"
+      [disabled]="disabled()"
+      (onClick)="pickFile()"
+    />
+  </div>
+
+  @if (disabled() && disabledHint(); as hint) {
+    <p class="text-gray-400 text-xs">{{ hint }}</p>
+  }
+
+  @if (validationError(); as error) {
+    <p-message severity="error" size="small" variant="simple">{{ error }}</p-message>
+  }
+</div>

@@ -15,13 +15,15 @@
         "icon": "ti ti-cash",
         "routerLink": "/donations",
         "badge": "3",
-        "badgeStyleClass": "p-badge-danger"
+        "badgeStyleClass": "p-badge-danger",
+        "permission": "donation:read"
       },
       {
         "id": "0103-donor",
         "label": "Donantes",
         "icon": "ti ti-users",
-        "routerLink": "/donors"
+        "routerLink": "/donors",
+        "permission": "donor:read"
       }
     ]
   },
@@ -34,14 +36,8 @@
         "label": "Página pública",
         "icon": "ti ti-layout-navbar",
         "routerLink": "/pages",
-        "title": "Landing y formularios del donante"
-      },
-      {
-        "id": "0202-forms",
-        "label": "Formularios",
-        "icon": "ti ti-forms",
-        "routerLink": "/forms",
-        "title": "Configuración de formularios de donación"
+        "title": "Landing y formularios del donante",
+        "permission": "donation_page:read"
       }
     ]
   },
@@ -54,14 +50,24 @@
         "label": "Organizaciones",
         "icon": "ti ti-building-community",
         "routerLink": "/organizations",
-        "title": "ADEU, ACES, AKIE"
+        "title": "ADEU, ACES, AKIE",
+        "permission": "organization:read"
       },
       {
         "id": "0302-user",
         "label": "Usuarios",
         "icon": "ti ti-user-shield",
         "routerLink": "/users",
-        "title": "Administradores y permisos"
+        "title": "Administradores y permisos",
+        "permission": "user:read"
+      },
+      {
+        "id": "0304-role",
+        "label": "Roles y permisos",
+        "icon": "ti ti-shield-lock",
+        "routerLink": "/roles",
+        "title": "Roles, permisos y acceso por organización",
+        "permission": "rbac:read"
       },
       {
         "id": "0303-settings",
@@ -73,13 +79,15 @@
             "id": "030301-targets",
             "label": "Objetivos",
             "routerLink": "/settings/targets",
-            "title": "Configuración de objetivos"
+            "title": "Configuración de objetivos",
+            "permission": "donation_target:read"
           },
           {
             "id": "030302-payment-gateway",
             "label": "Pasarela de pagos",
             "routerLink": "/settings/payment-gateways",
-            "title": "Pasarela de pagos"
+            "title": "Pasarela de pagos",
+            "permission": "payment_gateway:read"
           }
         ]
       }

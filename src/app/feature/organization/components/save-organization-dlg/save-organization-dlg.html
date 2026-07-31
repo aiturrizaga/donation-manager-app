@@ -77,6 +77,10 @@
     </div>
   </div>
 
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small" [text]="err.message" />
+  }
+
   <div class="flex justify-end gap-2 mt-2">
     <p-button
       label="Cancelar"
@@ -87,8 +91,8 @@
     />
     <p-button
       type="submit"
-      [label]="organization() ? 'Actualizar' : 'Guardar'"
-      [loading]="isSaving()"
+      label="Crear organización"
+      [loading]="saveOp.isPending()"
     />
   </div>
 

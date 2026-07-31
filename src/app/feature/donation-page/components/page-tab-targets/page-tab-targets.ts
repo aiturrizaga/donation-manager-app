@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
@@ -7,15 +7,16 @@ import { Skeleton } from 'primeng/skeleton';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
 import { EmptyState } from '@shared/components';
-import { DonationPage, FormConfigTarget } from '../../models/donation-page.model';
+import { DonationPage, FormConfigTarget } from '@domain/donation-page';
 import { DonationPageApi } from '../../api/donation-page.api';
 import { AssignTargetDlg } from '../assign-target-dlg/assign-target-dlg';
 
 @Component({
   selector: 'app-page-tab-targets',
   imports: [FormsModule, TableModule, Button, ToggleSwitch, Skeleton, EmptyState],
-  providers: [DialogService, ConfirmationService],
+  providers: [DialogService],
   templateUrl: './page-tab-targets.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageTabTargets implements OnInit {
   readonly page = input.required<DonationPage>();

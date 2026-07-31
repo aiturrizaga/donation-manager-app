@@ -1,19 +1,25 @@
-import { Component, inject, input, output, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
 import { InputText } from 'primeng/inputtext';
+import { Textarea } from 'primeng/textarea';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
-import { DonationPage, PageBrandingForm } from '../../models/donation-page.model';
+import { DonationPage, PageBranding } from '@domain/donation-page';
+import { PageBrandingForm } from '../../donation-page.forms';
 import { DonationPageApi } from '../../api/donation-page.api';
 import { FormValidator } from '@shared/utils/form-validator.util';
+import { operationState } from '@shared/utils/operation-state';
+import { AppError } from '@shared/models';
+import { ImageUpload } from '@shared/ui/image-upload/image-upload';
+import { environment } from '@env/environment';
 
 const COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
 @Component({
   selector: 'app-page-tab-branding',
-  imports: [ReactiveFormsModule, InputText, Button, Message],
+  imports: [ReactiveFormsModule, InputText, Textarea, Button, Message, ImageUpload],
   templateUrl: './page-tab-branding.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageTabBranding implements OnInit {
   readonly page = input.required<DonationPage>();
@@ -22,17 +28,20 @@ export class PageTabBranding implements OnInit {
   readonly #api = inject(DonationPageApi);
   readonly #fb = inject(FormBuilder);
 
-  readonly isSaving = signal(false);
+  protected readonly saveOp = operationState();
+  protected readonly logoUploadOp = operationState();
+  protected readonly heroUploadOp = operationState();
+  protected readonly faviconUploadOp = operationState();
   readonly hasExisting = signal(false);
+  readonly logoUrl = signal<string | null>(null);
+  readonly heroImageUrl = signal<string | null>(null);
+  readonly faviconUrl = signal<string | null>(null);
 
   readonly form: FormGroup<PageBrandingForm> = this.#fb.group({
     companyName: this.#fb.control('', {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(150)],
     }),
-    logoUrl: this.#fb.control<string | null>(null),
-    heroImageUrl: this.#fb.control<string | null>(null),
-    faviconUrl: this.#fb.control<string | null>(null),
     primaryColor: this.#fb.control('#0056A0', {
       nonNullable: true,
       validators: [Validators.required, Validators.pattern(COLOR_PATTERN)],
@@ -40,6 +49,10 @@ export class PageTabBranding implements OnInit {
     secondaryColor: this.#fb.control<string | null>(null, {
       validators: [Validators.pattern(COLOR_PATTERN)],
     }),
+    heroHeading: this.#fb.control<string | null>(null, {
+      validators: [Validators.maxLength(200)],
+    }),
+    welcomeText: this.#fb.control<string | null>(null),
   });
 
   readonly formValidator = new FormValidator(this.form);
@@ -49,12 +62,12 @@ export class PageTabBranding implements OnInit {
     if (branding) {
       this.hasExisting.set(true);
       this.form.patchValue(branding);
+      this.#applyBranding(branding);
     }
   }
 
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
-    this.isSaving.set(true);
     const raw = this.form.getRawValue();
     const pageId = this.page().id;
 
@@ -62,12 +75,41 @@ export class PageTabBranding implements OnInit {
       ? this.#api.updateBranding(pageId, raw)
       : this.#api.createBranding(pageId, raw);
 
-    request$.pipe(finalize(() => this.isSaving.set(false))).subscribe({
-      next: () => {
+    this.saveOp.run(request$).subscribe({
+      next: (branding) => {
         this.hasExisting.set(true);
+        this.#applyBranding(branding);
         this.saved.emit();
       },
-      error: (err) => console.error('[PageTabBranding]', err),
+      error: (err: AppError) => {
+        if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
+      },
     });
+  }
+
+  uploadLogo(file: File): void {
+    this.logoUploadOp.run(this.#api.uploadBrandingLogo(this.page().id, file)).subscribe({
+      next: (branding) => this.#applyBranding(branding),
+    });
+  }
+
+  uploadHero(file: File): void {
+    this.heroUploadOp.run(this.#api.uploadBrandingHero(this.page().id, file)).subscribe({
+      next: (branding) => this.#applyBranding(branding),
+    });
+  }
+
+  uploadFavicon(file: File): void {
+    this.faviconUploadOp.run(this.#api.uploadBrandingFavicon(this.page().id, file)).subscribe({
+      next: (branding) => this.#applyBranding(branding),
+    });
+  }
+
+  #applyBranding(branding: PageBranding): void {
+    this.logoUrl.set(branding.logoUrl ? `${environment.apiUrl}${branding.logoUrl}` : null);
+    this.heroImageUrl.set(
+      branding.heroImageUrl ? `${environment.apiUrl}${branding.heroImageUrl}` : null,
+    );
+    this.faviconUrl.set(branding.faviconUrl ? `${environment.apiUrl}${branding.faviconUrl}` : null);
   }
 }

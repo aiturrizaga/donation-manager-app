@@ -1,17 +1,36 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, numberAttribute } from '@angular/core';
+import { input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
-import { DonationTargetStore } from '../../store/donation-target.store';
+import { DonationTargetsListFacade } from '../../facade/donation-targets-list.facade';
 import { DonationTargetFilters } from '../../components/donation-target-filters/donation-target-filters';
 import { DonationTargetDataView } from '../../components/donation-target-data-view/donation-target-data-view';
 import { SaveDonationTargetDlg } from '../../components/save-donation-target-dlg/save-donation-target-dlg';
-import { DonationTarget, DonationTargetFilterParams } from '../../models/donation-target.model';
-import { OrganizationApi } from '../../../organization/api/organization.api';
-import { Organization } from '../../../organization/models/organization.model';
+import { DonationTarget } from '@domain/donation-target';
+import { SelectedOrganizationContext } from '@shared/context/selected-organization.context';
+import { OrganizationSelector } from '@shared/ui/organization-selector/organization-selector';
+import { InlineError } from '@shared/ui/inline-error/inline-error';
+import { rowOperation } from '@shared/utils/row-operation';
+
+const EMPTY_TEXT: Record<'no-records' | 'filtered' | 'search', { title: string; description: string }> = {
+  'no-records': {
+    title: 'Aún no hay objetivos',
+    description: 'Crea un nuevo objetivo para esta organización.',
+  },
+  filtered: {
+    title: 'Ningún objetivo coincide',
+    description: 'Prueba a cambiar el tipo o el estado.',
+  },
+  search: {
+    title: 'Sin resultados',
+    description: 'Ningún objetivo coincide con tu búsqueda.',
+  },
+};
 
 const STATUS_TABS = [
   { value: 'all', label: 'Todos' },
@@ -25,8 +44,10 @@ type TargetTabValue = (typeof STATUS_TABS)[number]['value'];
 @Component({
   selector: 'app-donation-target-list-page',
   imports: [
+    OrganizationSelector,
     DonationTargetFilters,
     DonationTargetDataView,
+    InlineError,
     Tabs,
     TabList,
     Tab,
@@ -36,56 +57,63 @@ type TargetTabValue = (typeof STATUS_TABS)[number]['value'];
     ButtonIcon,
     ButtonLabel,
   ],
-  providers: [DonationTargetStore, ConfirmationService, DialogService],
+  providers: [DonationTargetsListFacade, DialogService],
   templateUrl: './donation-target-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DonationTargetListPage implements OnInit {
-  readonly store = inject(DonationTargetStore);
+export class DonationTargetListPage {
+  readonly search = input<string | null>(null);
+  readonly targetType = input<string | null>(null);
+  readonly status = input<TargetTabValue>('all');
+  readonly page = input(1, { transform: (v: unknown) => numberAttribute(v, 1) });
+
+  protected readonly facade = inject(DonationTargetsListFacade);
+  protected readonly orgContext = inject(SelectedOrganizationContext);
   readonly #confirm = inject(ConfirmationService);
+  readonly #message = inject(MessageService);
   readonly #dialog = inject(DialogService);
-  readonly #orgApi = inject(OrganizationApi);
+  readonly #router = inject(Router);
 
   readonly statusTabs = STATUS_TABS;
-  activeStatus: TargetTabValue = 'all';
-  readonly organizations = signal<Organization[]>([]);
 
-  ngOnInit(): void {
-    this._loadOrganizations();
-  }
+  // El router deja `status()` en `undefined` (no en su valor por defecto)
+  // cuando la URL no trae `?status=...` — este signal normaliza ambos casos.
+  protected readonly activeStatus = computed<TargetTabValue>(() => this.status() ?? 'all');
 
-  private _loadOrganizations(): void {
-    this.#orgApi.getAll({ page: 1, size: 100 }, {}).subscribe((data) => {
-      const orgs = data.items.map((o) => ({
-        ...o,
-        tradeName: o.tradeName ?? o.legalName,
-      }));
-      this.organizations.set(orgs);
-    });
+  protected readonly setStatusOp = rowOperation<number>();
+  protected readonly deleteOp = rowOperation<number>();
+
+  protected readonly emptyText = computed(() => {
+    const reason = this.facade.emptyReason();
+    return reason ? EMPTY_TEXT[reason] : null;
+  });
+
+  constructor() {
+    this.facade.connect(() => ({
+      organizationId: this.orgContext.selectedId(),
+      search: this.search(),
+      targetType: this.targetType(),
+      status: this.activeStatus() === 'all' ? null : this.activeStatus(),
+      page: this.page(),
+      size: 50,
+    }));
   }
 
   onStatusChange(tab: string | number | undefined): void {
-    this.activeStatus = (tab as TargetTabValue) ?? 'all';
-    const status = tab === 'all' ? null : (tab as string);
-    this.store.setFilters({ ...this.store.filters(), status });
-    this.store.load();
+    this.#navigate({ status: (tab as TargetTabValue) ?? 'all', page: 1 });
   }
 
-  onFiltersChange(
-    filters: { organizationId: number | null } & Omit<DonationTargetFilterParams, 'status'>,
-  ): void {
-    const status = this.activeStatus === 'all' ? null : this.activeStatus;
-    this.store.setOrganization(filters.organizationId);
-    this.store.setFilters({ search: filters.search, targetType: filters.targetType, status });
-    if (filters.organizationId) this.store.load();
+  onFiltersChange(filters: { search: string | null; targetType: string | null }): void {
+    this.#navigate({ ...filters, page: 1 });
   }
 
   onPageChange(event: { first: number; rows: number }): void {
     const page = Math.floor(event.first / event.rows) + 1;
-    this.store.changePage(page, event.rows);
-    this.store.load();
+    this.#navigate({ page });
   }
 
   onSetStatus(event: { target: DonationTarget; status: 'active' | 'paused' | 'finished' }): void {
+    if (this.setStatusOp.isActive(event.target.id)) return;
     const labels: Record<string, string> = {
       active: 'activar',
       paused: 'pausar',
@@ -97,11 +125,19 @@ export class DonationTargetListPage implements OnInit {
       icon: 'ti ti-refresh',
       rejectLabel: 'No',
       acceptLabel: `Sí, ${labels[event.status]}`,
-      accept: () => this.store.setStatus(event.target, event.status),
+      accept: () => {
+        this.setStatusOp
+          .run(event.target.id, this.facade.setStatus(event.target, event.status))
+          .subscribe({
+            next: () => this.facade.reload(),
+            error: () => this.#notifyError(`No se pudo ${labels[event.status]} el objetivo.`),
+          });
+      },
     });
   }
 
   onDelete(target: DonationTarget): void {
+    if (this.deleteOp.isActive(target.id)) return;
     this.#confirm.confirm({
       message: `¿Eliminar "${target.name}"? Esta acción no se puede deshacer.`,
       header: 'Eliminar objetivo',
@@ -109,8 +145,17 @@ export class DonationTargetListPage implements OnInit {
       rejectLabel: 'No',
       acceptLabel: 'Sí, eliminar',
       acceptButtonProps: { severity: 'danger' },
-      accept: () => this.store.remove(target.id),
+      accept: () => {
+        this.deleteOp.run(target.id, this.facade.remove(target.id)).subscribe({
+          next: () => this.facade.reload(),
+          error: () => this.#notifyError('No se pudo eliminar el objetivo.'),
+        });
+      },
     });
+  }
+
+  #notifyError(detail: string): void {
+    this.#message.add({ severity: 'error', summary: 'Error', detail });
   }
 
   openDialog(target?: DonationTarget): void {
@@ -119,11 +164,15 @@ export class DonationTargetListPage implements OnInit {
       width: '560px',
       modal: true,
       closable: true,
-      data: { organizations: this.organizations(), target },
+      data: { organizationId: this.orgContext.selectedId(), target },
     });
 
     ref?.onClose.subscribe((result: DonationTarget) => {
-      if (result) this.store.load();
+      if (result) this.facade.reload();
     });
+  }
+
+  #navigate(queryParams: Record<string, unknown>): void {
+    this.#router.navigate([], { queryParams, queryParamsHandling: 'merge' });
   }
 }
