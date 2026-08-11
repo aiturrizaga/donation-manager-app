@@ -117,6 +117,24 @@ export class DonationPageApi {
       .pipe(map((r) => r.data));
   }
 
+  deleteBrandingLogo(pageId: string): Observable<PageBranding> {
+    return this.#http
+      .delete<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/logo`)
+      .pipe(map((r) => r.data));
+  }
+
+  deleteBrandingHero(pageId: string): Observable<PageBranding> {
+    return this.#http
+      .delete<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/hero`)
+      .pipe(map((r) => r.data));
+  }
+
+  deleteBrandingFavicon(pageId: string): Observable<PageBranding> {
+    return this.#http
+      .delete<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/favicon`)
+      .pipe(map((r) => r.data));
+  }
+
   // Form config targets
   getFormConfigTargets(pageId: string): Observable<FormConfigTarget[]> {
     return this.#http

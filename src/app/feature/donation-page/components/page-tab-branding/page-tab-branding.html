@@ -23,7 +23,9 @@
       [disabled]="!hasExisting()"
       disabledHint="Guarda el branding primero para poder subir el logo."
       [loading]="logoUploadOp.isPending()"
+      [removing]="logoRemoveOp.isPending()"
       (fileSelected)="uploadLogo($event)"
+      (removeRequested)="removeLogo()"
     />
 
     <app-image-upload
@@ -32,7 +34,9 @@
       [disabled]="!hasExisting()"
       disabledHint="Guarda el branding primero para poder subir la imagen hero."
       [loading]="heroUploadOp.isPending()"
+      [removing]="heroRemoveOp.isPending()"
       (fileSelected)="uploadHero($event)"
+      (removeRequested)="removeHero()"
     />
 
     <app-image-upload
@@ -41,7 +45,9 @@
       [disabled]="!hasExisting()"
       disabledHint="Guarda el branding primero para poder subir el favicon."
       [loading]="faviconUploadOp.isPending()"
+      [removing]="faviconRemoveOp.isPending()"
       (fileSelected)="uploadFavicon($event)"
+      (removeRequested)="removeFavicon()"
     />
   </div>
 

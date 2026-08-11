@@ -22,8 +22,10 @@ export class ImageUpload {
   readonly disabled = input(false);
   readonly disabledHint = input<string | null>(null);
   readonly loading = input(false);
+  readonly removing = input(false);
 
   readonly fileSelected = output<File>();
+  readonly removeRequested = output<void>();
 
   private readonly fileInputRef = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
   readonly validationError = signal<string | null>(null);

@@ -4,6 +4,7 @@ import { InputText } from 'primeng/inputtext';
 import { Editor } from 'primeng/editor';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
+import { ConfirmationService } from 'primeng/api';
 import { DonationPage, PageBranding } from '@domain/donation-page';
 import { PageBrandingForm } from '../../donation-page.forms';
 import { DonationPageApi } from '../../api/donation-page.api';
@@ -27,11 +28,15 @@ export class PageTabBranding implements OnInit {
 
   readonly #api = inject(DonationPageApi);
   readonly #fb = inject(FormBuilder);
+  readonly #confirm = inject(ConfirmationService);
 
   protected readonly saveOp = operationState();
   protected readonly logoUploadOp = operationState();
   protected readonly heroUploadOp = operationState();
   protected readonly faviconUploadOp = operationState();
+  protected readonly logoRemoveOp = operationState();
+  protected readonly heroRemoveOp = operationState();
+  protected readonly faviconRemoveOp = operationState();
   readonly hasExisting = signal(false);
   readonly logoUrl = signal<string | null>(null);
   readonly heroImageUrl = signal<string | null>(null);
@@ -108,6 +113,42 @@ export class PageTabBranding implements OnInit {
       .subscribe({
         next: (branding) => this.#applyBranding(branding),
       });
+  }
+
+  removeLogo(): void {
+    this.#confirmRemove('¿Quitar el logo?', () =>
+      this.logoRemoveOp
+        .run(this.#api.deleteBrandingLogo(this.page().id), 'Logo eliminado.')
+        .subscribe({ next: (branding) => this.#applyBranding(branding) }),
+    );
+  }
+
+  removeHero(): void {
+    this.#confirmRemove('¿Quitar la imagen principal?', () =>
+      this.heroRemoveOp
+        .run(this.#api.deleteBrandingHero(this.page().id), 'Imagen principal eliminada.')
+        .subscribe({ next: (branding) => this.#applyBranding(branding) }),
+    );
+  }
+
+  removeFavicon(): void {
+    this.#confirmRemove('¿Quitar el favicon?', () =>
+      this.faviconRemoveOp
+        .run(this.#api.deleteBrandingFavicon(this.page().id), 'Favicon eliminado.')
+        .subscribe({ next: (branding) => this.#applyBranding(branding) }),
+    );
+  }
+
+  #confirmRemove(message: string, onConfirm: () => void): void {
+    this.#confirm.confirm({
+      message: `${message} Esta acción no se puede deshacer.`,
+      header: 'Confirmar eliminación',
+      icon: 'ti ti-trash',
+      rejectLabel: 'No',
+      acceptLabel: 'Sí, quitar',
+      acceptButtonProps: { severity: 'danger' },
+      accept: onConfirm,
+    });
   }
 
   #applyBranding(branding: PageBranding): void {

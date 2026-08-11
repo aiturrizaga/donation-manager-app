@@ -21,15 +21,30 @@
       (change)="onFileChange($event)"
       class="hidden"
     />
-    <p-button
-      type="button"
-      label="Subir imagen"
-      severity="secondary"
-      [outlined]="true"
-      [loading]="loading()"
-      [disabled]="disabled()"
-      (onClick)="pickFile()"
-    />
+    <div class="flex flex-col gap-1.5">
+      <p-button
+        type="button"
+        label="Subir imagen"
+        severity="secondary"
+        [outlined]="true"
+        [loading]="loading()"
+        [disabled]="disabled()"
+        (onClick)="pickFile()"
+      />
+      @if (imageUrl()) {
+        <p-button
+          type="button"
+          label="Quitar"
+          icon="ti ti-trash"
+          severity="danger"
+          [text]="true"
+          size="small"
+          [loading]="removing()"
+          [disabled]="disabled()"
+          (onClick)="removeRequested.emit()"
+        />
+      }
+    </div>
   </div>
 
   @if (disabled() && disabledHint(); as hint) {
