@@ -8,8 +8,11 @@ export interface Organization {
   phone: string | null;
   mobilePhone: string | null;
   logoPath: string | null;
-  // Selects this org's asset folder (logo/seal/signature) for certificate
-  // generation — see app/core/certificate/generator.py (backend).
+  // Sello y firma del representante legal, usados en el certificado de
+  // donación — ver app/core/certificate/generator.py (backend).
+  sealPath: string | null;
+  signaturePath: string | null;
+  // Legacy — ya no se usa para resolver assets del certificado.
   slug: string | null;
   // Certificate legal data — see app/core/certificate/organization_data.py
   // (backend): certificate generation fails loudly if any of these four are

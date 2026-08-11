@@ -1,0 +1,224 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Organización</label>
+    <p-select
+      formControlName="organizationId"
+      [options]="organizations()"
+      optionLabel="tradeName"
+      optionValue="id"
+      placeholder="Selecciona una organización"
+      styleClass="w-full"
+      appendTo="body"
+      [invalid]="formValidator.hasError('organizationId')"
+    />
+    @if (formValidator.hasError('organizationId')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('organizationId') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Tipo de registro</label>
+      <p-select
+        formControlName="recordType"
+        [options]="recordTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        appendTo="body"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Bien contratado</label>
+      <p-select
+        formControlName="goodType"
+        [options]="goodTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        appendTo="body"
+      />
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Nombre completo</label>
+    <input
+      pInputText
+      type="text"
+      formControlName="fullName"
+      placeholder="Nombre y apellidos del reclamante"
+      maxlength="200"
+      [invalid]="formValidator.hasError('fullName')"
+    />
+    @if (formValidator.hasError('fullName')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('fullName') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Tipo de documento</label>
+      <p-select
+        formControlName="documentType"
+        [options]="documentTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+        appendTo="body"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">N° de documento</label>
+      <input
+        pInputText
+        type="text"
+        formControlName="documentNumber"
+        maxlength="20"
+        [invalid]="formValidator.hasError('documentNumber')"
+      />
+      @if (formValidator.hasError('documentNumber')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('documentNumber') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Correo</label>
+      <input
+        pInputText
+        type="email"
+        formControlName="email"
+        maxlength="255"
+        [invalid]="formValidator.hasError('email')"
+      />
+      @if (formValidator.hasError('email')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('email') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Teléfono</label>
+      <input
+        pInputText
+        type="text"
+        formControlName="phone"
+        maxlength="20"
+        [invalid]="formValidator.hasError('phone')"
+      />
+      @if (formValidator.hasError('phone')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('phone') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Domicilio</label>
+    <input
+      pInputText
+      type="text"
+      formControlName="address"
+      maxlength="500"
+      [invalid]="formValidator.hasError('address')"
+    />
+    @if (formValidator.hasError('address')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('address') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex items-center gap-2">
+    <p-checkbox [binary]="true" formControlName="isMinor" inputId="isMinor" />
+    <label for="isMinor" class="text-sm">El reclamante es menor de edad</label>
+  </div>
+
+  @if (form.controls.isMinor.value) {
+    <div class="flex flex-col gap-1">
+      <label class="font-medium">Nombre del apoderado</label>
+      <input pInputText type="text" formControlName="guardianName" maxlength="200" />
+    </div>
+  }
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">
+      Monto reclamado (S/)
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+    </label>
+    <p-input-number
+      formControlName="amount"
+      mode="decimal"
+      [minFractionDigits]="2"
+      [maxFractionDigits]="2"
+      placeholder="0.00"
+      class="w-full"
+    />
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Detalle</label>
+    <textarea
+      pTextarea
+      formControlName="detail"
+      placeholder="Describe el detalle de la reclamación..."
+      rows="3"
+      class="w-full"
+      [invalid]="formValidator.hasError('detail')"
+    ></textarea>
+    @if (formValidator.hasError('detail')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('detail') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Pedido</label>
+    <textarea
+      pTextarea
+      formControlName="request"
+      placeholder="Describe lo que solicita el reclamante..."
+      rows="3"
+      class="w-full"
+      [invalid]="formValidator.hasError('request')"
+    ></textarea>
+    @if (formValidator.hasError('request')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('request') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex items-center gap-2">
+    <p-checkbox [binary]="true" formControlName="dataConsent" inputId="dataConsent" />
+    <label for="dataConsent" class="text-sm">
+      Autoriza el tratamiento de datos personales para atender el reclamo
+    </label>
+  </div>
+
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
+  }
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" (click)="close()" />
+    <p-button type="submit" label="Crear reclamo" [loading]="saveOp.isPending()" />
+  </div>
+
+</form>

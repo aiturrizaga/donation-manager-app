@@ -1,0 +1,35 @@
+<div class="card">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <p class="text-sm text-gray-500 flex-1">
+      Catálogos internos del sistema (ej. opciones de frecuencia, monedas). Solo un super_admin puede crear, editar o eliminar.
+    </p>
+    <div class="toolbar__actions">
+      <button pButton (click)="openCreateDialog()">
+        <i class="ti ti-plus" pButtonIcon></i>
+        <span pButtonLabel class="hidden sm:inline">Nuevo catálogo</span>
+        <span pButtonLabel class="inline sm:hidden">Nuevo</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Data view -->
+  @if (error()) {
+    <app-inline-error
+      message="No se pudo cargar la lista de catálogos."
+      (retry)="reload()"
+    />
+  } @else {
+    <app-lookup-data-view
+      [items]="lookups()"
+      [isLoading]="loading()"
+      emptyIcon="ti-list-details"
+      emptyTitle="Aún no hay catálogos"
+      emptyDescription="Crea el primer catálogo interno del sistema."
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+    />
+  }
+
+</div>

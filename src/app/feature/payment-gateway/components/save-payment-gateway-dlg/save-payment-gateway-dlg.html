@@ -118,7 +118,7 @@
       la pestaña en el checkout, pero el resultado no se ha probado contra nuestro backend.
     </span>
     <div class="grid grid-cols-2 gap-2">
-      @for (opt of paymentMethodOptions; track opt.value) {
+      @for (opt of paymentMethodOptions(); track opt.value) {
         <div class="flex items-center gap-2">
           <p-checkbox
             [inputId]="'pm-' + opt.value"
@@ -127,9 +127,31 @@
           />
           <label [for]="'pm-' + opt.value" class="text-sm cursor-pointer">
             {{ opt.label }}
-            @if (!opt.verified) {
+            @if (!isVerifiedPaymentMethod(opt.value)) {
               <span class="text-amber-500 text-xs">(sin verificar)</span>
             }
+          </label>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-medium">Marcas de tarjeta habilitadas</label>
+    <span class="text-xs text-gray-400">
+      Deben coincidir con lo que Culqi tiene realmente habilitado en el panel del negocio — esto
+      solo cambia el texto que ve el donante, no lo que Culqi acepta al cobrar.
+    </span>
+    <div class="grid grid-cols-2 gap-2">
+      @for (opt of cardBrandOptions(); track opt.value) {
+        <div class="flex items-center gap-2">
+          <p-checkbox
+            [inputId]="'cb-' + opt.value"
+            formControlName="enabledCardBrands"
+            [value]="opt.value"
+          />
+          <label [for]="'cb-' + opt.value" class="text-sm cursor-pointer">
+            {{ opt.label }}
           </label>
         </div>
       }
@@ -155,7 +177,9 @@
   </div>
 
   @if (saveOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <div class="flex justify-end gap-2 mt-2">

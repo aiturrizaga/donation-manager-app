@@ -3,6 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { Skeleton } from 'primeng/skeleton';
+import { MessageService } from 'primeng/api';
 import { EmptyState } from '@shared/components';
 import { DonationCertificateApi } from '../../api/donation-certificate.api';
 import { firstValueFrom } from 'rxjs';
@@ -15,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 export class DonationDetailCertificate implements OnInit {
   readonly donationId = input.required<string>();
   readonly #api = inject(DonationCertificateApi);
+  readonly #message = inject(MessageService);
 
   readonly certificate = signal<any | null>(null);
   readonly loading = signal(true);
@@ -44,6 +46,7 @@ export class DonationDetailCertificate implements OnInit {
       next: (cert) => {
         this.certificate.set(cert);
         this.generating.set(false);
+        this.#message.add({ severity: 'success', summary: 'Listo', detail: 'Certificado generado.' });
       },
       error: () => this.generating.set(false),
     });

@@ -89,7 +89,9 @@ export class PageTabGeneral {
     if (this.form.invalid) return this.form.markAllAsTouched();
     const raw = this.form.getRawValue();
 
-    this.saveOp.run(this.#api.update(this.page().id, { ...raw })).subscribe({
+    this.saveOp
+      .run(this.#api.update(this.page().id, { ...raw }), 'Datos generales actualizados.')
+      .subscribe({
       next: (updated) => this.saved.emit(updated),
       error: (err: AppError) => {
         if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);

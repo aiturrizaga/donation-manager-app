@@ -1,5 +1,5 @@
 import { FormControl } from '@angular/forms';
-import { PaymentMethod } from '@domain/payment-gateway';
+import { CardBrand, PaymentMethod } from '@domain/payment-gateway';
 
 export interface OrganizationPaymentGatewayForm {
   provider: FormControl<string>;
@@ -12,4 +12,5 @@ export interface OrganizationPaymentGatewayForm {
   isActive: FormControl<boolean>;
   testMode: FormControl<boolean>;
   enabledPaymentMethods: FormControl<PaymentMethod[]>;
+  enabledCardBrands: FormControl<CardBrand[]>;
 }

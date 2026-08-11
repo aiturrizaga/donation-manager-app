@@ -65,6 +65,7 @@ export class SaveUserDlg implements OnDestroy {
           documentNumber: raw.documentNumber,
           roleId: raw.roleId,
         }),
+        'Usuario creado.',
       )
       .subscribe({
         next: (res) => {

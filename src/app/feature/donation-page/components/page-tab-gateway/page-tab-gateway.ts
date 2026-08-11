@@ -66,8 +66,9 @@ export class PageTabGateway implements OnInit {
     const request$ = gw
       ? this.#api.updateGateway(this.page().id, raw)
       : this.#api.createGateway(this.page().id, raw);
+    const successMessage = gw ? 'Configuración de pasarela actualizada.' : 'Pasarela configurada.';
 
-    this.saveOp.run(request$).subscribe({
+    this.saveOp.run(request$, successMessage).subscribe({
       next: (updated) => this.gateway.set(updated),
       error: (err: AppError) => {
         if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
@@ -103,7 +104,8 @@ export class PageTabGateway implements OnInit {
         const call$ = gw.isActive
           ? this.#api.deactivateGateway(this.page().id)
           : this.#api.activateGateway(this.page().id);
-        this.toggleOp.run(call$).subscribe({
+        const successMessage = gw.isActive ? 'Pasarela desactivada.' : 'Pasarela activada.';
+        this.toggleOp.run(call$, successMessage).subscribe({
           next: (updated) => this.gateway.set(updated),
         });
       },

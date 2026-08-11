@@ -19,6 +19,9 @@ export const MODULE_LABELS_ES: Record<string, string> = {
   recurring_subscription: 'Suscripciones recurrentes',
   user: 'Usuarios',
   rbac: 'Roles y permisos',
+  complaint: 'Reclamos',
+  legal_page: 'Páginas legales',
+  lookup: 'Catálogos del sistema',
 };
 
 export function moduleLabel(module: string): string {

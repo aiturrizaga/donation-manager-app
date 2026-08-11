@@ -53,7 +53,9 @@ export class CreateDonationPageDlg implements OnInit, OnDestroy {
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
-    this.saveOp.run(this.#api.create(this.form.getRawValue())).subscribe({
+    this.saveOp
+      .run(this.#api.create(this.form.getRawValue()), 'Página de donación creada.')
+      .subscribe({
       next: (page) => {
         this.#dialogRef.close(page);
         this.#router.navigate(['/pages', page.id]).then();

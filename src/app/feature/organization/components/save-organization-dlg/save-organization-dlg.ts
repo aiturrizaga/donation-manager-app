@@ -45,7 +45,9 @@ export class SaveOrganizationDlg implements OnDestroy {
   save(): void {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
-    this.saveOp.run(this.#organizationApi.create(this.form.getRawValue())).subscribe({
+    this.saveOp
+      .run(this.#organizationApi.create(this.form.getRawValue()), 'Organización creada.')
+      .subscribe({
       next: (organization) => this.#dialogRef.close(organization),
       error: (err: AppError) => {
         if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);

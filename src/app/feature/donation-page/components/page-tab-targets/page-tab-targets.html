@@ -1,14 +1,14 @@
 @if (!page().formConfig) {
   <div class="py-8 text-center">
     <p class="text-sm text-gray-400">
-      Primero configura el formulario antes de asignar targets.
+      Primero configura el formulario antes de asignar objetivos.
     </p>
   </div>
 } @else {
   <div class="flex flex-col gap-4">
     <div class="flex items-center justify-between">
       <span class="text-sm text-gray-500">
-        {{ items().length }} target{{ items().length !== 1 ? 's' : '' }} asignado{{ items().length !== 1 ? 's' : '' }}
+        {{ items().length }} objetivo{{ items().length !== 1 ? 's' : '' }} asignado{{ items().length !== 1 ? 's' : '' }}
       </span>
       <p-button
         icon="ti ti-plus"
@@ -37,7 +37,7 @@
       <app-empty-state
         icon="ti-target-off"
         iconClass="text-4xl"
-        title="Sin targets asignados"
+        title="Sin objetivos asignados"
         description="Asigna objetivos para que aparezcan en el formulario de donación."
       />
     } @else {

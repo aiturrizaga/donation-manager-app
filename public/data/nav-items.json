@@ -38,6 +38,22 @@
         "routerLink": "/pages",
         "title": "Landing y formularios del donante",
         "permission": "donation_page:read"
+      },
+      {
+        "id": "0202-complaint",
+        "label": "Reclamos",
+        "icon": "ti ti-message-report",
+        "routerLink": "/complaints",
+        "title": "Libro de reclamaciones",
+        "permission": "complaint:read"
+      },
+      {
+        "id": "0203-legal-page",
+        "label": "Legales",
+        "icon": "ti ti-file-text",
+        "routerLink": "/legal-pages",
+        "title": "Términos de uso, política de privacidad y otras páginas legales",
+        "permission": "legal_page:read"
       }
     ]
   },
@@ -88,6 +104,13 @@
             "routerLink": "/settings/payment-gateways",
             "title": "Pasarela de pagos",
             "permission": "payment_gateway:read"
+          },
+          {
+            "id": "030303-lookups",
+            "label": "Catálogos del sistema",
+            "routerLink": "/settings/lookups",
+            "title": "Opciones de frecuencia, monedas, métodos de pago",
+            "permission": "lookup:read"
           }
         ]
       }

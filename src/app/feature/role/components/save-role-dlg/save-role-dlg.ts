@@ -73,7 +73,8 @@ export class SaveRoleDlg implements OnDestroy {
           description: raw.description,
         });
 
-    this.saveOp.run(call$).subscribe({
+    const successMessage = this.#existingRole ? 'Rol actualizado.' : 'Rol creado.';
+    this.saveOp.run(call$, successMessage).subscribe({
       next: (role) => this.#dialogRef.close(role),
       error: (err: AppError) => {
         if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);

@@ -78,6 +78,7 @@ export class AssignTargetDlg implements OnInit {
           isLocked: sel.isLocked,
           isVisible: sel.isVisible,
         }),
+        'Objetivo asignado.',
       )
       .subscribe({
         next: (result) => this.#dialogRef.close(result),

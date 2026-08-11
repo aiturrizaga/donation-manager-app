@@ -120,7 +120,10 @@ export class UserListPage {
       accept: () => {
         const call$ = user.isActive ? this.#api.deactivate(user.id) : this.#api.activate(user.id);
         this.toggleOp.run(user.id, call$).subscribe({
-          next: () => this.facade.reload(),
+          next: () => {
+            this.facade.reload();
+            this.#notifySuccess(user.isActive ? 'Usuario desactivado.' : 'Usuario activado.');
+          },
           error: () => this.#notifyError(`No se pudo ${action} al usuario.`),
         });
       },
@@ -137,6 +140,7 @@ export class UserListPage {
       icon: 'ti ti-lock-open',
       accept: () => {
         this.resetPasswordOp.run(user.id, this.#api.resetPassword(user.id)).subscribe({
+          next: () => this.#notifySuccess('Correo de restablecimiento enviado.'),
           error: () => this.#notifyError('No se pudo enviar el correo de restablecimiento.'),
         });
       },
@@ -159,6 +163,10 @@ export class UserListPage {
         });
       },
     });
+  }
+
+  #notifySuccess(detail: string): void {
+    this.#message.add({ severity: 'success', summary: 'Listo', detail });
   }
 
   #notifyError(detail: string): void {

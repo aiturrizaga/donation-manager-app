@@ -121,6 +121,7 @@ export class SaveDonorDlg implements OnInit, OnDestroy {
             phone: raw.phone,
             address: raw.address,
           }),
+          'Donante actualizado.',
         )
         .subscribe({
           next: (partner) => this.#dialogRef.close(partner),
@@ -143,6 +144,7 @@ export class SaveDonorDlg implements OnInit, OnDestroy {
           phone: raw.phone,
           address: raw.address,
         }),
+        'Donante creado.',
       )
       .subscribe({
         next: (donor) => this.#dialogRef.close(donor),

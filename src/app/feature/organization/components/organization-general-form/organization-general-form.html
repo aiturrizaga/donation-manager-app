@@ -114,7 +114,9 @@
     (fileSelected)="uploadLogo($event)"
   />
   @if (logoUploadOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <hr class="border-gray-200 my-1" />
@@ -128,6 +130,36 @@
       campos, los certificados nuevos usarán el valor actualizado — los ya
       emitidos no cambian.
     </p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <app-image-upload
+        label="Sello"
+        [imageUrl]="sealUrl()"
+        [loading]="sealUploadOp.isPending()"
+        (fileSelected)="uploadSeal($event)"
+      />
+      @if (sealUploadOp.error(); as err) {
+        <p-message severity="error" size="small">
+          {{ err.message }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <app-image-upload
+        label="Firma del apoderado"
+        [imageUrl]="signatureUrl()"
+        [loading]="signatureUploadOp.isPending()"
+        (fileSelected)="uploadSignature($event)"
+      />
+      @if (signatureUploadOp.error(); as err) {
+        <p-message severity="error" size="small">
+          {{ err.message }}
+        </p-message>
+      }
+    </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -178,7 +210,9 @@
   </div>
 
   @if (saveOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <div class="flex justify-end mt-2">

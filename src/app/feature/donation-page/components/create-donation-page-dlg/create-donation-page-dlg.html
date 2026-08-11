@@ -53,11 +53,13 @@
   </div>
 
   <p-message severity="info" size="small" variant="simple">
-    Después de crear la página podrás configurar el branding, formulario, targets y pasarela.
+    Después de crear la página podrás configurar el branding, formulario, objetivos y pasarela.
   </p-message>
 
   @if (saveOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <div class="flex justify-end gap-2 mt-2">

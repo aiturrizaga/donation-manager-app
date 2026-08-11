@@ -25,6 +25,7 @@
     "keycloak-angular": "^21.0.0",
     "keycloak-js": "^26.2.4",
     "primeng": "^21.1.4",
+    "quill": "^2.0.3",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.2.2",
     "tailwindcss-primeui": "^0.6.1",

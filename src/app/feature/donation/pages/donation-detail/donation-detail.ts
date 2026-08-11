@@ -4,7 +4,7 @@ import { DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Donation } from '@domain/donation';
 import { DonationApi } from '@shared/api/donation.api';
 import { DonationDetailCertificate } from '../donation-detail-certificate/donation-detail-certificate';
@@ -33,6 +33,7 @@ export class DonationDetailPage {
   readonly #router = inject(Router);
   readonly #api = inject(DonationApi);
   readonly #confirm = inject(ConfirmationService);
+  readonly #message = inject(MessageService);
 
   readonly donation = input.required<Donation>();
   readonly refunding = signal(false);
@@ -93,6 +94,7 @@ export class DonationDetailPage {
       .subscribe({
         next: () => {
           this.refunding.set(false);
+          this.#message.add({ severity: 'success', summary: 'Listo', detail: 'Reembolso procesado.' });
           this.#router.navigate(['/donations']);
         },
         error: () => this.refunding.set(false),

@@ -46,13 +46,19 @@
   </div>
 
   @if (logoUploadOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
   @if (heroUploadOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
   @if (faviconUploadOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <div class="flex flex-col gap-1">
@@ -60,15 +66,9 @@
       Encabezado del hero
       <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
     </label>
-    <input
-      pInputText
-      formControlName="heroHeading"
-      placeholder="Ej. Cada donación transforma una vida"
-      maxlength="200"
-      [invalid]="formValidator.hasError('heroHeading')"
-    />
+    <p-editor formControlName="heroHeading" [style]="{ height: '160px' }" />
     <span class="text-xs text-gray-400">
-      Título grande de la página pública. Si lo dejas vacío, se usa el texto por defecto.
+      Título grande de la página pública. Si lo dejas vacío, no se muestra.
     </span>
   </div>
 
@@ -77,15 +77,9 @@
       Texto de bienvenida
       <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
     </label>
-    <textarea
-      pTextarea
-      formControlName="welcomeText"
-      placeholder="Mensaje de bienvenida en la página pública..."
-      rows="3"
-      class="w-full"
-    ></textarea>
+    <p-editor formControlName="welcomeText" [style]="{ height: '160px' }" />
     <span class="text-xs text-gray-400">
-      Bajada bajo el encabezado del hero, visible para el donante.
+      Bajada bajo el encabezado del hero, visible para el donante. Si lo dejas vacío, no se muestra.
     </span>
   </div>
 
@@ -145,7 +139,9 @@
   </div>
 
   @if (saveOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <div class="flex justify-end">

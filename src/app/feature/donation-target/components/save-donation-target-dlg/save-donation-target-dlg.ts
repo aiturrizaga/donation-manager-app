@@ -114,7 +114,8 @@ export class SaveDonationTargetDlg implements OnInit, OnDestroy {
       ? this.#api.update(this.#organizationId, target.id, payload)
       : this.#api.create(this.#organizationId, payload);
 
-    this.saveOp.run(request$).subscribe({
+    const successMessage = target ? 'Objetivo actualizado.' : 'Objetivo creado.';
+    this.saveOp.run(request$, successMessage).subscribe({
       next: (result) => this.#dialogRef.close(result),
       error: (err: AppError) => {
         if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);

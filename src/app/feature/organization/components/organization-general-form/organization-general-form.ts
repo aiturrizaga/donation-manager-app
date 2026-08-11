@@ -35,7 +35,11 @@ export class OrganizationGeneralForm {
 
   protected readonly saveOp = operationState();
   protected readonly logoUploadOp = operationState();
+  protected readonly sealUploadOp = operationState();
+  protected readonly signatureUploadOp = operationState();
   readonly logoUrl = signal<string | null>(null);
+  readonly sealUrl = signal<string | null>(null);
+  readonly signatureUrl = signal<string | null>(null);
 
   readonly form: FormGroup<OrganizationGeneralFormFields> = this.#fb.group({
     legalName: this.#fb.control('', { validators: [Validators.required], nonNullable: true }),
@@ -65,6 +69,8 @@ export class OrganizationGeneralForm {
       const org = this.organization();
       this.form.patchValue(org);
       this.logoUrl.set(org.logoPath ? `${environment.apiUrl}${org.logoPath}` : null);
+      this.sealUrl.set(org.sealPath ? `${environment.apiUrl}${org.sealPath}` : null);
+      this.signatureUrl.set(org.signaturePath ? `${environment.apiUrl}${org.signaturePath}` : null);
     });
   }
 
@@ -72,7 +78,7 @@ export class OrganizationGeneralForm {
     if (this.form.invalid) return this.form.markAllAsTouched();
 
     this.saveOp
-      .run(this.#api.update(this.organization().id, this.form.getRawValue()))
+      .run(this.#api.update(this.organization().id, this.form.getRawValue()), 'Organización actualizada.')
       .subscribe({
         next: (organization) => this.saved.emit(organization),
         error: (err: AppError) => {
@@ -82,8 +88,26 @@ export class OrganizationGeneralForm {
   }
 
   uploadLogo(file: File): void {
-    this.logoUploadOp.run(this.#api.uploadLogo(this.organization().id, file)).subscribe({
-      next: (organization) => this.saved.emit(organization),
-    });
+    this.logoUploadOp
+      .run(this.#api.uploadLogo(this.organization().id, file), 'Logo actualizado.')
+      .subscribe({
+        next: (organization) => this.saved.emit(organization),
+      });
+  }
+
+  uploadSeal(file: File): void {
+    this.sealUploadOp
+      .run(this.#api.uploadSeal(this.organization().id, file), 'Sello actualizado.')
+      .subscribe({
+        next: (organization) => this.saved.emit(organization),
+      });
+  }
+
+  uploadSignature(file: File): void {
+    this.signatureUploadOp
+      .run(this.#api.uploadSignature(this.organization().id, file), 'Firma actualizada.')
+      .subscribe({
+        next: (organization) => this.saved.emit(organization),
+      });
   }
 }

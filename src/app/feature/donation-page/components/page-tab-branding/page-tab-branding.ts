@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
+import { Editor } from 'primeng/editor';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { DonationPage, PageBranding } from '@domain/donation-page';
@@ -17,7 +17,7 @@ const COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
 @Component({
   selector: 'app-page-tab-branding',
-  imports: [ReactiveFormsModule, InputText, Textarea, Button, Message, ImageUpload],
+  imports: [ReactiveFormsModule, InputText, Editor, Button, Message, ImageUpload],
   templateUrl: './page-tab-branding.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -49,9 +49,7 @@ export class PageTabBranding implements OnInit {
     secondaryColor: this.#fb.control<string | null>(null, {
       validators: [Validators.pattern(COLOR_PATTERN)],
     }),
-    heroHeading: this.#fb.control<string | null>(null, {
-      validators: [Validators.maxLength(200)],
-    }),
+    heroHeading: this.#fb.control<string | null>(null),
     welcomeText: this.#fb.control<string | null>(null),
   });
 
@@ -74,8 +72,9 @@ export class PageTabBranding implements OnInit {
     const request$ = this.hasExisting()
       ? this.#api.updateBranding(pageId, raw)
       : this.#api.createBranding(pageId, raw);
+    const successMessage = this.hasExisting() ? 'Apariencia actualizada.' : 'Apariencia creada.';
 
-    this.saveOp.run(request$).subscribe({
+    this.saveOp.run(request$, successMessage).subscribe({
       next: (branding) => {
         this.hasExisting.set(true);
         this.#applyBranding(branding);
@@ -88,21 +87,27 @@ export class PageTabBranding implements OnInit {
   }
 
   uploadLogo(file: File): void {
-    this.logoUploadOp.run(this.#api.uploadBrandingLogo(this.page().id, file)).subscribe({
-      next: (branding) => this.#applyBranding(branding),
-    });
+    this.logoUploadOp
+      .run(this.#api.uploadBrandingLogo(this.page().id, file), 'Logo actualizado.')
+      .subscribe({
+        next: (branding) => this.#applyBranding(branding),
+      });
   }
 
   uploadHero(file: File): void {
-    this.heroUploadOp.run(this.#api.uploadBrandingHero(this.page().id, file)).subscribe({
-      next: (branding) => this.#applyBranding(branding),
-    });
+    this.heroUploadOp
+      .run(this.#api.uploadBrandingHero(this.page().id, file), 'Imagen principal actualizada.')
+      .subscribe({
+        next: (branding) => this.#applyBranding(branding),
+      });
   }
 
   uploadFavicon(file: File): void {
-    this.faviconUploadOp.run(this.#api.uploadBrandingFavicon(this.page().id, file)).subscribe({
-      next: (branding) => this.#applyBranding(branding),
-    });
+    this.faviconUploadOp
+      .run(this.#api.uploadBrandingFavicon(this.page().id, file), 'Favicon actualizado.')
+      .subscribe({
+        next: (branding) => this.#applyBranding(branding),
+      });
   }
 
   #applyBranding(branding: PageBranding): void {

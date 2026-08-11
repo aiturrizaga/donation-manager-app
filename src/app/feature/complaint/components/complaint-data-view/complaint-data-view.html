@@ -1,0 +1,166 @@
+<!-- Desktop -->
+<div class="hidden sm:block">
+  <p-table
+    [value]="items()"
+    [loading]="isLoading()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="rows()"
+    [first]="first()"
+    [totalRecords]="total()"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    paginatorDropdownAppendTo="body"
+    currentPageReportTemplate="{first} – {last} de {totalRecords}"
+    paginatorStyleClass="flex! justify-end!"
+    [tableStyle]="{ 'min-width': '720px' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th>Hoja N°</th>
+        <th>Fecha</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Organización</th>
+        <th>Página</th>
+        <th>Estado</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-complaint>
+      <tr>
+        <td>
+          <a
+            [routerLink]="['/complaints', complaint.id]"
+            class="font-mono text-sm text-gray-600 hover:underline"
+          >
+            {{ complaint.sheetNumber }}
+          </a>
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">
+            {{ complaint.createdAt | date:'dd MMM yyyy' }}
+          </span>
+        </td>
+        <td>
+          <a
+            [routerLink]="['/complaints', complaint.id]"
+            class="text-sm font-medium text-gray-900 hover:underline"
+          >
+            {{ complaint.fullName }}
+          </a>
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">{{ getRecordTypeLabel(complaint.recordType) }}</span>
+        </td>
+        <td>
+          @if (complaint.organization) {
+            <span class="text-sm text-gray-700">
+              {{ complaint.organization.tradeName ?? complaint.organization.legalName }}
+            </span>
+          } @else {
+            <p-tag value="Sin organización" severity="danger" />
+          }
+        </td>
+        <td>
+          <span class="text-sm text-gray-600">{{ complaint.donationPage?.name ?? '—' }}</span>
+        </td>
+        <td>
+          <p-tag
+            [value]="getStatusLabel(complaint.status)"
+            [severity]="getStatusSeverity(complaint.status)"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="text-center py-0">
+          <app-empty-state
+            [icon]="emptyIcon()"
+            iconClass="text-5xl"
+            [title]="emptyTitle()"
+            [description]="emptyDescription()"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Mobile -->
+<div class="sm:hidden">
+  @if (isLoading()) {
+    <div class="divide-y divide-gray-100">
+      @for (_ of skeletonRows; track $index) {
+        <div class="flex items-center justify-between gap-3 px-4 py-4">
+          <div class="flex flex-col gap-1.5 flex-1">
+            <p-skeleton height="0.875rem" width="8rem" />
+            <p-skeleton height="0.75rem" width="5rem" />
+            <p-skeleton height="0.75rem" width="6rem" />
+          </div>
+          <p-skeleton height="1.25rem" width="4.5rem" borderRadius="999px" />
+        </div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      [icon]="emptyIcon()"
+      iconClass="text-5xl"
+      [title]="emptyTitle()"
+      [description]="emptyDescription()"
+    />
+  } @else {
+    <div class="divide-y divide-gray-100">
+      @for (complaint of items(); track complaint.id) {
+        <a
+          [routerLink]="['/complaints', complaint.id]"
+          class="flex items-center justify-between gap-3 px-4 py-4"
+        >
+          <div class="flex flex-col gap-0.5 min-w-0">
+            <span class="text-sm font-medium text-gray-900 truncate">
+              {{ complaint.fullName }}
+            </span>
+            <span class="text-xs text-gray-400">
+              Hoja {{ complaint.sheetNumber }} · {{ complaint.createdAt | date:'dd MMM yyyy' }}
+            </span>
+            @if (complaint.organization) {
+              <span class="text-xs text-gray-400">
+                {{ complaint.organization.tradeName ?? complaint.organization.legalName }}
+                @if (complaint.donationPage) {
+                  · {{ complaint.donationPage.name }}
+                }
+              </span>
+            } @else {
+              <span class="text-xs text-red-500 font-medium">Sin organización</span>
+            }
+          </div>
+          <div class="flex flex-col items-end gap-1.5 shrink-0">
+            <span class="text-xs text-gray-500">{{ getRecordTypeLabel(complaint.recordType) }}</span>
+            <p-tag
+              [value]="getStatusLabel(complaint.status)"
+              [severity]="getStatusSeverity(complaint.status)"
+            />
+          </div>
+        </a>
+      }
+    </div>
+    <div class="border-t border-gray-200">
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="total()"
+        (onPageChange)="onPageChange($event)"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [showCurrentPageReport]="true"
+        [showPageLinks]="false"
+        [showFirstLastIcon]="false"
+        appendTo="body"
+        currentPageReportTemplate="{first} – {last} de {totalRecords}"
+        class="flex! justify-between!"
+      />
+    </div>
+  }
+</div>

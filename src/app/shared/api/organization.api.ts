@@ -76,4 +76,20 @@ export class OrganizationApi {
       .post<ApiResponse<Organization>>(`${this.#base}/${id}/logo`, formData)
       .pipe(map((r) => r.data));
   }
+
+  uploadSeal(id: number, file: File): Observable<Organization> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.#http
+      .post<ApiResponse<Organization>>(`${this.#base}/${id}/seal`, formData)
+      .pipe(map((r) => r.data));
+  }
+
+  uploadSignature(id: number, file: File): Observable<Organization> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.#http
+      .post<ApiResponse<Organization>>(`${this.#base}/${id}/signature`, formData)
+      .pipe(map((r) => r.data));
+  }
 }

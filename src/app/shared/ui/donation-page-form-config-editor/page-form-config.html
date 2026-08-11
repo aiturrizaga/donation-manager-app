@@ -8,7 +8,7 @@
         <label class="font-medium text-sm">Opciones</label>
         <p-multi-select
           formControlName="currencyOptions"
-          [options]="currencyOptions"
+          [options]="currencyOptions()"
           optionLabel="label"
           optionValue="value"
           display="chip"
@@ -20,7 +20,7 @@
         <label class="font-medium text-sm">Default</label>
         <p-select
           formControlName="currencyDefault"
-          [options]="currencyOptions"
+          [options]="currencyOptions()"
           optionLabel="label"
           optionValue="value"
           class="w-full"
@@ -105,7 +105,7 @@
         <label class="font-medium text-sm">Opciones</label>
         <p-multi-select
           formControlName="frequencyOptions"
-          [options]="frequencyOptions"
+          [options]="frequencyOptions()"
           optionLabel="label"
           optionValue="value"
           display="chip"
@@ -117,7 +117,7 @@
         <label class="font-medium text-sm">Default</label>
         <p-select
           formControlName="frequencyDefault"
-          [options]="frequencyOptions.filter(o => form.getRawValue().frequencyOptions.includes(o.value))"
+          [options]="frequencyOptions().filter(o => form.getRawValue().frequencyOptions.includes(o.value))"
           optionLabel="label"
           optionValue="value"
           class="w-full"
@@ -128,6 +128,35 @@
         <p-toggleswitch formControlName="frequencyVisible" />
         <span class="text-sm">Visible al donante</span>
       </div>
+    </div>
+  </div>
+
+  <!-- Mensajes de impacto -->
+  <div class="flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+      Mensajes de impacto
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="font-medium text-sm">
+        Textos rotativos
+        <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+      </label>
+      <p-auto-complete
+        formControlName="impactMessages"
+        [multiple]="true"
+        [typeahead]="false"
+        [addOnTab]="true"
+        [addOnBlur]="true"
+        placeholder="Ej. Tu aporte ayuda a 2 estudiantes este mes."
+        class="w-full"
+        (onSelect)="onImpactMessageAdd($event)"
+        (keydown.enter)="$event.preventDefault()"
+      />
+      <span class="text-xs text-gray-400">
+        Escribe un mensaje corto (máx. 140 caracteres, ~2 líneas) y presiona Enter o Tab para
+        agregarlo. En cada carga del formulario del portal se muestra uno al azar, debajo de la
+        frecuencia. Si no agregas ninguno, no se muestra nada ahí.
+      </span>
     </div>
   </div>
 
@@ -192,6 +221,103 @@
           />
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Legales -->
+  <div class="flex flex-col gap-4">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+      Política de privacidad y términos de uso
+    </div>
+
+    <!-- Política de privacidad -->
+    <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+      <div class="flex items-center justify-between gap-3">
+        <span class="text-sm font-medium">Política de privacidad</span>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            class="text-xs px-2.5 py-1 rounded-full border cursor-pointer"
+            [class.bg-gray-900]="!privacyPolicyCustomized()"
+            [class.text-white]="!privacyPolicyCustomized()"
+            [class.border-gray-900]="!privacyPolicyCustomized()"
+            [class.text-gray-500]="privacyPolicyCustomized()"
+            [class.border-gray-200]="privacyPolicyCustomized()"
+            (click)="setPrivacyPolicyCustomized(false)"
+          >
+            Heredar de la organización
+          </button>
+          <button
+            type="button"
+            class="text-xs px-2.5 py-1 rounded-full border cursor-pointer"
+            [class.bg-gray-900]="privacyPolicyCustomized()"
+            [class.text-white]="privacyPolicyCustomized()"
+            [class.border-gray-900]="privacyPolicyCustomized()"
+            [class.text-gray-500]="!privacyPolicyCustomized()"
+            [class.border-gray-200]="!privacyPolicyCustomized()"
+            (click)="setPrivacyPolicyCustomized(true)"
+          >
+            Personalizar
+          </button>
+        </div>
+      </div>
+
+      @if (privacyPolicyCustomized()) {
+        <p-editor formControlName="privacyPolicyOverride" [style]="{ height: '200px' }" />
+      } @else {
+        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto">
+          @if (orgPrivacyPolicyContent()) {
+            <div [innerHTML]="orgPrivacyPolicyContent()"></div>
+          } @else {
+            Sin contenido definido en la organización.
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Términos de uso -->
+    <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+      <div class="flex items-center justify-between gap-3">
+        <span class="text-sm font-medium">Términos de uso</span>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            class="text-xs px-2.5 py-1 rounded-full border cursor-pointer"
+            [class.bg-gray-900]="!termsOfServiceCustomized()"
+            [class.text-white]="!termsOfServiceCustomized()"
+            [class.border-gray-900]="!termsOfServiceCustomized()"
+            [class.text-gray-500]="termsOfServiceCustomized()"
+            [class.border-gray-200]="termsOfServiceCustomized()"
+            (click)="setTermsOfServiceCustomized(false)"
+          >
+            Heredar de la organización
+          </button>
+          <button
+            type="button"
+            class="text-xs px-2.5 py-1 rounded-full border cursor-pointer"
+            [class.bg-gray-900]="termsOfServiceCustomized()"
+            [class.text-white]="termsOfServiceCustomized()"
+            [class.border-gray-900]="termsOfServiceCustomized()"
+            [class.text-gray-500]="!termsOfServiceCustomized()"
+            [class.border-gray-200]="!termsOfServiceCustomized()"
+            (click)="setTermsOfServiceCustomized(true)"
+          >
+            Personalizar
+          </button>
+        </div>
+      </div>
+
+      @if (termsOfServiceCustomized()) {
+        <p-editor formControlName="termsOfServiceOverride" [style]="{ height: '200px' }" />
+      } @else {
+        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto">
+          @if (orgTermsOfServiceContent()) {
+            <div [innerHTML]="orgTermsOfServiceContent()"></div>
+          } @else {
+            Sin contenido definido en la organización.
+          }
+        </div>
+      }
     </div>
   </div>
 

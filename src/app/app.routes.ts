@@ -72,6 +72,27 @@ export const routes: Routes = [
         loadChildren: () => import('./feature/role/role.routes').then((m) => m.routes),
       },
       {
+        title: 'Reclamos',
+        path: 'complaints',
+        canActivate: [permissionGuard('complaint:read')],
+        data: { breadcrumb: 'Reclamos' },
+        loadChildren: () => import('./feature/complaint/complaint.routes').then((m) => m.routes),
+      },
+      {
+        title: 'Legales',
+        path: 'legal-pages',
+        canActivate: [permissionGuard('legal_page:read')],
+        data: { breadcrumb: 'Legales' },
+        loadChildren: () => import('./feature/legal-page/legal-page.routes').then((m) => m.routes),
+      },
+      {
+        title: 'Catálogos del sistema',
+        path: 'settings/lookups',
+        canActivate: [permissionGuard('lookup:read')],
+        data: { breadcrumb: 'Catálogos del sistema' },
+        loadChildren: () => import('./feature/lookup/lookup.routes').then((m) => m.routes),
+      },
+      {
         path: 'settings/targets',
         loadChildren: () =>
           import('./feature/donation-target/donation-target.routes').then((m) => m.routes),

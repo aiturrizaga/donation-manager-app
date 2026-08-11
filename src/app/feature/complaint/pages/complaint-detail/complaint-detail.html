@@ -1,0 +1,164 @@
+<div class="flex flex-col gap-4">
+
+  <!-- Header -->
+  <div class="card p-4">
+    <div class="mb-4">
+      <p-button
+        icon="ti ti-arrow-left"
+        label="Volver a reclamos"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        (onClick)="goBack()"
+      />
+    </div>
+
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-lg font-semibold text-gray-900 font-mono">
+            Hoja N° {{ complaint().sheetNumber }}
+          </span>
+          <p-tag
+            [value]="getStatusLabel(complaint().status)"
+            [severity]="getStatusSeverity(complaint().status)"
+          />
+        </div>
+        <span class="text-sm text-gray-400">
+          {{ complaint().createdAt | date:'dd MMM yyyy, HH:mm' }}
+        </span>
+      </div>
+    </div>
+
+    @if (!complaint().organization) {
+      <div class="flex items-start gap-2 mt-4 p-3 bg-red-50 rounded-lg">
+        <i class="ti ti-alert-triangle text-base text-red-600 shrink-0 mt-0.5"></i>
+        <span class="text-sm text-red-700">
+          Este reclamo no tiene organización asociada — el dominio desde el que se envió no
+          coincide con ninguna página de donación registrada.
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Body: detail panel + resolution form -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+
+    <!-- Left panel — complaint details -->
+    <div class="card lg:col-span-1 flex flex-col gap-0">
+
+      <div class="flex flex-col gap-0.5 bg-gray-50 rounded-lg px-4 py-4 mb-4">
+        <span class="text-xs text-gray-400 uppercase tracking-wide font-medium">Reclamante</span>
+        <span class="text-xl font-bold text-gray-900">{{ complaint().fullName }}</span>
+      </div>
+
+      <div class="flex flex-col divide-y divide-gray-100 px-4">
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Organización</span>
+          <span class="text-sm text-gray-900 text-right">{{ orgName() }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Página</span>
+          <span class="text-sm text-gray-900 text-right">{{ complaint().donationPage?.name ?? '—' }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Tipo de registro</span>
+          <span class="text-sm text-gray-900">{{ getRecordTypeLabel(complaint().recordType) }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Bien contratado</span>
+          <span class="text-sm text-gray-900">{{ getGoodTypeLabel(complaint().goodType) }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Documento</span>
+          <span class="text-sm text-gray-900 text-right uppercase">
+            {{ complaint().documentType }} {{ complaint().documentNumber }}
+          </span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Correo</span>
+          <span class="text-sm text-gray-900 text-right break-all">{{ complaint().email }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Teléfono</span>
+          <span class="text-sm text-gray-900">{{ complaint().phone }}</span>
+        </div>
+
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400 shrink-0">Domicilio</span>
+          <span class="text-sm text-gray-900 text-right">{{ complaint().address }}</span>
+        </div>
+
+        @if (complaint().isMinor) {
+          <div class="flex justify-between py-3 gap-3">
+            <span class="text-sm text-gray-400 shrink-0">Apoderado</span>
+            <span class="text-sm text-gray-900 text-right">{{ complaint().guardianName ?? '—' }}</span>
+          </div>
+        }
+
+        @if (complaint().amount !== null) {
+          <div class="flex justify-between py-3 gap-3">
+            <span class="text-sm text-gray-400 shrink-0">Monto reclamado</span>
+            <span class="text-sm text-gray-900">S/ {{ complaint().amount | number:'1.2-2' }}</span>
+          </div>
+        }
+
+      </div>
+    </div>
+
+    <!-- Right panel — detail, request & resolution -->
+    <div class="card lg:col-span-2 flex flex-col gap-4">
+
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-gray-700">Detalle</span>
+        <p class="text-sm text-gray-600 whitespace-pre-line">{{ complaint().detail }}</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium text-gray-700">Pedido</span>
+        <p class="text-sm text-gray-600 whitespace-pre-line">{{ complaint().request }}</p>
+      </div>
+
+      <hr class="border-gray-100" />
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Estado</label>
+          <p-select
+            formControlName="status"
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            class="w-full sm:w-56"
+            appendTo="body"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="font-medium">Respuesta</label>
+          <textarea
+            pTextarea
+            formControlName="response"
+            placeholder="Escribe la respuesta al reclamante..."
+            rows="4"
+            class="w-full"
+          ></textarea>
+        </div>
+
+        <div class="flex justify-end">
+          <p-button type="submit" label="Guardar" [loading]="saveOp.isPending()" />
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

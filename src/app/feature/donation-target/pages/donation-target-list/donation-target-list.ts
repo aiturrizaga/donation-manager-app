@@ -119,6 +119,11 @@ export class DonationTargetListPage {
       paused: 'pausar',
       finished: 'finalizar',
     };
+    const doneLabels: Record<string, string> = {
+      active: 'activado',
+      paused: 'pausado',
+      finished: 'finalizado',
+    };
     this.#confirm.confirm({
       message: `¿Deseas ${labels[event.status]} "${event.target.name}"?`,
       header: 'Cambiar estado',
@@ -129,7 +134,10 @@ export class DonationTargetListPage {
         this.setStatusOp
           .run(event.target.id, this.facade.setStatus(event.target, event.status))
           .subscribe({
-            next: () => this.facade.reload(),
+            next: () => {
+              this.facade.reload();
+              this.#notifySuccess(`Objetivo ${doneLabels[event.status]}.`);
+            },
             error: () => this.#notifyError(`No se pudo ${labels[event.status]} el objetivo.`),
           });
       },
@@ -152,6 +160,10 @@ export class DonationTargetListPage {
         });
       },
     });
+  }
+
+  #notifySuccess(detail: string): void {
+    this.#message.add({ severity: 'success', summary: 'Listo', detail });
   }
 
   #notifyError(detail: string): void {

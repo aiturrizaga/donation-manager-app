@@ -1,0 +1,71 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4">
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Organización</label>
+    <p-select
+      formControlName="organizationId"
+      [options]="organizations()"
+      optionLabel="tradeName"
+      optionValue="id"
+      placeholder="Selecciona una organización"
+      styleClass="w-full"
+      appendTo="body"
+      [invalid]="formValidator.hasError('organizationId')"
+    />
+    @if (formValidator.hasError('organizationId')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('organizationId') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Título</label>
+    <input
+      pInputText
+      formControlName="title"
+      placeholder="Ej. Política de cookies"
+      maxlength="200"
+      [invalid]="formValidator.hasError('title')"
+    />
+    @if (formValidator.hasError('title')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('title') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Slug</label>
+    <input
+      pInputText
+      formControlName="slug"
+      placeholder="ej. politica-de-cookies"
+      maxlength="100"
+      [invalid]="formValidator.hasError('slug')"
+    />
+    <span class="text-xs text-gray-400">Solo minúsculas, números y guiones. Es la URL pública en el portal.</span>
+    @if (formValidator.hasError('slug')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('slug') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="font-medium">Contenido</label>
+    <p-editor formControlName="content" [style]="{ height: '220px' }" />
+  </div>
+
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
+  }
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" type="button" (click)="close()" />
+    <p-button type="submit" label="Crear página legal" [loading]="saveOp.isPending()" />
+  </div>
+
+</form>

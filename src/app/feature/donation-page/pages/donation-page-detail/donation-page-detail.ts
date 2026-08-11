@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { DonationPage } from '@domain/donation-page';
 import { DonationPageApi } from '../../api/donation-page.api';
 import { PageTitleService } from '@core/services';
@@ -34,6 +34,7 @@ export class DonationPageDetail {
   readonly #router = inject(Router);
   readonly #api = inject(DonationPageApi);
   readonly #confirm = inject(ConfirmationService);
+  readonly #message = inject(MessageService);
   readonly #pageTitle = inject(PageTitleService);
 
   readonly page = input.required<DonationPage>();
@@ -72,7 +73,10 @@ export class DonationPageDetail {
       acceptButtonProps: deactivating ? { severity: 'danger' } : {},
       accept: () => {
         const call$ = deactivating ? this.#api.deactivate(p.id) : this.#api.activate(p.id);
-        call$.subscribe((updated) => this.currentPage.set(updated));
+        call$.subscribe((updated) => {
+          this.currentPage.set(updated);
+          this.#notifySuccess(deactivating ? 'Página desactivada.' : 'Página activada.');
+        });
       },
     });
   }
@@ -89,9 +93,16 @@ export class DonationPageDetail {
       rejectLabel: 'No',
       acceptLabel: 'Sí, establecer',
       accept: () => {
-        this.#api.setDefault(p.id).subscribe((updated) => this.currentPage.set(updated));
+        this.#api.setDefault(p.id).subscribe((updated) => {
+          this.currentPage.set(updated);
+          this.#notifySuccess('Página establecida como predeterminada.');
+        });
       },
     });
+  }
+
+  #notifySuccess(detail: string): void {
+    this.#message.add({ severity: 'success', summary: 'Listo', detail });
   }
 
   saveBranding(): void {}

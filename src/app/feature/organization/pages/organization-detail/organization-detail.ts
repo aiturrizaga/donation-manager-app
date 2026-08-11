@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Avatar } from 'primeng/avatar';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Organization } from '@domain/organization';
 import { OrganizationApi } from '@shared/api/organization.api';
 import { OrganizationGeneralForm } from '../../components/organization-general-form/organization-general-form';
@@ -20,6 +20,7 @@ export class OrganizationDetail {
   readonly #router = inject(Router);
   readonly #api = inject(OrganizationApi);
   readonly #confirm = inject(ConfirmationService);
+  readonly #message = inject(MessageService);
   readonly #pageTitle = inject(PageTitleService);
 
   readonly organization = input.required<Organization>();
@@ -63,7 +64,14 @@ export class OrganizationDetail {
       acceptButtonProps: deactivating ? { severity: 'danger' } : {},
       accept: () => {
         const call$ = deactivating ? this.#api.deactivate(org.id) : this.#api.activate(org.id);
-        call$.subscribe((updated) => this.currentOrganization.set(updated));
+        call$.subscribe((updated) => {
+          this.currentOrganization.set(updated);
+          this.#message.add({
+            severity: 'success',
+            summary: 'Listo',
+            detail: deactivating ? 'Organización desactivada.' : 'Organización activada.',
+          });
+        });
       },
     });
   }

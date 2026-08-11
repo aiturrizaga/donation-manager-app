@@ -4,6 +4,12 @@
 // resulting charge/order shape has not been tested against our adapter.
 export type PaymentMethod = 'tarjeta' | 'yape' | 'billetera' | 'bancaMovil' | 'agente' | 'cuotealo';
 
+// Qué marcas de tarjeta tiene realmente habilitadas la cuenta Culqi del
+// negocio — se configura en el propio dashboard de Culqi, no hay API para
+// consultarlo, así que se replica acá para que el portal pueda decir
+// "Aceptamos Visa, Mastercard..." en vez de un texto genérico fijo.
+export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'diners';
+
 export interface OrganizationPaymentGateway {
   id: number;
   organizationId: number;
@@ -12,6 +18,7 @@ export interface OrganizationPaymentGateway {
   isActive: boolean;
   testMode: boolean;
   enabledPaymentMethods: PaymentMethod[];
+  enabledCardBrands: CardBrand[];
 }
 
 export interface OrganizationPaymentGatewayCreateRequest {
@@ -25,6 +32,7 @@ export interface OrganizationPaymentGatewayCreateRequest {
   isActive: boolean;
   testMode: boolean;
   enabledPaymentMethods: PaymentMethod[];
+  enabledCardBrands: CardBrand[];
 }
 
 export interface OrganizationPaymentGatewayUpdateRequest {
@@ -37,6 +45,7 @@ export interface OrganizationPaymentGatewayUpdateRequest {
   isActive?: boolean;
   testMode?: boolean;
   enabledPaymentMethods?: PaymentMethod[];
+  enabledCardBrands?: CardBrand[];
 }
 
 export interface OrganizationPaymentGatewayTestResult {

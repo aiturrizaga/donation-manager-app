@@ -129,7 +129,10 @@ export class DonorListPage {
       acceptButtonProps: deactivating ? { severity: 'danger' } : {},
       accept: () => {
         this.toggleOp.run(donor.id, this.facade.toggleActive(donor)).subscribe({
-          next: () => this.facade.reload(),
+          next: () => {
+            this.facade.reload();
+            this.#notifySuccess(deactivating ? 'Donante desactivado.' : 'Donante activado.');
+          },
           error: () => this.#notifyError(`No se pudo ${deactivating ? 'desactivar' : 'activar'} al donante.`),
         });
       },
@@ -157,6 +160,10 @@ export class DonorListPage {
         });
       },
     });
+  }
+
+  #notifySuccess(detail: string): void {
+    this.#message.add({ severity: 'success', summary: 'Listo', detail });
   }
 
   #notifyError(detail: string): void {

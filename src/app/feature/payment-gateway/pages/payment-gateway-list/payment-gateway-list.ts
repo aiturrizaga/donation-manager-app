@@ -100,7 +100,14 @@ export class PaymentGatewayListPage {
 
   #toggleGateway(gw: OrganizationPaymentGateway): void {
     this.toggleOp.run(gw.id, this.facade.update(gw.id, { isActive: !gw.isActive })).subscribe({
-      next: () => this.facade.reload(),
+      next: () => {
+        this.facade.reload();
+        this.#message.add({
+          severity: 'success',
+          summary: 'Listo',
+          detail: gw.isActive ? 'Pasarela desactivada.' : 'Pasarela activada.',
+        });
+      },
       error: () => {
         this.#message.add({
           severity: 'error',

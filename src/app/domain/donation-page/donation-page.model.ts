@@ -51,10 +51,14 @@ export interface FormConfig {
   frequencyOptions: string[];
   frequencyDefault: string;
   frequencyVisible: boolean;
+  /** Mensajes cortos (máx. 140 caracteres, ~2 líneas); el portal muestra uno al azar. */
+  impactMessages: string[] | null;
   confirmHeading: string;
   confirmMessage: string | null;
   confirmQuoteText: string | null;
   confirmQuoteAuthor: string | null;
+  privacyPolicyOverride: string | null;
+  termsOfServiceOverride: string | null;
 }
 
 export interface FormConfigTarget {

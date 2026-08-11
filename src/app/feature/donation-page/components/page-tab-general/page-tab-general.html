@@ -6,7 +6,7 @@
       <input
         pInputText
         formControlName="name"
-        placeholder="Ej. Página principal ACES"
+        placeholder="Ej. Página principal"
         maxlength="150"
         [invalid]="formValidator.hasError('name')"
       />
@@ -22,7 +22,7 @@
       <input
         pInputText
         formControlName="slug"
-        placeholder="ej. aces-2026"
+        placeholder="Ej. donaciones"
         maxlength="100"
         [invalid]="formValidator.hasError('slug')"
       />
@@ -43,7 +43,7 @@
       <input
         pInputText
         formControlName="domain"
-        placeholder="dona.aces.edu.pe"
+        placeholder="donaciones.com"
         maxlength="255"
         class="flex-1"
       />
@@ -59,23 +59,21 @@
   <div class="flex flex-col gap-1">
     <label class="font-medium">
       Descripción
-      <span class="text-gray-400 font-normal text-xs ml-1">(opcional, uso interno)</span>
+      <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
     </label>
     <textarea
       pTextarea
       formControlName="description"
-      placeholder="Nota interna sobre esta página/campaña..."
+      placeholder="Nota interna"
       rows="3"
       class="w-full"
     ></textarea>
-    <span class="text-xs text-gray-400">
-      Solo visible aquí, en el panel admin — el donante nunca ve este texto.
-      El copy que sí se muestra en la página pública se edita en la pestaña Branding.
-    </span>
   </div>
 
   @if (saveOp.error(); as err) {
-    <p-message severity="error" size="small" [text]="err.message" />
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
   }
 
   <div class="flex justify-end">

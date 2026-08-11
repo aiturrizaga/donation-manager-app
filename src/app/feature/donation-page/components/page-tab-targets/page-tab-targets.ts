@@ -71,7 +71,7 @@ export class PageTabTargets implements OnInit {
   onUnassign(target: FormConfigTarget): void {
     this.#confirm.confirm({
       message: `¿Desasignar "${target.target.name}" del formulario?`,
-      header: 'Desasignar target',
+      header: 'Desasignar objetivo',
       icon: 'ti ti-unlink',
       rejectLabel: 'No',
       acceptLabel: 'Sí, desasignar',
