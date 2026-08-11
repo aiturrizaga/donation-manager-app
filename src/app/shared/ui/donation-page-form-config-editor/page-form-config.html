@@ -265,7 +265,7 @@
       @if (privacyPolicyCustomized()) {
         <p-editor formControlName="privacyPolicyOverride" [style]="{ height: '200px' }" />
       } @else {
-        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto">
+        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto break-words">
           @if (orgPrivacyPolicyContent()) {
             <div [innerHTML]="orgPrivacyPolicyContent()"></div>
           } @else {
@@ -310,7 +310,7 @@
       @if (termsOfServiceCustomized()) {
         <p-editor formControlName="termsOfServiceOverride" [style]="{ height: '200px' }" />
       } @else {
-        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto">
+        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto break-words">
           @if (orgTermsOfServiceContent()) {
             <div [innerHTML]="orgTermsOfServiceContent()"></div>
           } @else {
