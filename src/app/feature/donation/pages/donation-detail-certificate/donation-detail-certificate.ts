@@ -42,7 +42,8 @@ export class DonationDetailCertificate implements OnInit {
 
   generate(): void {
     this.generating.set(true);
-    this.#api.generate(this.donationId(), { forceRegenerate: false }).subscribe({
+    const forceRegenerate = this.certificate() !== null;
+    this.#api.generate(this.donationId(), { forceRegenerate }).subscribe({
       next: (cert) => {
         this.certificate.set(cert);
         this.generating.set(false);

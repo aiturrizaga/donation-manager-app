@@ -5,6 +5,7 @@ import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
+import { Tooltip } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DonorsListFacade } from '../../facade/donors-list.facade';
@@ -57,6 +58,7 @@ type DonorTabValue = (typeof STATUS_TABS)[number]['value'];
     ButtonDirective,
     ButtonIcon,
     ButtonLabel,
+    Tooltip,
   ],
   providers: [DonorsListFacade, DialogService],
   templateUrl: './donor-list.html',

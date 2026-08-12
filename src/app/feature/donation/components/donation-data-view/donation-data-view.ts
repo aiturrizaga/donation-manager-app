@@ -1,13 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
 import { Skeleton } from 'primeng/skeleton';
-import { Menu } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
 import { Paginator, PaginatorState } from 'primeng/paginator';
+import { Tooltip } from 'primeng/tooltip';
 import { EmptyState } from '@shared/components';
 import { Donation } from '@domain/donation';
 
@@ -21,8 +20,8 @@ import { Donation } from '@domain/donation';
     Tag,
     Button,
     Skeleton,
-    Menu,
     Paginator,
+    Tooltip,
     EmptyState,
   ],
   templateUrl: './donation-data-view.html',
@@ -41,26 +40,6 @@ export class DonationDataView {
   readonly pageChange = output<{ first: number; rows: number }>();
 
   readonly skeletonRows = Array(5).fill({});
-  readonly menu = viewChild.required<Menu>('menu');
-  readonly selectedDonation = signal<Donation | null>(null);
-
-  readonly menuItems = computed((): MenuItem[] => {
-    const donation = this.selectedDonation();
-    if (!donation) return [];
-    return [
-      {
-        label: 'Vista previa',
-        icon: 'ti ti-eye',
-        // TODO: emit preview event when drawer is implemented
-        command: () => {},
-      },
-    ];
-  });
-
-  openMenu(event: MouseEvent, donation: Donation): void {
-    this.selectedDonation.set(donation);
-    this.menu().toggle(event);
-  }
 
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {

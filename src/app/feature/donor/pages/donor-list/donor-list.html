@@ -27,6 +27,18 @@
       (filtersChange)="onFiltersChange($event)"
     />
     <div class="toolbar__actions">
+      <button
+        pButton
+        type="button"
+        severity="secondary"
+        [text]="true"
+        [loading]="facade.loading()"
+        (click)="facade.reload()"
+        pTooltip="Recargar"
+        tooltipPosition="top"
+      >
+        <i class="ti ti-refresh" pButtonIcon></i>
+      </button>
       <button pButton (click)="openCreateDialog()">
         <i class="ti ti-plus" pButtonIcon></i>
         <span pButtonLabel class="hidden sm:inline">Nuevo donante</span>

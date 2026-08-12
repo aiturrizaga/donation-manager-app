@@ -27,6 +27,15 @@
     />
     <div class="toolbar__actions">
       <p-button
+        icon="ti ti-refresh"
+        severity="secondary"
+        [text]="true"
+        [loading]="facade.loading()"
+        (onClick)="facade.reload()"
+        pTooltip="Recargar"
+        tooltipPosition="top"
+      />
+      <p-button
         icon="ti ti-download"
         label="Exportar"
         severity="secondary"

@@ -5,6 +5,7 @@ import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
 import { Chip } from 'primeng/chip';
 import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
 import { finalize } from 'rxjs';
 import { DonationsListFacade } from '../../facade/donations-list.facade';
 import { DonationFilters } from '../../components/donation-filters/donation-filters';
@@ -48,6 +49,7 @@ type DonationTabValue = (typeof STATUS_TABS)[number]['value'];
     Badge,
     Chip,
     Button,
+    Tooltip,
   ],
   providers: [DonationsListFacade],
   templateUrl: './donation-list.html',
