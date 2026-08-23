@@ -15,7 +15,9 @@ import { Tooltip } from 'primeng/tooltip';
 export class Sidebar {
   navItems = input.required<MenuItem[]>();
   collapsed = input<boolean>(false);
+  mobileOpen = input<boolean>(false);
   collapseToggled = output<boolean>();
+  mobileClose = output<void>();
 
   sidebarWidth = computed<string>(() => (this.collapsed() ? '52px' : '256px'));
 
@@ -43,5 +45,9 @@ export class Sidebar {
 
   onCollapseClick(): void {
     this.collapseToggled.emit(!this.collapsed());
+  }
+
+  onBackdropClick(): void {
+    this.mobileClose.emit();
   }
 }

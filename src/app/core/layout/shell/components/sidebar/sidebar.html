@@ -1,6 +1,16 @@
+@if (mobileOpen()) {
+  <div
+    class="sidebar__backdrop fixed inset-0 z-40 bg-gray-900/40 lg:hidden"
+    (click)="onBackdropClick()"
+  ></div>
+}
+
 <aside
-  class="sidebar hidden lg:flex shrink-0 flex-col bg-white overflow-hidden relative border-r border-gray-200"
+  class="sidebar flex w-64 flex-col bg-white overflow-hidden border-r border-gray-200 fixed inset-y-0 left-0 z-50 lg:static lg:z-auto lg:shrink-0 lg:translate-x-0"
+  [class.-translate-x-full]="!mobileOpen()"
+  [class.translate-x-0]="mobileOpen()"
   [class.sidebar--collapsed]="collapsed()"
+  [class.sidebar--mobile-open]="mobileOpen()"
   [style.width]="sidebarWidth()"
 >
 
@@ -99,6 +109,7 @@
                         routerLinkActive="nav-item--active"
                         class="nav-item nav-item--sub flex items-center gap-2.5 rounded-lg py-1.5 mb-0 text-sm text-gray-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700"
                         style="padding-left: 0.75rem; font-size: 0.8125rem"
+                        (click)="mobileClose.emit()"
                       >
                         <i class="nav-item__icon shrink-0 text-[14px] leading-none text-gray-400"
                            [class]="sub.icon"></i>
@@ -118,6 +129,7 @@
                 [pTooltip]="collapsed() ? child.label : ''"
                 [tooltipDisabled]="!collapsed()"
                 tooltipPosition="right"
+                (click)="mobileClose.emit()"
               >
                 <i class="nav-item__icon shrink-0 text-[18px] leading-none text-gray-400" [class]="child.icon"></i>
                 <span class="nav-item__label"
@@ -140,6 +152,7 @@
           [pTooltip]="collapsed() ? item.label : ''"
           [tooltipDisabled]="!collapsed()"
           tooltipPosition="right"
+          (click)="mobileClose.emit()"
         >
           <i class="nav-item__icon shrink-0 text-[18px] leading-none text-gray-400" [class]="item.icon"></i>
           <span class="nav-item__label"
@@ -153,7 +166,7 @@
   </nav>
 
   <!-- Footer -->
-  <div class="sidebar__footer flex shrink-0 items-center justify-end px-3 py-3 border-t border-gray-200"
+  <div class="sidebar__footer hidden shrink-0 items-center justify-end px-3 py-3 border-t border-gray-200 lg:flex"
        [class.sidebar__footer--collapsed]="collapsed()">
     <button
       type="button"

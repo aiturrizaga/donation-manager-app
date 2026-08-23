@@ -25,6 +25,7 @@ export class ShellLayout {
   protected readonly navLoading = inject(NavigationLoadingService);
 
   sidebarCollapsed = signal(false);
+  mobileSidebarOpen = signal(false);
 
   sidebarNavigationItems = toSignal(this.#navApi.getNavigationItems(), {
     initialValue: [] as MenuItem[],
@@ -32,5 +33,13 @@ export class ShellLayout {
 
   onSidebarCollapseToggled(collapsed: boolean): void {
     this.sidebarCollapsed.set(collapsed);
+  }
+
+  onMobileMenuClick(): void {
+    this.mobileSidebarOpen.set(true);
+  }
+
+  onMobileSidebarClose(): void {
+    this.mobileSidebarOpen.set(false);
   }
 }

@@ -7,6 +7,12 @@ $transition-fast: 150ms ease;
   transition: width $transition-collapse,
   transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
+  // On mobile the sidebar is an off-canvas overlay: always full width,
+  // ignoring the desktop-only collapsed width set via inline style.
+  @media (max-width: 1023.98px) {
+    width: 16rem !important;
+  }
+
   &__collapse-icon {
     transition: transform $transition-collapse;
 

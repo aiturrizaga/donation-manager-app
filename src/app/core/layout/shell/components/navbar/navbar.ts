@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, output } from '@angular/core';
 import { ButtonDirective } from 'primeng/button';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
@@ -13,6 +13,8 @@ import { UserMenu } from '@core/components';
 })
 export class Navbar {
   protected readonly navApi = inject(NavApi);
+
+  menuClick = output<void>();
 
   readonly visibleBreadcrumb = computed<MenuItem[]>(() => {
     const items = this.navApi.breadcrumb();

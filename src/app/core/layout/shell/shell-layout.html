@@ -23,11 +23,13 @@
   <app-sidebar
     [navItems]="sidebarNavigationItems()"
     [collapsed]="sidebarCollapsed()"
+    [mobileOpen]="mobileSidebarOpen()"
     (collapseToggled)="onSidebarCollapseToggled($event)"
+    (mobileClose)="onMobileSidebarClose()"
   />
 
   <div class="shell__body">
-    <app-navbar />
+    <app-navbar (menuClick)="onMobileMenuClick()" />
 
     <main class="shell__main">
       <router-outlet />

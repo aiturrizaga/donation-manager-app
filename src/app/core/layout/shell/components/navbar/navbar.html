@@ -1,6 +1,19 @@
 <header class="navbar flex shrink-0 items-center h-14 gap-3 px-4 lg:gap-4 lg:px-6 border-b border-gray-200 bg-white"
         style="padding-top: env(safe-area-inset-top, 0px)">
 
+  <!-- Mobile - Menu button -->
+  <button
+    pButton
+    type="button"
+    class="navbar__action-btn lg:hidden!"
+    [text]="true"
+    severity="secondary"
+    aria-label="Abrir menú"
+    (click)="menuClick.emit()"
+  >
+    <i class="ti ti-menu-2"></i>
+  </button>
+
   <!-- Mobile - Logo mark -->
   <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-brand-700 lg:hidden">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -58,18 +71,6 @@
       (click)="onSearchClick()"
     >
       <i class="ti ti-search"></i>
-    </button>
-
-    <!-- App switcher -->
-    <button
-      pButton
-      type="button"
-      class="navbar__action-btn"
-      [text]="true"
-      severity="secondary"
-      aria-label="Cambiar módulo"
-    >
-      <i class="ti ti-layout-grid"></i>
     </button>
 
     <!-- User menu -->
