@@ -2,13 +2,13 @@
 
   <div class="flex items-start justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-semibold text-gray-900 mb-0.5">Dashboard</h1>
+      <h1 class="text-2xl font-semibold text-gray-900 dark:text-zinc-100 mb-0.5">Dashboard</h1>
       <p class="text-sm text-gray-400">Resumen de actividad de donaciones</p>
     </div>
   </div>
 
   <!-- Filters bar -->
-  <div class="flex flex-wrap items-center gap-3 mb-6 p-4 bg-white rounded-xl border border-gray-100">
+  <div class="flex flex-wrap items-center gap-3 mb-6 p-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800">
     <app-organization-multi-selector />
 
     <div class="flex items-center gap-2">
@@ -20,7 +20,7 @@
         [maxDate]="dateTo()"
         class="w-36"
       />
-      <span class="text-gray-300 font-light">–</span>
+      <span class="text-gray-300 dark:text-zinc-500 font-light">–</span>
       <p-date-picker
         [ngModel]="dateTo()"
         (ngModelChange)="dateTo.set($event)"

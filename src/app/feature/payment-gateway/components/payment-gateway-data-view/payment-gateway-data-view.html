@@ -1,7 +1,7 @@
 <p-menu #menu [model]="menuItems()" [popup]="true" appendTo="body" />
 
 @if (isLoading()) {
-  <div class="divide-y divide-gray-100">
+  <div class="divide-y divide-gray-100 dark:divide-zinc-800">
     @for (_ of skeletonRows; track $index) {
       <div class="flex items-center justify-between gap-4 px-4 py-4">
         <div class="flex items-center gap-3">
@@ -23,15 +23,15 @@
     description="Agrega una pasarela de pago para esta organización"
   />
 } @else {
-  <div class="divide-y divide-gray-100">
+  <div class="divide-y divide-gray-100 dark:divide-zinc-800">
     @for (gw of items(); track gw.id) {
       <div class="flex items-center justify-between gap-4 px-4 py-4">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-            <i [class]="getProviderIcon(gw.provider) + ' text-lg text-gray-600'"></i>
+          <div class="w-9 h-9 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+            <i [class]="getProviderIcon(gw.provider) + ' text-lg text-gray-600 dark:text-zinc-300'"></i>
           </div>
           <div class="flex flex-col gap-0.5">
-            <span class="text-sm font-medium text-gray-900">
+            <span class="text-sm font-medium text-gray-900 dark:text-zinc-100">
               {{ getProviderLabel(gw.provider) }}
             </span>
             <div class="flex items-center gap-2">
@@ -39,7 +39,7 @@
                 <span class="text-xs font-mono text-gray-400">•••• {{ gw.publicKeyMasked }}</span>
               }
               @if (gw.testMode) {
-                <span class="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                <span class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-1.5 py-0.5 rounded">
                   Sandbox
                 </span>
               }

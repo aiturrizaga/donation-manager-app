@@ -40,7 +40,7 @@
             <div class="flex flex-col gap-0.5">
               <a
                 [routerLink]="['/donors', donor.id]"
-                class="font-medium text-gray-900 hover:underline cursor-pointer"
+                class="font-medium text-gray-900 dark:text-zinc-100 hover:underline cursor-pointer"
               >
                 {{ donor.partner.name }}
               </a>
@@ -55,12 +55,12 @@
         <td>
           <div class="flex flex-col gap-0.5">
             @if (donor.partner.email) {
-              <span class="text-xs text-gray-500 flex items-center gap-1.5">
+              <span class="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1.5">
                 <i class="ti ti-mail text-gray-400"></i>{{ donor.partner.email }}
               </span>
             }
             @if (donor.partner.phone) {
-              <span class="text-xs text-gray-500 flex items-center gap-1.5">
+              <span class="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1.5">
                 <i class="ti ti-phone text-gray-400"></i>{{ donor.partner.phone }}
               </span>
             }
@@ -71,7 +71,7 @@
         </td>
         <td>
           @if (donor.partner.documentNumber) {
-            <span class="font-mono text-sm text-gray-700">
+            <span class="font-mono text-sm text-gray-700 dark:text-zinc-300">
               {{ donor.partner.documentNumber }}
             </span>
           } @else {
@@ -114,7 +114,7 @@
 <!-- Mobile -->
 <div class="sm:hidden">
   @if (isLoading()) {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (_ of skeletonRows; track $index) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex items-center gap-3">
@@ -136,7 +136,7 @@
       [description]="emptyDescription()"
     />
   } @else {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (donor of items(); track donor.id) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex items-center gap-3 min-w-0">
@@ -149,7 +149,7 @@
             <div class="flex flex-col gap-0.5 min-w-0">
               <a
                 [routerLink]="['/donors', donor.id]"
-                class="text-sm font-medium text-gray-900 truncate hover:underline"
+                class="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate hover:underline"
               >
                 {{ donor.partner.name }}
               </a>
@@ -179,7 +179,7 @@
         </div>
       }
     </div>
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-zinc-700">
       <p-paginator
         [first]="first()"
         [rows]="rows()"

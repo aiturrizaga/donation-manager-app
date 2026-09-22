@@ -97,7 +97,7 @@
           type="color"
           [value]="form.controls.primaryColor.value"
           (input)="form.controls.primaryColor.setValue($any($event.target).value)"
-          class="w-10 h-9 rounded cursor-pointer border border-gray-200"
+          class="w-10 h-9 rounded cursor-pointer border border-gray-200 dark:border-zinc-700"
         />
         <input
           pInputText
@@ -125,7 +125,7 @@
           type="color"
           [value]="form.controls.secondaryColor.value ?? '#ffffff'"
           (input)="form.controls.secondaryColor.setValue($any($event.target).value)"
-          class="w-10 h-9 rounded cursor-pointer border border-gray-200"
+          class="w-10 h-9 rounded cursor-pointer border border-gray-200 dark:border-zinc-700"
         />
         <input
           pInputText

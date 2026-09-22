@@ -71,6 +71,13 @@ $transition-fast: 150ms ease;
     border-left: 1.5px solid var(--color-primary-100);
     overflow: hidden;
     animation: accordion-down 180ms ease forwards;
+
+    // :host-context(.dark), not `.dark &` — Angular's emulated encapsulation
+    // would otherwise scope `.dark` itself to this component too, and since
+    // .dark lives on <html> (outside this component), it would never match.
+    :host-context(.dark) & {
+      border-left-color: var(--p-zinc-700);
+    }
   }
 }
 
@@ -105,6 +112,15 @@ $transition-fast: 150ms ease;
 
     .nav-item__icon {
       color: var(--color-brand-600);
+    }
+
+    :host-context(.dark) & {
+      background-color: color-mix(in srgb, var(--color-brand-600) 18%, transparent);
+      color: var(--color-brand-300);
+
+      .nav-item__icon {
+        color: var(--color-brand-300);
+      }
     }
   }
 

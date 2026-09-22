@@ -10,6 +10,25 @@ body {
   font-family: var(--font-sans), serif;
 }
 
+/*
+ * Dark mode overrides for the global classes below (.card, .toolbar,
+ * .chip-btn, .data-table, tabs). Light-mode declarations keep PrimeNG's
+ * `--p-gray-*` primitives (matching this app's existing light theme); dark
+ * declarations use `--p-zinc-*` instead, to match the exact tone PrimeNG's
+ * own components (p-menu, p-select, p-dialog, etc.) use for their dark
+ * surfaces (--p-content-background et al. resolve to the zinc scale) —
+ * otherwise custom elements and PrimeNG panels end up as two visibly
+ * different shades of "dark" sitting next to each other. Both primitive
+ * scales are fixed hex values (NOT colorScheme-aware), so each dark value
+ * has to be spelled out explicitly via a `.dark` ancestor selector (the
+ * class ThemeService toggles on <html>).
+ */
+body.dark,
+html.dark {
+  background-color: var(--p-zinc-950);
+  color-scheme: dark;
+}
+
 .data-table {
   .p-datatable-header-cell {
     font-size: 0.75rem;
@@ -19,26 +38,49 @@ body {
     color: var(--p-gray-500);
     background-color: var(--p-gray-50);
     border-bottom: 1px solid var(--p-gray-200);
+
+    .dark & {
+      color: var(--p-zinc-400);
+      background-color: var(--p-zinc-800);
+      border-bottom-color: var(--p-zinc-700);
+    }
   }
 
   .p-datatable-tbody > tr {
     border-bottom: 1px solid var(--p-gray-100);
     transition: background-color 0.15s;
 
+    .dark & {
+      border-bottom-color: var(--p-zinc-800);
+    }
+
     &:hover {
       background-color: color-mix(in srgb, var(--p-gray-50) 60%, transparent);
+
+      .dark & {
+        background-color: color-mix(in srgb, var(--p-zinc-800) 60%, transparent);
+      }
     }
 
     > td {
       padding: 0.75rem 1rem;
       font-size: 0.875rem;
       color: var(--p-gray-700);
+
+      .dark & {
+        color: var(--p-zinc-300);
+      }
     }
   }
 
   .p-datatable-paginator-bottom {
     border-top: 1px solid var(--p-gray-200);
     background-color: white;
+
+    .dark & {
+      border-top-color: var(--p-zinc-700);
+      background-color: var(--p-zinc-900);
+    }
   }
 
   .data-table__empty-row td {
@@ -53,6 +95,11 @@ body {
   border: 1px solid var(--p-gray-200);
   border-radius: 0.75rem;
   overflow: hidden;
+
+  .dark & {
+    background-color: var(--p-zinc-900);
+    border-color: var(--p-zinc-700);
+  }
 }
 
 /* Toolbar */
@@ -63,6 +110,10 @@ body {
   gap: 1rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--p-gray-200);
+
+  .dark & {
+    border-bottom-color: var(--p-zinc-700);
+  }
 }
 
 .toolbar__actions {
@@ -87,15 +138,28 @@ body {
   min-height: 2.5rem;
   transition: background-color 0.15s, color 0.15s;
   user-select: none;
+
+  .dark & {
+    background-color: var(--p-zinc-800);
+    color: var(--p-zinc-400);
+  }
 }
 
 .chip-btn:hover {
   background-color: var(--p-gray-200);
+
+  .dark & {
+    background-color: var(--p-zinc-700);
+  }
 }
 
 .chip-btn--active {
   background-color: var(--p-gray-800);
   color: white;
+
+  .dark & {
+    background-color: var(--p-zinc-600);
+  }
 }
 
 .chip-btn__label {
@@ -119,11 +183,19 @@ body {
 .chip-btn:not(.chip-btn--active):hover,
 .chip-btn:not(.chip-btn--active):hover .p-chip {
   background-color: var(--p-gray-200) !important;
+
+  .dark & {
+    background-color: var(--p-zinc-700) !important;
+  }
 }
 
 .chip-btn--active:hover,
 .chip-btn--active:hover .p-chip {
   background-color: var(--p-gray-800) !important;
+
+  .dark & {
+    background-color: var(--p-zinc-600) !important;
+  }
 }
 
 /*

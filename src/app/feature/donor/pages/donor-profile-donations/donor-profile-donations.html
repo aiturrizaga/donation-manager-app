@@ -27,22 +27,22 @@
   <ng-template #body let-donation>
     <tr>
       <td>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-zinc-300">
           {{ donation.createdAt | date:'dd MMM yyyy' }}
         </span>
       </td>
       <td>
-        <span class="font-semibold text-gray-900">
+        <span class="font-semibold text-gray-900 dark:text-zinc-100">
           {{ donation.currency }} {{ donation.amount | number:'1.2-2' }}
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600 capitalize">
+        <span class="text-sm text-gray-600 dark:text-zinc-300 capitalize">
           {{ donation.donationType === 'one_time' ? 'Única' : 'Recurrente' }}
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-zinc-300">
           {{ donation.paymentMethod ?? '—' }}
         </span>
       </td>

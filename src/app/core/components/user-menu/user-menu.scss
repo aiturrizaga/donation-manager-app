@@ -2,6 +2,11 @@
 
 $transition-fast: 150ms ease;
 
+// `dark:` inside @apply would compile against the default
+// prefers-color-scheme variant, not the class-based one registered in
+// src/tailwind.css (this file gets its own independent Tailwind pass via
+// @reference) — so every dark-mode override below is plain CSS instead.
+
 .user-menu {
 
   &__trigger {
@@ -10,12 +15,23 @@ $transition-fast: 150ms ease;
     background: none;
     border: none;
     outline: none;
+
+    // This button is never portaled, so :host-context(.dark) — which
+    // requires the target to stay inside the host's own DOM subtree — works
+    // fine here (unlike everything in the ::ng-deep blocks below).
+    &:hover {
+      :host-context(.dark) & {
+        background-color: theme('colors.zinc.800');
+      }
+    }
   }
 }
 
 // Global (not :host-scoped): with appendTo="body" the popup is moved out of
-// this component's DOM subtree, so a :host ::ng-deep selector would no
-// longer match it.
+// this component's DOM subtree, so a :host/:host-context selector would no
+// longer match it — Angular compiles those to require the target to be a
+// descendant of the host element, which becomes false once PrimeNG moves
+// the popup under <body>.
 ::ng-deep .user-menu__popup {
   @apply overflow-hidden;
   margin-left: 6px;
@@ -79,6 +95,107 @@ $transition-fast: 150ms ease;
       .p-menu-item-label {
         @apply text-red-600!;
       }
+    }
+  }
+
+  // Theme picker — a plain non-interactive menu item (own click handling on
+  // the inner buttons via the command's originalEvent.target), so the row
+  // itself must not look/behave like the other clickable items.
+  .user-menu-item--theme {
+    .p-menu-item-content {
+      cursor: default !important;
+
+      &:hover {
+        background: transparent !important;
+      }
+    }
+
+    .p-menu-item-link {
+      @apply px-2.5 py-1.5!;
+    }
+
+    .p-menu-item-label {
+      @apply w-full! flex-1!;
+    }
+  }
+
+  .theme-picker {
+    @apply flex items-center justify-between w-full gap-2;
+  }
+
+  .theme-picker__label {
+    @apply text-sm font-medium text-gray-500;
+  }
+
+  .theme-picker__options {
+    @apply flex items-center gap-0.5 rounded-md p-0.5;
+    @apply bg-gray-100;
+  }
+
+  .theme-picker__btn {
+    @apply flex items-center justify-center rounded-md border-0 bg-transparent cursor-pointer;
+    @apply text-gray-500;
+    @apply transition-colors;
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+    transition: background $transition-fast, color $transition-fast;
+
+    &:hover {
+      @apply bg-gray-200 text-gray-700;
+    }
+
+    &.is-active {
+      @apply bg-white text-gray-900;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+// Dark-mode overrides for the popup, kept as an entirely SEPARATE top-level
+// block (not nested `.dark &` inside the rules above) on purpose: nesting
+// would make Sass resolve `&` to the already-`::ng-deep`-prefixed parent
+// selector, putting `.dark` BEFORE `::ng-deep` in the compiled text —
+// Angular's encapsulation shim then scopes whatever precedes `::ng-deep`,
+// requiring `.dark` to be on an element this component itself rendered.
+// Since `.dark` actually lives on <html>, that compiled selector could
+// never match. Writing `::ng-deep .dark .user-menu__popup {...}` as its own
+// rule keeps `::ng-deep` first, so everything after it — `.dark` included —
+// stays fully unscoped and matches regardless of where the portal-ed popup
+// physically renders in the DOM.
+::ng-deep .dark .user-menu__popup {
+  .user-menu__header {
+    border-bottom-color: theme('colors.zinc.700');
+  }
+
+  .user-menu__header-name {
+    color: theme('colors.zinc.100');
+  }
+
+  .p-menu-item-label {
+    color: theme('colors.zinc.300');
+  }
+
+  .theme-picker__label {
+    color: theme('colors.zinc.400');
+  }
+
+  .theme-picker__options {
+    background-color: theme('colors.zinc.800');
+  }
+
+  .theme-picker__btn {
+    color: theme('colors.zinc.400');
+
+    &:hover {
+      background-color: theme('colors.zinc.700');
+      color: theme('colors.zinc.200');
+    }
+
+    &.is-active {
+      background-color: theme('colors.zinc.600');
+      color: theme('colors.zinc.100');
+      box-shadow: none;
     }
   }
 }

@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
 
+/* Class-based dark mode (toggled by ThemeService on <html>) instead of the
+   default media-query-only `dark:` variant. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --color-brand-50: oklch(96.9% 0.016 293.756);
   --color-brand-100: oklch(94.3% 0.029 294.588);

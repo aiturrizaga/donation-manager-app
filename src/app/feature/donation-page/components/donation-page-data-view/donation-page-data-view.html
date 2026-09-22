@@ -34,7 +34,7 @@
           <div class="flex flex-col gap-0.5">
             <a
               [routerLink]="['/pages', page.id]"
-              class="font-medium text-gray-900 hover:underline cursor-pointer"
+              class="font-medium text-gray-900 dark:text-zinc-100 hover:underline cursor-pointer"
             >
               {{ page.name }}
             </a>
@@ -42,14 +42,14 @@
           </div>
         </td>
         <td>
-          <span class="text-sm text-gray-600">
+          <span class="text-sm text-gray-600 dark:text-zinc-300">
             {{ page.organization?.tradeName ?? page.organization?.legalName ?? '—' }}
           </span>
         </td>
         <td>
           @if (page.domain) {
             <div class="flex items-center gap-1.5">
-              <span class="text-xs font-mono text-gray-600">{{ page.domain }}</span>
+              <span class="text-xs font-mono text-gray-600 dark:text-zinc-300">{{ page.domain }}</span>
               <p-tag
                 [value]="page.domainStatus"
                 [severity]="getDomainStatusSeverity(page.domainStatus)"
@@ -117,7 +117,7 @@
 <!-- Mobile -->
 <div class="sm:hidden">
   @if (isLoading()) {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (_ of skeletonRows; track $index) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex flex-col gap-1.5 flex-1">
@@ -136,13 +136,13 @@
       [description]="emptyDescription()"
     />
   } @else {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (page of items(); track page.id) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex flex-col gap-0.5 min-w-0">
             <a
               [routerLink]="['/pages', page.id]"
-              class="text-sm font-medium text-gray-900 truncate hover:underline"
+              class="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate hover:underline"
             >
               {{ page.name }}
             </a>
@@ -167,7 +167,7 @@
         </div>
       }
     </div>
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-zinc-700">
       <p-paginator
         [first]="first()"
         [rows]="rows()"

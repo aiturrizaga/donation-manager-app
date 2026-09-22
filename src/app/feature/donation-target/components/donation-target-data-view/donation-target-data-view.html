@@ -34,7 +34,7 @@
       <tr>
         <td>
           <div class="flex flex-col gap-0.5">
-            <span class="font-medium text-gray-900">{{ target.name }}</span>
+            <span class="font-medium text-gray-900 dark:text-zinc-100">{{ target.name }}</span>
             @if (target.description) {
               <span class="text-xs text-gray-400 truncate max-w-xs">
                 {{ target.description }}
@@ -48,11 +48,11 @@
           </div>
         </td>
         <td>
-          <span class="text-sm text-gray-600">{{ getTypeLabel(target.targetType) }}</span>
+          <span class="text-sm text-gray-600 dark:text-zinc-300">{{ getTypeLabel(target.targetType) }}</span>
         </td>
         <td>
           @if (target.amountGoal) {
-            <span class="text-sm font-mono text-gray-700">
+            <span class="text-sm font-mono text-gray-700 dark:text-zinc-300">
               S/ {{ target.amountGoal | number:'1.2-2' }}
             </span>
           } @else {
@@ -61,11 +61,11 @@
         </td>
         <td>
           <div class="flex flex-col gap-0.5">
-            <span class="text-sm font-mono text-gray-700">
+            <span class="text-sm font-mono text-gray-700 dark:text-zinc-300">
               S/ {{ target.amountRaised | number:'1.2-2' }}
             </span>
             @if (target.amountGoal) {
-              <div class="w-20 h-1 bg-gray-100 rounded-full overflow-hidden">
+              <div class="w-20 h-1 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                 <div
                   class="h-full bg-gray-900 rounded-full"
                   [style.width.%]="Math.min(100, (target.amountRaised / target.amountGoal) * 100)"
@@ -75,7 +75,7 @@
           </div>
         </td>
         <td>
-          <div class="flex flex-col gap-0.5 text-xs text-gray-500">
+          <div class="flex flex-col gap-0.5 text-xs text-gray-500 dark:text-zinc-400">
             @if (target.startsAt) {
               <span>{{ target.startsAt | date:'dd MMM yyyy' }}</span>
             }
@@ -123,7 +123,7 @@
 <!-- Mobile -->
 <div class="sm:hidden">
   @if (isLoading()) {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (_ of skeletonRows; track $index) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex flex-col gap-1.5 flex-1">
@@ -142,14 +142,14 @@
       [description]="emptyDescription()"
     />
   } @else {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (target of items(); track target.id) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex flex-col gap-0.5 min-w-0">
-            <span class="text-sm font-medium text-gray-900 truncate">{{ target.name }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate">{{ target.name }}</span>
             <span class="text-xs text-gray-400">{{ getTypeLabel(target.targetType) }}</span>
             @if (target.amountGoal) {
-              <span class="text-xs font-mono text-gray-500">
+              <span class="text-xs font-mono text-gray-500 dark:text-zinc-400">
                 S/ {{ target.amountRaised | number:'1.2-2' }} / S/ {{ target.amountGoal | number:'1.2-2' }}
               </span>
             }
@@ -170,7 +170,7 @@
         </div>
       }
     </div>
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-zinc-700">
       <p-paginator
         [first]="first()"
         [rows]="rows()"

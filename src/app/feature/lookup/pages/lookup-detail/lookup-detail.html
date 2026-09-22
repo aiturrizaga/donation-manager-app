@@ -16,7 +16,7 @@
     <div class="flex items-start justify-between gap-4">
       <div class="flex flex-col gap-1">
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-lg font-semibold text-gray-900">{{ lookup().name }}</span>
+          <span class="text-lg font-semibold text-gray-900 dark:text-zinc-100">{{ lookup().name }}</span>
           <p-tag
             [value]="lookup().isActive ? 'Activo' : 'Inactivo'"
             [severity]="lookup().isActive ? 'success' : 'secondary'"
@@ -24,7 +24,7 @@
         </div>
         <span class="text-sm text-gray-400 font-mono">{{ lookup().code }}</span>
         @if (lookup().description) {
-          <p class="text-sm text-gray-500 mt-1">{{ lookup().description }}</p>
+          <p class="text-sm text-gray-500 dark:text-zinc-400 mt-1">{{ lookup().description }}</p>
         }
       </div>
 
@@ -43,7 +43,7 @@
   <!-- Items -->
   <div class="card">
     <div class="toolbar">
-      <p class="text-sm text-gray-500 flex-1">
+      <p class="text-sm text-gray-500 dark:text-zinc-400 flex-1">
         Ítems del catálogo, en el orden en que se muestran al usuario final.
       </p>
       <div class="toolbar__actions">

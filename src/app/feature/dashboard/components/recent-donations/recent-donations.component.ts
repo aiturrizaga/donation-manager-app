@@ -25,8 +25,8 @@ const DONATION_TYPE_LABELS: Record<DonationType, string> = {
 };
 
 const DONATION_TYPE_CLASSES: Record<DonationType, string> = {
-  one_time: 'bg-gray-100 text-gray-600',
-  recurring: 'bg-blue-50 text-blue-700',
+  one_time: 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-300',
+  recurring: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
 };
 
 @Component({
@@ -34,13 +34,13 @@ const DONATION_TYPE_CLASSES: Record<DonationType, string> = {
   imports: [DatePipe, DecimalPipe, TagModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-700">
+    <div class="bg-white dark:bg-zinc-900 rounded-xl border border-gray-100 dark:border-zinc-800 overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-zinc-800">
+        <h3 class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-zinc-300">
           <i class="ti ti-receipt text-primary-500" style="font-size: 1rem"></i>
           Donaciones recientes
         </h3>
-        <span class="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">
+        <span class="text-xs text-gray-400 bg-gray-50 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
           {{ donations().length }} registros
         </span>
       </div>
@@ -48,17 +48,17 @@ const DONATION_TYPE_CLASSES: Record<DonationType, string> = {
       @if (donations().length === 0) {
         <p class="text-sm text-gray-400 text-center py-8">No hay donaciones recientes.</p>
       } @else {
-        <div class="flex flex-col divide-y divide-gray-100 px-5">
+        <div class="flex flex-col divide-y divide-gray-100 dark:divide-zinc-800 px-5">
           @for (donation of donations(); track donation.id) {
             <div class="flex items-center justify-between gap-4 py-3">
               <div class="flex items-center gap-3 min-w-0">
                 <div
-                  class="w-9 h-9 rounded-full bg-primary-100 text-primary-700 text-xs font-semibold flex items-center justify-center shrink-0"
+                  class="w-9 h-9 rounded-full bg-primary-100 dark:bg-zinc-800 text-primary-700 dark:text-primary-300 text-xs font-semibold flex items-center justify-center shrink-0"
                 >
                   {{ initials(donation.donorName) }}
                 </div>
                 <div class="flex flex-col min-w-0 gap-0.5">
-                  <span class="text-sm font-medium text-gray-800 truncate">{{ donation.donorName }}</span>
+                  <span class="text-sm font-medium text-gray-800 dark:text-zinc-200 truncate">{{ donation.donorName }}</span>
                   <div class="flex items-center gap-1.5 min-w-0">
                     <span class="text-xs text-gray-400 truncate">{{ donation.campaignName }}</span>
                     <span
@@ -73,7 +73,7 @@ const DONATION_TYPE_CLASSES: Record<DonationType, string> = {
               </div>
 
               <div class="flex flex-col items-end gap-1 shrink-0">
-                <span class="text-sm font-semibold text-gray-800 whitespace-nowrap">
+                <span class="text-sm font-semibold text-gray-800 dark:text-zinc-200 whitespace-nowrap">
                   {{ donation.currency }} {{ donation.amount | number: '1.2-2' }}
                 </span>
                 <div class="flex items-center gap-2">

@@ -17,14 +17,14 @@
           <div class="flex flex-col gap-0.5">
             <a
               [routerLink]="['/settings/lookups', lookup.id]"
-              class="font-medium text-gray-900 hover:underline cursor-pointer"
+              class="font-medium text-gray-900 dark:text-zinc-100 hover:underline cursor-pointer"
             >
               {{ lookup.name }}
             </a>
             <span class="text-xs text-gray-400 font-mono">{{ lookup.code }}</span>
           </div>
         </td>
-        <td class="text-sm text-gray-600 max-w-xs truncate">{{ lookup.description || '—' }}</td>
+        <td class="text-sm text-gray-600 dark:text-zinc-300 max-w-xs truncate">{{ lookup.description || '—' }}</td>
         <td>{{ lookup.items.length }}</td>
         <td>
           <p-tag
@@ -75,7 +75,7 @@
 <!-- Mobile -->
 <div class="sm:hidden">
   @if (isLoading()) {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (_ of skeletonRows; track $index) {
         <div class="flex flex-col gap-3 px-4 py-4">
           <div class="flex items-start justify-between gap-3">
@@ -96,7 +96,7 @@
       [description]="emptyDescription()"
     />
   } @else {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (lookup of items(); track lookup.id) {
         <div class="flex flex-col gap-2 px-4 py-4">
 
@@ -104,7 +104,7 @@
             <div class="flex flex-col gap-0.5 min-w-0">
               <a
                 [routerLink]="['/settings/lookups', lookup.id]"
-                class="text-sm font-medium text-gray-900 truncate hover:underline"
+                class="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate hover:underline"
               >
                 {{ lookup.name }}
               </a>
@@ -117,10 +117,10 @@
           </div>
 
           @if (lookup.description) {
-            <p class="text-xs text-gray-500">{{ lookup.description }}</p>
+            <p class="text-xs text-gray-500 dark:text-zinc-400">{{ lookup.description }}</p>
           }
 
-          <div class="flex items-center gap-3 text-xs text-gray-500">
+          <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-zinc-400">
             <span class="flex items-center gap-1">
               <i class="ti ti-list text-gray-400"></i>{{ lookup.items.length }} ítems
             </span>

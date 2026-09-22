@@ -6,6 +6,7 @@ import { ProfileCard } from '@shared/components';
 import Keycloak from 'keycloak-js';
 import { CurrentUserService } from '@core/services/current-user.service';
 import { getInitials } from '@shared/utils/string.util';
+import { ThemeMode, ThemeService } from '@core/theme';
 
 interface BasicProfileClaims {
   name?: string;
@@ -23,6 +24,7 @@ interface BasicProfileClaims {
 export class UserMenu {
   readonly #keycloak = inject(Keycloak);
   readonly #currentUser = inject(CurrentUserService);
+  readonly #themeService = inject(ThemeService);
 
   // Sin loading real: el nombre/correo salen del propio access token
   // (ya decodificado en memoria por keycloak-js), no de una llamada a la
@@ -45,17 +47,49 @@ export class UserMenu {
     };
   });
 
-  readonly menuItems: MenuItem[] = [
-    { label: 'Mi perfil', icon: 'ti ti-user', routerLink: '/configuracion/perfil' },
-    { label: 'Configuración', icon: 'ti ti-settings', routerLink: '/configuracion' },
-    { separator: true },
-    {
-      label: 'Cerrar sesión',
-      icon: 'ti ti-logout',
-      styleClass: 'user-menu-item--danger',
-      command: () => this.#logout(),
-    },
-  ];
+  readonly menuItems = computed<MenuItem[]>(() => {
+    const currentMode = this.#themeService.mode();
+
+    return [
+      { label: 'Mi perfil', icon: 'ti ti-user', routerLink: '/configuracion/perfil' },
+      { label: 'Configuración', icon: 'ti ti-settings', routerLink: '/configuracion' },
+      { separator: true },
+      {
+        label: `
+          <div class="theme-picker">
+            <span class="theme-picker__label">Tema</span>
+            <div class="theme-picker__options">
+              <button class="theme-picker__btn ${currentMode === 'light' ? 'is-active' : ''}" data-mode="light" aria-label="Claro">
+                <i class="ti ti-sun"></i>
+              </button>
+              <button class="theme-picker__btn ${currentMode === 'dark' ? 'is-active' : ''}" data-mode="dark" aria-label="Oscuro">
+                <i class="ti ti-moon"></i>
+              </button>
+              <button class="theme-picker__btn ${currentMode === 'system' ? 'is-active' : ''}" data-mode="system" aria-label="Predeterminado del sistema">
+                <i class="ti ti-device-laptop"></i>
+              </button>
+            </div>
+          </div>
+        `,
+        escape: false,
+        styleClass: 'user-menu-item--theme',
+        command: (event) => {
+          const target = event.originalEvent?.target as HTMLElement | undefined;
+          const mode = target?.closest('[data-mode]')?.getAttribute('data-mode') as
+            | ThemeMode
+            | null;
+          if (mode) this.#themeService.setMode(mode);
+        },
+      },
+      { separator: true },
+      {
+        label: 'Cerrar sesión',
+        icon: 'ti ti-logout',
+        styleClass: 'user-menu-item--danger',
+        command: () => this.#logout(),
+      },
+    ];
+  });
 
   onToggle(event: MouseEvent): void {
     this.menu().toggle(event);

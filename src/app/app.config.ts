@@ -31,6 +31,10 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       theme: {
         preset: SystemPreset,
+        // Respond to the ThemeService's `.dark` class on <html> instead of
+        // only `prefers-color-scheme` (PrimeNG's 'system' default) — that
+        // way an explicit 'light'/'dark' choice overrides the OS setting.
+        options: { darkModeSelector: '.dark' },
       },
     }),
     provideAppTitle(),

@@ -231,7 +231,7 @@
     </div>
 
     <!-- Política de privacidad -->
-    <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+    <div class="flex flex-col gap-2 border border-gray-200 dark:border-zinc-700 rounded-lg p-3">
       <div class="flex items-center justify-between gap-3">
         <span class="text-sm font-medium">Política de privacidad</span>
         <div class="flex gap-2">
@@ -242,7 +242,9 @@
             [class.text-white]="!privacyPolicyCustomized()"
             [class.border-gray-900]="!privacyPolicyCustomized()"
             [class.text-gray-500]="privacyPolicyCustomized()"
+            [class.dark:text-zinc-400]="privacyPolicyCustomized()"
             [class.border-gray-200]="privacyPolicyCustomized()"
+            [class.dark:border-zinc-700]="privacyPolicyCustomized()"
             (click)="setPrivacyPolicyCustomized(false)"
           >
             Heredar de la organización
@@ -254,7 +256,9 @@
             [class.text-white]="privacyPolicyCustomized()"
             [class.border-gray-900]="privacyPolicyCustomized()"
             [class.text-gray-500]="!privacyPolicyCustomized()"
+            [class.dark:text-zinc-400]="!privacyPolicyCustomized()"
             [class.border-gray-200]="!privacyPolicyCustomized()"
+            [class.dark:border-zinc-700]="!privacyPolicyCustomized()"
             (click)="setPrivacyPolicyCustomized(true)"
           >
             Personalizar
@@ -265,7 +269,7 @@
       @if (privacyPolicyCustomized()) {
         <p-editor formControlName="privacyPolicyOverride" [style]="{ height: '200px' }" />
       } @else {
-        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto break-words">
+        <div class="text-xs text-gray-400 bg-gray-50 dark:bg-zinc-800 rounded p-2 max-h-24 overflow-y-auto break-words">
           @if (orgPrivacyPolicyContent()) {
             <div [innerHTML]="orgPrivacyPolicyContent()"></div>
           } @else {
@@ -276,7 +280,7 @@
     </div>
 
     <!-- Términos de uso -->
-    <div class="flex flex-col gap-2 border border-gray-200 rounded-lg p-3">
+    <div class="flex flex-col gap-2 border border-gray-200 dark:border-zinc-700 rounded-lg p-3">
       <div class="flex items-center justify-between gap-3">
         <span class="text-sm font-medium">Términos de uso</span>
         <div class="flex gap-2">
@@ -287,7 +291,9 @@
             [class.text-white]="!termsOfServiceCustomized()"
             [class.border-gray-900]="!termsOfServiceCustomized()"
             [class.text-gray-500]="termsOfServiceCustomized()"
+            [class.dark:text-zinc-400]="termsOfServiceCustomized()"
             [class.border-gray-200]="termsOfServiceCustomized()"
+            [class.dark:border-zinc-700]="termsOfServiceCustomized()"
             (click)="setTermsOfServiceCustomized(false)"
           >
             Heredar de la organización
@@ -299,7 +305,9 @@
             [class.text-white]="termsOfServiceCustomized()"
             [class.border-gray-900]="termsOfServiceCustomized()"
             [class.text-gray-500]="!termsOfServiceCustomized()"
+            [class.dark:text-zinc-400]="!termsOfServiceCustomized()"
             [class.border-gray-200]="!termsOfServiceCustomized()"
+            [class.dark:border-zinc-700]="!termsOfServiceCustomized()"
             (click)="setTermsOfServiceCustomized(true)"
           >
             Personalizar
@@ -310,7 +318,7 @@
       @if (termsOfServiceCustomized()) {
         <p-editor formControlName="termsOfServiceOverride" [style]="{ height: '200px' }" />
       } @else {
-        <div class="text-xs text-gray-400 bg-gray-50 rounded p-2 max-h-24 overflow-y-auto break-words">
+        <div class="text-xs text-gray-400 bg-gray-50 dark:bg-zinc-800 rounded p-2 max-h-24 overflow-y-auto break-words">
           @if (orgTermsOfServiceContent()) {
             <div [innerHTML]="orgTermsOfServiceContent()"></div>
           } @else {
@@ -328,7 +336,7 @@
     </div>
 
     @if (availableGateways().length === 0) {
-      <div class="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+      <div class="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-3 py-2 rounded-lg">
         <i class="ti ti-alert-triangle text-base"></i>
         <span>
         No hay pasarelas activas configuradas para esta organización.

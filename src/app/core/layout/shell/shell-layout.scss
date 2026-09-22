@@ -1,7 +1,23 @@
 @reference 'tailwindcss';
 
+// Two things to know about the dark-mode overrides below:
+// 1. `dark:` inside @apply would compile against the default
+//    prefers-color-scheme variant, not the class-based one registered in
+//    src/tailwind.css (this file gets its own independent Tailwind pass via
+//    @reference) — so overrides are written as plain CSS instead.
+// 2. They use `:host-context(.dark)`, not `.dark &` — Angular's emulated
+//    encapsulation appends this component's [_ngcontent] attribute to EVERY
+//    simple selector in a compiled rule, including a plain `.dark` written
+//    here. Since `.dark` lives on <html>, outside this component's own
+//    template, it would never carry that attribute and `.dark &` would
+//    silently never match. `:host-context()` is Angular's dedicated escape
+//    hatch for testing a class on an ancestor outside the component.
 .shell {
   @apply flex h-screen overflow-hidden bg-gray-50 font-sans antialiased;
+
+  :host-context(.dark) & {
+    background-color: var(--p-zinc-950);
+  }
 
   &__body {
     @apply flex min-w-0 flex-1 flex-col overflow-hidden;
@@ -11,6 +27,10 @@
     @apply flex-1 overflow-y-auto bg-gray-50;
     @apply px-4 py-5 pb-24;
     @apply lg:px-6 lg:pb-6;
+
+    :host-context(.dark) & {
+      background-color: var(--p-zinc-950);
+    }
 
     &::-webkit-scrollbar {
       width: 4px;
@@ -22,6 +42,10 @@
 
     &::-webkit-scrollbar-thumb {
       @apply bg-gray-400 rounded-full;
+
+      :host-context(.dark) & {
+        background-color: var(--p-zinc-700);
+      }
     }
   }
 }

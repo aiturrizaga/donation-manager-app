@@ -6,7 +6,7 @@
     </button>
     <div>
       <div class="flex items-center gap-2">
-        <h1 class="text-xl font-semibold text-gray-900">{{ resolvedRole().displayName }}</h1>
+        <h1 class="text-xl font-semibold text-gray-900 dark:text-zinc-100">{{ resolvedRole().displayName }}</h1>
         @if (resolvedRole().isSystem) {
           <p-tag value="Rol del sistema" severity="secondary" />
         }
@@ -16,9 +16,9 @@
   </div>
 
   <!-- Permisos -->
-  <div class="flex flex-col gap-3 border border-gray-200 rounded-lg p-4">
+  <div class="flex flex-col gap-3 border border-gray-200 dark:border-zinc-700 rounded-lg p-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Permisos</h2>
+      <h2 class="text-sm font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wide">Permisos</h2>
       <button pButton size="small" [loading]="savePermissionsOp.isPending()" (click)="savePermissions()">
         <span pButtonLabel>Guardar permisos</span>
       </button>
@@ -26,8 +26,8 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       @for (group of moduleGroups(); track group.module) {
-        <div class="flex flex-col gap-1.5 border border-gray-100 rounded-md p-3">
-          <label class="flex items-center gap-2 font-medium text-sm text-gray-900">
+        <div class="flex flex-col gap-1.5 border border-gray-100 dark:border-zinc-800 rounded-md p-3">
+          <label class="flex items-center gap-2 font-medium text-sm text-gray-900 dark:text-zinc-100">
             <p-checkbox
               [binary]="true"
               [ngModel]="isModuleFullySelected(group)"
@@ -37,7 +37,7 @@
           </label>
           <div class="flex flex-col gap-1 pl-6">
             @for (permission of group.permissions; track permission.id) {
-              <label class="flex items-center gap-2 text-sm text-gray-600">
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-zinc-300">
                 <p-checkbox
                   [binary]="true"
                   [ngModel]="selectedPermissionIds().has(permission.id)"
@@ -53,9 +53,9 @@
   </div>
 
   <!-- Organizaciones -->
-  <div class="flex flex-col gap-3 border border-gray-200 rounded-lg p-4">
+  <div class="flex flex-col gap-3 border border-gray-200 dark:border-zinc-700 rounded-lg p-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+      <h2 class="text-sm font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wide">
         Organizaciones con acceso
       </h2>
       <button

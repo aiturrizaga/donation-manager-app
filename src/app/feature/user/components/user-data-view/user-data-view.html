@@ -37,7 +37,7 @@
               class="text-xs font-semibold"
             />
             <div class="flex flex-col gap-0.5">
-              <span class="font-medium text-gray-900">{{ user.partner.name }}</span>
+              <span class="font-medium text-gray-900 dark:text-zinc-100">{{ user.partner.name }}</span>
               @if (user.partner.documentNumber) {
                 <span class="text-xs text-gray-400 font-mono">
                   {{ user.partner.documentNumber }}
@@ -47,7 +47,7 @@
           </div>
         </td>
         <td>
-          <span class="text-sm text-gray-600">{{ user.partner.email ?? '—' }}</span>
+          <span class="text-sm text-gray-600 dark:text-zinc-300">{{ user.partner.email ?? '—' }}</span>
         </td>
         <td>
           <p-tag
@@ -91,7 +91,7 @@
 <!-- Mobile -->
 <div class="sm:hidden">
   @if (isLoading()) {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (_ of skeletonRows; track $index) {
         <div class="flex flex-col gap-3 px-4 py-4">
           <div class="flex items-center justify-between gap-3">
@@ -119,7 +119,7 @@
       [description]="emptyDescription()"
     />
   } @else {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (user of items(); track user.id) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
 
@@ -131,7 +131,7 @@
               class="text-xs font-semibold shrink-0"
             />
             <div class="flex flex-col gap-0.5 min-w-0">
-              <span class="text-sm font-medium text-gray-900 truncate">
+              <span class="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate">
                 {{ user.partner.name }}
               </span>
               <span class="text-xs text-gray-400 truncate">
@@ -163,7 +163,7 @@
       }
     </div>
 
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-zinc-700">
       <p-paginator
         [first]="first()"
         [rows]="rows()"

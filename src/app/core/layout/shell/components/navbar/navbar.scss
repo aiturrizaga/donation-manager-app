@@ -26,8 +26,16 @@ $transition-fast: 150ms ease;
       box-shadow: none;
       transition: color $transition-fast;
 
+      :host-context(.dark) & {
+        color: theme('colors.zinc.500');
+      }
+
       &:hover {
         color: theme('colors.gray.600');
+
+        :host-context(.dark) & {
+          color: theme('colors.zinc.300');
+        }
       }
     }
 
@@ -37,6 +45,10 @@ $transition-fast: 150ms ease;
         font-weight: 600;
         cursor: default;
         pointer-events: none;
+
+        :host-context(.dark) & {
+          color: theme('colors.zinc.100');
+        }
       }
     }
 
@@ -63,9 +75,18 @@ $transition-fast: 150ms ease;
         line-height: 1;
       }
 
+      :host-context(.dark) & {
+        color: theme('colors.zinc.400');
+      }
+
       &:hover {
         background: theme('colors.gray.100');
         color: theme('colors.gray.900');
+
+        :host-context(.dark) & {
+          background: theme('colors.zinc.800');
+          color: theme('colors.zinc.100');
+        }
       }
     }
   }

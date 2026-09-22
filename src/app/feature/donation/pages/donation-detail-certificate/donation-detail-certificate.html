@@ -7,30 +7,30 @@
 } @else if (certificate()) {
   <div class="flex flex-col gap-4">
 
-    <div class="flex flex-col divide-y divide-gray-100">
+    <div class="flex flex-col divide-y divide-gray-100 dark:divide-zinc-800">
       <div class="flex justify-between py-3 gap-3">
         <span class="text-sm text-gray-400">Número</span>
-        <span class="text-sm font-mono font-medium text-gray-900">
+        <span class="text-sm font-mono font-medium text-gray-900 dark:text-zinc-100">
           {{ certificate().certificateNumber }}
         </span>
       </div>
       <div class="flex justify-between py-3 gap-3">
         <span class="text-sm text-gray-400">Fecha de emisión</span>
-        <span class="text-sm text-gray-900">
+        <span class="text-sm text-gray-900 dark:text-zinc-100">
           {{ certificate().issuedAt | date:'dd MMM yyyy, HH:mm' }}
         </span>
       </div>
       <div class="flex justify-between py-3 gap-3">
         <span class="text-sm text-gray-400">Donante en cert.</span>
-        <span class="text-sm text-gray-900">{{ certificate().donorNameOnCert }}</span>
+        <span class="text-sm text-gray-900 dark:text-zinc-100">{{ certificate().donorNameOnCert }}</span>
       </div>
       <div class="flex justify-between py-3 gap-3">
         <span class="text-sm text-gray-400">Documento en cert.</span>
-        <span class="text-sm font-mono text-gray-900">{{ certificate().donorDocumentOnCert }}</span>
+        <span class="text-sm font-mono text-gray-900 dark:text-zinc-100">{{ certificate().donorDocumentOnCert }}</span>
       </div>
       <div class="flex justify-between py-3 gap-3">
         <span class="text-sm text-gray-400">Monto en cert.</span>
-        <span class="text-sm font-semibold text-gray-900">
+        <span class="text-sm font-semibold text-gray-900 dark:text-zinc-100">
           {{ certificate().currencyOnCert }} {{ certificate().amountOnCert | number:'1.2-2' }}
         </span>
       </div>

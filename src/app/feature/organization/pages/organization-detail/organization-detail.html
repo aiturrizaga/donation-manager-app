@@ -24,7 +24,7 @@
         />
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-xl font-semibold text-gray-900">
+            <span class="text-xl font-semibold text-gray-900 dark:text-zinc-100">
               {{ resolvedOrganization().legalName }}
             </span>
             <p-tag
@@ -34,20 +34,20 @@
           </div>
           <div class="flex flex-wrap gap-x-4 gap-y-1">
             @if (resolvedOrganization().tradeName) {
-              <span class="text-sm text-gray-500">{{ resolvedOrganization().tradeName }}</span>
+              <span class="text-sm text-gray-500 dark:text-zinc-400">{{ resolvedOrganization().tradeName }}</span>
             }
-            <span class="flex items-center gap-1.5 text-sm text-gray-500 font-mono">
+            <span class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-zinc-400 font-mono">
               <i class="ti ti-id-badge-2 text-gray-400 text-xs" aria-hidden="true"></i>
               {{ resolvedOrganization().ruc }}
             </span>
             @if (resolvedOrganization().email) {
-              <span class="flex items-center gap-1.5 text-sm text-gray-500">
+              <span class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-zinc-400">
                 <i class="ti ti-mail text-gray-400 text-xs" aria-hidden="true"></i>
                 {{ resolvedOrganization().email }}
               </span>
             }
             @if (resolvedOrganization().phone) {
-              <span class="flex items-center gap-1.5 text-sm text-gray-500">
+              <span class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-zinc-400">
                 <i class="ti ti-phone text-gray-400 text-xs" aria-hidden="true"></i>
                 {{ resolvedOrganization().phone }}
               </span>

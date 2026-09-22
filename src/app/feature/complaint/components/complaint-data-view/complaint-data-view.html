@@ -34,30 +34,30 @@
         <td>
           <a
             [routerLink]="['/complaints', complaint.id]"
-            class="font-mono text-sm text-gray-600 hover:underline"
+            class="font-mono text-sm text-gray-600 dark:text-zinc-300 hover:underline"
           >
             {{ complaint.sheetNumber }}
           </a>
         </td>
         <td>
-          <span class="text-sm text-gray-600">
+          <span class="text-sm text-gray-600 dark:text-zinc-300">
             {{ complaint.createdAt | date:'dd MMM yyyy' }}
           </span>
         </td>
         <td>
           <a
             [routerLink]="['/complaints', complaint.id]"
-            class="text-sm font-medium text-gray-900 hover:underline"
+            class="text-sm font-medium text-gray-900 dark:text-zinc-100 hover:underline"
           >
             {{ complaint.fullName }}
           </a>
         </td>
         <td>
-          <span class="text-sm text-gray-600">{{ getRecordTypeLabel(complaint.recordType) }}</span>
+          <span class="text-sm text-gray-600 dark:text-zinc-300">{{ getRecordTypeLabel(complaint.recordType) }}</span>
         </td>
         <td>
           @if (complaint.organization) {
-            <span class="text-sm text-gray-700">
+            <span class="text-sm text-gray-700 dark:text-zinc-300">
               {{ complaint.organization.tradeName ?? complaint.organization.legalName }}
             </span>
           } @else {
@@ -65,7 +65,7 @@
           }
         </td>
         <td>
-          <span class="text-sm text-gray-600">{{ complaint.donationPage?.name ?? '—' }}</span>
+          <span class="text-sm text-gray-600 dark:text-zinc-300">{{ complaint.donationPage?.name ?? '—' }}</span>
         </td>
         <td>
           <p-tag
@@ -106,7 +106,7 @@
 <!-- Mobile -->
 <div class="sm:hidden">
   @if (isLoading()) {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (_ of skeletonRows; track $index) {
         <div class="flex items-center justify-between gap-3 px-4 py-4">
           <div class="flex flex-col gap-1.5 flex-1">
@@ -126,14 +126,14 @@
       [description]="emptyDescription()"
     />
   } @else {
-    <div class="divide-y divide-gray-100">
+    <div class="divide-y divide-gray-100 dark:divide-zinc-800">
       @for (complaint of items(); track complaint.id) {
         <a
           [routerLink]="['/complaints', complaint.id]"
           class="flex items-center justify-between gap-3 px-4 py-4"
         >
           <div class="flex flex-col gap-0.5 min-w-0">
-            <span class="text-sm font-medium text-gray-900 truncate">
+            <span class="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate">
               {{ complaint.fullName }}
             </span>
             <span class="text-xs text-gray-400">
@@ -151,7 +151,7 @@
             }
           </div>
           <div class="flex flex-col items-end gap-1.5 shrink-0">
-            <span class="text-xs text-gray-500">{{ getRecordTypeLabel(complaint.recordType) }}</span>
+            <span class="text-xs text-gray-500 dark:text-zinc-400">{{ getRecordTypeLabel(complaint.recordType) }}</span>
             <p-tag
               [value]="getStatusLabel(complaint.status)"
               [severity]="getStatusSeverity(complaint.status)"
@@ -160,7 +160,7 @@
         </a>
       }
     </div>
-    <div class="border-t border-gray-200">
+    <div class="border-t border-gray-200 dark:border-zinc-700">
       <p-paginator
         [first]="first()"
         [rows]="rows()"

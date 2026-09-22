@@ -1,7 +1,7 @@
 <div class="card">
 
   <!-- Tabs desktop -->
-  <div class="hidden sm:flex items-center border-b border-gray-200 status-tabs-bar">
+  <div class="hidden sm:flex items-center border-b border-gray-200 dark:border-zinc-700 status-tabs-bar">
     <p-tabs [value]="activeStatus()" (valueChange)="onStatusChange($event)">
       <p-tablist>
         @for (tab of statusTabs; track $index) {
@@ -51,7 +51,7 @@
   </div>
 
   <!-- Chips mobile -->
-  <div class="sm:hidden border-b border-gray-200" style="overflow-x: auto; overflow-y: visible;">
+  <div class="sm:hidden border-b border-gray-200 dark:border-zinc-700" style="overflow-x: auto; overflow-y: visible;">
     <div class="flex gap-2 px-3 py-2 scrollbar-none" style="width: max-content; min-width: 100%;">
       @for (tab of statusTabs; track $index) {
         <p-chip

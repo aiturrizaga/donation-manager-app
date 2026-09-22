@@ -6,17 +6,17 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="bg-white rounded-xl p-5 border border-gray-100 flex flex-col gap-3">
+    <div class="bg-white dark:bg-zinc-900 rounded-xl p-5 border border-gray-100 dark:border-zinc-800 flex flex-col gap-3">
       <div class="flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-500">{{ label() }}</span>
+        <span class="text-sm font-medium text-gray-500 dark:text-zinc-400">{{ label() }}</span>
         <div
-          class="w-9 h-9 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600"
+          class="w-9 h-9 rounded-lg bg-primary-50 dark:bg-zinc-800 flex items-center justify-center text-primary-600 dark:text-primary-300"
         >
           <i class="ti {{ icon() }}" style="font-size: 1.1rem"></i>
         </div>
       </div>
 
-      <div class="text-2xl font-semibold text-gray-900 tracking-tight">
+      <div class="text-2xl font-semibold text-gray-900 dark:text-zinc-100 tracking-tight">
         {{ formattedValue() }}
       </div>
 
@@ -24,7 +24,9 @@ import { CommonModule } from '@angular/common';
         <div
           class="flex items-center gap-1.5 text-sm font-medium"
           [class.text-emerald-600]="delta()! >= 0"
+          [class.dark:text-emerald-400]="delta()! >= 0"
           [class.text-red-500]="delta()! < 0"
+          [class.dark:text-red-400]="delta()! < 0"
         >
           <i class="ti {{ deltaIcon() }}" style="font-size: 0.9rem"></i>
           <span>{{ deltaLabel() }}</span>

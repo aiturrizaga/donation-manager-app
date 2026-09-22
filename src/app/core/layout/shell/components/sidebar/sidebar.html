@@ -6,7 +6,7 @@
 }
 
 <aside
-  class="sidebar flex w-64 flex-col bg-white overflow-hidden border-r border-gray-200 fixed inset-y-0 left-0 z-50 lg:static lg:z-auto lg:shrink-0 lg:translate-x-0"
+  class="sidebar flex w-64 flex-col bg-white dark:bg-zinc-900 overflow-hidden border-r border-gray-200 dark:border-zinc-800 fixed inset-y-0 left-0 z-50 lg:static lg:z-auto lg:shrink-0 lg:translate-x-0"
   [class.-translate-x-full]="!mobileOpen()"
   [class.translate-x-0]="mobileOpen()"
   [class.sidebar--collapsed]="collapsed()"
@@ -16,7 +16,7 @@
 
   <!-- Header -->
   <div
-    class="flex h-14 shrink-0 items-center gap-2 px-3 border-b border-gray-200"
+    class="flex h-14 shrink-0 items-center gap-2 px-3 border-b border-gray-200 dark:border-zinc-800"
     [class.justify-center]="collapsed()"
     [class.px-0]="collapsed()"
   >
@@ -34,7 +34,7 @@
           </svg>
         </div>
         <div class="flex flex-col leading-none">
-          <span class="text-sm font-semibold text-gray-900">DonationHub Manager</span>
+          <span class="text-sm font-semibold text-gray-900 dark:text-zinc-100">DonationHub Manager</span>
           <span class="mt-0.5 text-xs leading-none text-gray-400">v1.0.0</span>
         </div>
       </div>
@@ -77,7 +77,7 @@
 
                 <button
                   type="button"
-                  class="nav-item nav-item--accordion mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 w-full text-left bg-transparent border-none"
+                  class="nav-item nav-item--accordion mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-zinc-300 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-300 w-full text-left bg-transparent border-none"
                   [class.nav-item--collapsed]="collapsed()"
                   [class.nav-item--active]="parentLink.isActive"
                   [class.bg-brand-50]="parentLink.isActive"
@@ -107,7 +107,7 @@
                       <a
                         [routerLink]="sub.routerLink"
                         routerLinkActive="nav-item--active"
-                        class="nav-item nav-item--sub flex items-center gap-2.5 rounded-lg py-1.5 mb-0 text-sm text-gray-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700"
+                        class="nav-item nav-item--sub flex items-center gap-2.5 rounded-lg py-1.5 mb-0 text-sm text-gray-600 dark:text-zinc-300 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-300"
                         style="padding-left: 0.75rem; font-size: 0.8125rem"
                         (click)="mobileClose.emit()"
                       >
@@ -124,7 +124,7 @@
               <a
                 [routerLink]="child.routerLink"
                 routerLinkActive="nav-item--active"
-                class="nav-item mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700"
+                class="nav-item mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-zinc-300 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-300"
                 [class.nav-item--collapsed]="collapsed()"
                 [pTooltip]="collapsed() ? child.label : ''"
                 [tooltipDisabled]="!collapsed()"
@@ -146,7 +146,7 @@
         <a
           [routerLink]="item.routerLink"
           routerLinkActive="nav-item--active"
-          class="nav-item mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700"
+          class="nav-item mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-zinc-300 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-300"
           [class.mt-4]="!first"
           [class.nav-item--collapsed]="collapsed()"
           [pTooltip]="collapsed() ? item.label : ''"
@@ -166,11 +166,11 @@
   </nav>
 
   <!-- Footer -->
-  <div class="sidebar__footer hidden shrink-0 items-center justify-end px-3 py-3 border-t border-gray-200 lg:flex"
+  <div class="sidebar__footer hidden shrink-0 items-center justify-end px-3 py-3 border-t border-gray-200 dark:border-zinc-800 lg:flex"
        [class.sidebar__footer--collapsed]="collapsed()">
     <button
       type="button"
-      class="shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 cursor-pointer bg-transparent border-none"
+      class="shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 cursor-pointer bg-transparent border-none"
       (click)="onCollapseClick()"
       [attr.aria-label]="collapsed() ? 'Expandir sidebar' : 'Colapsar sidebar'"
     >

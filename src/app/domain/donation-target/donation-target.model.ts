@@ -32,6 +32,7 @@ export interface DonationTargetCreateRequest {
 }
 
 export interface DonationTargetUpdateRequest {
+  targetType?: string;
   name?: string;
   description?: string | null;
   amountGoal?: number | null;

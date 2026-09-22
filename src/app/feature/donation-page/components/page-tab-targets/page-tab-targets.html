@@ -7,7 +7,7 @@
 } @else {
   <div class="flex flex-col gap-4">
     <div class="flex items-center justify-between">
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-gray-500 dark:text-zinc-300">
         {{ items().length }} objetivo{{ items().length !== 1 ? 's' : '' }} asignado{{ items().length !== 1 ? 's' : '' }}
       </span>
       <p-button
@@ -20,7 +20,7 @@
       />
     </div>
 
-    <div class="flex items-center gap-3 border border-gray-200 rounded-lg p-3">
+    <div class="flex items-center gap-3 border border-gray-200 dark:border-zinc-700 rounded-lg p-3">
       <p-toggleswitch
         [ngModel]="allowNoneTarget()"
         [disabled]="savingAllowNoneTarget()"
@@ -69,7 +69,7 @@
           <tr>
             <td>
               <div class="flex flex-col gap-0.5">
-                <span class="font-medium text-gray-900">{{ item.target.name }}</span>
+                <span class="font-medium text-gray-900 dark:text-zinc-100">{{ item.target.name }}</span>
                 <span class="text-xs text-gray-400">{{ getTypeLabel(item.target.targetType) }}</span>
               </div>
             </td>

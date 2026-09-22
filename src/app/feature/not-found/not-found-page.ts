@@ -16,8 +16,8 @@ import { RouterLink } from '@angular/router';
   template: `
     <div class="flex flex-col items-center justify-center gap-3 min-h-[60vh] text-center px-4">
       <i class="ti ti-map-off text-4xl text-gray-400" aria-hidden="true"></i>
-      <h1 class="text-lg font-semibold text-gray-700">Página no encontrada</h1>
-      <p class="text-sm text-gray-500 max-w-sm">
+      <h1 class="text-lg font-semibold text-gray-700 dark:text-zinc-200">Página no encontrada</h1>
+      <p class="text-sm text-gray-500 dark:text-zinc-400 max-w-sm">
         La página que buscas no existe o fue movida.
       </p>
       <a routerLink="/dashboard" class="mt-2 text-sm font-medium text-blue-600 hover:underline">

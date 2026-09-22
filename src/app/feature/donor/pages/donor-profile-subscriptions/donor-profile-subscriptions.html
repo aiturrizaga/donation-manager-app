@@ -66,12 +66,12 @@
   <ng-template #body let-sub>
     <tr>
       <td>
-        <span class="font-semibold text-gray-900">
+        <span class="font-semibold text-gray-900 dark:text-zinc-100">
           {{ sub.currency }} {{ sub.amount | number:'1.2-2' }}
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600">{{ getFrequencyLabel(sub) }}</span>
+        <span class="text-sm text-gray-600 dark:text-zinc-300">{{ getFrequencyLabel(sub) }}</span>
       </td>
       <td>
         <p-tag
@@ -80,22 +80,22 @@
         />
       </td>
       <td>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-zinc-300">
           {{ sub.createdAt | date:'dd MMM yyyy' }}
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-zinc-300">
           {{ sub.nextChargeDate ? (sub.nextChargeDate | date:'dd MMM yyyy') : '—' }}
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-zinc-300">
           {{ sub.lastChargeDate ? (sub.lastChargeDate | date:'dd MMM yyyy') : '—' }}
         </span>
       </td>
       <td>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-zinc-300">
           {{ sub.cancelledAt ? (sub.cancelledAt | date:'dd MMM yyyy') : '—' }}
         </span>
       </td>
