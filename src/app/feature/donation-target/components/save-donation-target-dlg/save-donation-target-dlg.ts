@@ -16,13 +16,7 @@ import { DonationTargetForm } from '../../donation-target.forms';
 import { FormValidator } from '@shared/utils/form-validator.util';
 import { operationState } from '@shared/utils/operation-state';
 import { AppError } from '@shared/models';
-
-const TYPE_OPTIONS = [
-  { label: 'Causa', value: 'cause' },
-  { label: 'Grupo', value: 'group' },
-  { label: 'Campaña', value: 'campaign' },
-  { label: 'Meta', value: 'goal' },
-];
+import { TARGET_TYPE_OPTIONS } from '@shared/utils/target-type.util';
 
 /**
  * `organizationId` ya no se elige aquí: la organización sale de la
@@ -55,7 +49,7 @@ export class SaveDonationTargetDlg implements OnInit, OnDestroy {
   readonly #api = inject(DonationTargetApi);
 
   protected readonly saveOp = operationState();
-  readonly typeOptions = TYPE_OPTIONS;
+  readonly typeOptions = TARGET_TYPE_OPTIONS;
 
   readonly target = signal<DonationTarget | null>(null);
   #organizationId = 0;

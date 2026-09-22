@@ -20,6 +20,16 @@
         "4201"
       ],
       "port": 4201
+    },
+    {
+      "name": "donation-manager-api",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/d",
+        "/c",
+        "D:\\info\\Documents\\Development\\workspaces\\adeu\\backend\\donation-manager-api\\scripts\\dev-server.bat"
+      ],
+      "port": 8085
     }
   ]
 }

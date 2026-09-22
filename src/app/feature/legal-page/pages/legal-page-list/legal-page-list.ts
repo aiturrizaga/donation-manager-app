@@ -16,6 +16,7 @@ import { OrganizationsCatalog } from '@shared/api/organizations-catalog';
 import { SelectedOrganizationsFilterContext } from '@shared/context/selected-organizations-filter.context';
 import { OrganizationMultiSelector } from '@shared/ui/organization-multi-selector/organization-multi-selector';
 import { InlineError } from '@shared/ui/inline-error/inline-error';
+import { FiltersPanel } from '@shared/ui/filters-panel/filters-panel';
 import { rowOperation } from '@shared/utils/row-operation';
 
 const EMPTY_TEXT: Record<'no-records' | 'filtered' | 'search', { title: string; description: string }> = {
@@ -46,6 +47,7 @@ type LegalPageTabValue = (typeof STATUS_TABS)[number]['value'];
   imports: [
     OrganizationMultiSelector,
     LegalPageFilters,
+    FiltersPanel,
     LegalPageDataView,
     InlineError,
     Tabs,
@@ -90,6 +92,13 @@ export class LegalPageListPage {
     return reason ? EMPTY_TEXT[reason] : null;
   });
 
+  protected readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.orgContext.selectedIds().length > 0) count++;
+    if (this.search()) count++;
+    return count;
+  });
+
   constructor() {
     this.facade.connect(() => ({
       organizationIds: this.orgContext.selectedIds(),
@@ -106,6 +115,11 @@ export class LegalPageListPage {
 
   onFiltersChange(filters: { search: string | null }): void {
     this.#navigate({ search: filters.search, page: 1 });
+  }
+
+  onClearFilters(): void {
+    this.orgContext.select(null);
+    this.#navigate({ search: null, page: 1 });
   }
 
   onPageChange(event: { first: number; rows: number }): void {

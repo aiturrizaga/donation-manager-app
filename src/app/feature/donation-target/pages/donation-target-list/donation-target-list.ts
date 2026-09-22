@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, numberAttribute } from '@angular/core';
-import { input } from '@angular/core';
+import { input, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
@@ -15,6 +15,7 @@ import { DonationTarget } from '@domain/donation-target';
 import { SelectedOrganizationContext } from '@shared/context/selected-organization.context';
 import { OrganizationSelector } from '@shared/ui/organization-selector/organization-selector';
 import { InlineError } from '@shared/ui/inline-error/inline-error';
+import { FiltersPanel } from '@shared/ui/filters-panel/filters-panel';
 import { rowOperation } from '@shared/utils/row-operation';
 
 const EMPTY_TEXT: Record<'no-records' | 'filtered' | 'search', { title: string; description: string }> = {
@@ -46,6 +47,7 @@ type TargetTabValue = (typeof STATUS_TABS)[number]['value'];
   imports: [
     OrganizationSelector,
     DonationTargetFilters,
+    FiltersPanel,
     DonationTargetDataView,
     InlineError,
     Tabs,
@@ -76,9 +78,21 @@ export class DonationTargetListPage {
 
   readonly statusTabs = STATUS_TABS;
 
+  protected readonly filtersRef = viewChild(DonationTargetFilters);
+
   // El router deja `status()` en `undefined` (no en su valor por defecto)
   // cuando la URL no trae `?status=...` — este signal normaliza ambos casos.
   protected readonly activeStatus = computed<TargetTabValue>(() => this.status() ?? 'all');
+
+  // La organización no cuenta como "filtro" aquí — es contexto obligatorio
+  // (la página no puede listar objetivos sin una organización elegida), así
+  // que "Limpiar filtros" no la toca.
+  protected readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.search()) count++;
+    if (this.targetType()) count++;
+    return count;
+  });
 
   protected readonly setStatusOp = rowOperation<number>();
   protected readonly deleteOp = rowOperation<number>();
@@ -105,6 +119,10 @@ export class DonationTargetListPage {
 
   onFiltersChange(filters: { search: string | null; targetType: string | null }): void {
     this.#navigate({ ...filters, page: 1 });
+  }
+
+  onClearFilters(): void {
+    this.filtersRef()?.reset();
   }
 
   onPageChange(event: { first: number; rows: number }): void {

@@ -6,13 +6,7 @@ import { InputText } from 'primeng/inputtext';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { Select } from 'primeng/select';
-
-const TYPE_OPTIONS = [
-  { label: 'Causa', value: 'cause' },
-  { label: 'Grupo', value: 'group' },
-  { label: 'Campaña', value: 'campaign' },
-  { label: 'Meta', value: 'goal' },
-];
+import { TARGET_TYPE_OPTIONS } from '@shared/utils/target-type.util';
 
 @Component({
   selector: 'app-donation-target-filters',
@@ -23,7 +17,7 @@ const TYPE_OPTIONS = [
 export class DonationTargetFilters {
   readonly filtersChange = output<{ search: string | null; targetType: string | null }>();
 
-  readonly typeOptions = TYPE_OPTIONS;
+  readonly typeOptions = TARGET_TYPE_OPTIONS;
 
   readonly form = new FormGroup({
     search: new FormControl<string | null>(null),
@@ -39,5 +33,9 @@ export class DonationTargetFilters {
           targetType: value.targetType ?? null,
         });
       });
+  }
+
+  reset(): void {
+    this.form.reset();
   }
 }

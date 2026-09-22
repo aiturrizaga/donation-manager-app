@@ -20,18 +20,21 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <app-organization-multi-selector />
-    <app-donor-filters
-      class="flex-1"
-      [search]="search()"
-      (filtersChange)="onFiltersChange($event)"
-    />
+    <app-filters-panel [activeCount]="activeFilterCount()" (clear)="onClearFilters()">
+      <app-organization-multi-selector />
+      <app-donor-filters
+        class="flex-1"
+        [search]="search()"
+        (filtersChange)="onFiltersChange($event)"
+      />
+    </app-filters-panel>
     <div class="toolbar__actions">
       <button
         pButton
         type="button"
         severity="secondary"
         [text]="true"
+        size="small"
         [loading]="facade.loading()"
         (click)="facade.reload()"
         pTooltip="Recargar"
@@ -39,7 +42,7 @@
       >
         <i class="ti ti-refresh" pButtonIcon></i>
       </button>
-      <button pButton (click)="openCreateDialog()">
+      <button pButton size="small" (click)="openCreateDialog()">
         <i class="ti ti-plus" pButtonIcon></i>
         <span pButtonLabel class="hidden sm:inline">Nuevo donante</span>
         <span pButtonLabel class="inline sm:hidden">Nuevo</span>

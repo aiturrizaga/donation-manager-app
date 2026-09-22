@@ -25,6 +25,7 @@
         <th>Organización</th>
         <th>Página</th>
         <th>Estado</th>
+        <th class="w-16"></th>
       </tr>
     </ng-template>
 
@@ -72,12 +73,24 @@
             [severity]="getStatusSeverity(complaint.status)"
           />
         </td>
+        <td>
+          <p-button
+            icon="ti ti-arrow-right"
+            class="[&_.p-button-icon]:text-lg!"
+            [text]="true"
+            severity="secondary"
+            [rounded]="true"
+            [routerLink]="['/complaints', complaint.id]"
+            pTooltip="Ver detalle"
+            tooltipPosition="top"
+          />
+        </td>
       </tr>
     </ng-template>
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="7" class="text-center py-0">
+        <td colspan="8" class="text-center py-0">
           <app-empty-state
             [icon]="emptyIcon()"
             iconClass="text-5xl"

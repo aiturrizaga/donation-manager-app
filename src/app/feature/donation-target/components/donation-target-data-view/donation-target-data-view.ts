@@ -9,6 +9,7 @@ import { MenuItem } from 'primeng/api';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { EmptyState } from '@shared/components';
 import { DonationTarget } from '@domain/donation-target';
+import { getTargetTypeLabel } from '@shared/utils/target-type.util';
 
 @Component({
   selector: 'app-donation-target-data-view',
@@ -112,13 +113,7 @@ export class DonationTargetDataView {
   }
 
   getTypeLabel(type: string): string {
-    const map: Record<string, string> = {
-      cause: 'Causa',
-      group: 'Grupo',
-      campaign: 'Campaña',
-      goal: 'Meta',
-    };
-    return map[type] ?? type;
+    return getTargetTypeLabel(type);
   }
 
   onPageChange(event: TablePageEvent | PaginatorState): void {

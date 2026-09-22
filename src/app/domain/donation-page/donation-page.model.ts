@@ -53,6 +53,8 @@ export interface FormConfig {
   frequencyVisible: boolean;
   /** Mensajes cortos (máx. 140 caracteres, ~2 líneas); el portal muestra uno al azar. */
   impactMessages: string[] | null;
+  /** Si el portal muestra la opción "Ninguno" junto a los objetivos asignados (Paso 1). */
+  allowNoneTarget: boolean;
   confirmHeading: string;
   confirmMessage: string | null;
   confirmQuoteText: string | null;

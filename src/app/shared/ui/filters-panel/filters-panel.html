@@ -1,0 +1,42 @@
+<p-button
+  class="filters-panel-trigger"
+  label="Filtros"
+  icon="ti ti-filter"
+  [severity]="activeCount() > 0 ? 'info' : 'secondary'"
+  [outlined]="activeCount() === 0"
+  [badge]="activeCount() > 0 ? activeCount().toString() : undefined"
+  badgeSeverity="danger"
+  size="small"
+  (onClick)="open.set(true)"
+/>
+
+@if (open()) {
+  <div class="filters-panel-backdrop" (click)="open.set(false)"></div>
+}
+
+<div class="filters-panel-content" [class.filters-panel-content--open]="open()">
+  <div class="filters-panel-header">
+    <span class="text-sm font-semibold text-gray-900">Filtros</span>
+    <div class="flex items-center gap-1">
+      @if (activeCount() > 0) {
+        <p-button
+          label="Limpiar"
+          icon="ti ti-filter-off"
+          severity="secondary"
+          [text]="true"
+          size="small"
+          (onClick)="clear.emit()"
+        />
+      }
+      <p-button
+        icon="ti ti-x"
+        severity="secondary"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        (onClick)="open.set(false)"
+      />
+    </div>
+  </div>
+  <ng-content />
+</div>

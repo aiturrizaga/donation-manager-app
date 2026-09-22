@@ -16,6 +16,7 @@ import { SelectedOrganizationsFilterContext } from '@shared/context/selected-org
 import { OrganizationMultiSelector } from '@shared/ui/organization-multi-selector/organization-multi-selector';
 import { CreateDonationPageDlg } from '../../components/create-donation-page-dlg/create-donation-page-dlg';
 import { InlineError } from '@shared/ui/inline-error/inline-error';
+import { FiltersPanel } from '@shared/ui/filters-panel/filters-panel';
 import { rowOperation } from '@shared/utils/row-operation';
 
 const EMPTY_TEXT: Record<'no-records' | 'filtered' | 'search', { title: string; description: string }> = {
@@ -46,6 +47,7 @@ type PageTabValue = (typeof STATUS_TABS)[number]['value'];
   imports: [
     OrganizationMultiSelector,
     DonationPageFilters,
+    FiltersPanel,
     DonationPageDataView,
     InlineError,
     Tabs,
@@ -92,6 +94,13 @@ export class DonationPageListPage {
     return reason ? EMPTY_TEXT[reason] : null;
   });
 
+  protected readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.orgContext.selectedIds().length > 0) count++;
+    if (this.search()) count++;
+    return count;
+  });
+
   constructor() {
     this.facade.connect(() => ({
       organizationIds: this.orgContext.selectedIds(),
@@ -108,6 +117,11 @@ export class DonationPageListPage {
 
   onFiltersChange(filters: { search: string | null }): void {
     this.#navigate({ search: filters.search, page: 1 });
+  }
+
+  onClearFilters(): void {
+    this.orgContext.select(null);
+    this.#navigate({ search: null, page: 1 });
   }
 
   onPageChange(event: { first: number; rows: number }): void {

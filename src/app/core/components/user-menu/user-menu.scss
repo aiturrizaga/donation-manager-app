@@ -13,7 +13,10 @@ $transition-fast: 150ms ease;
   }
 }
 
-:host ::ng-deep .user-menu__popup {
+// Global (not :host-scoped): with appendTo="body" the popup is moved out of
+// this component's DOM subtree, so a :host ::ng-deep selector would no
+// longer match it.
+::ng-deep .user-menu__popup {
   @apply overflow-hidden;
   margin-left: 6px;
   margin-right: 6px;

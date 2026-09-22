@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, numberAttribute, signal } from '@angular/core';
-import { input } from '@angular/core';
+import { input, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Tab, TabList, Tabs } from 'primeng/tabs';
 import { Badge } from 'primeng/badge';
@@ -14,6 +14,7 @@ import { SelectedOrganizationsFilterContext } from '@shared/context/selected-org
 import { OrganizationMultiSelector } from '@shared/ui/organization-multi-selector/organization-multi-selector';
 import { FileDownloadService } from '@shared/utils/file-download.service';
 import { InlineError } from '@shared/ui/inline-error/inline-error';
+import { FiltersPanel } from '@shared/ui/filters-panel/filters-panel';
 
 const EMPTY_TEXT: Record<'no-records' | 'filtered', { title: string; description: string }> = {
   'no-records': {
@@ -41,6 +42,7 @@ type DonationTabValue = (typeof STATUS_TABS)[number]['value'];
   imports: [
     OrganizationMultiSelector,
     DonationFilters,
+    FiltersPanel,
     DonationDataView,
     InlineError,
     Tabs,
@@ -70,9 +72,20 @@ export class DonationListPage {
   readonly statusTabs = STATUS_TABS;
   readonly exporting = signal(false);
 
+  protected readonly filtersRef = viewChild(DonationFilters);
+
   // El router deja `status()` en `undefined` (no en su valor por defecto)
   // cuando la URL no trae `?status=...` — este signal normaliza ambos casos.
   protected readonly activeStatus = computed<DonationTabValue>(() => this.status() ?? 'all');
+
+  protected readonly activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.orgContext.selectedIds().length > 0) count++;
+    if (this.donationType()) count++;
+    if (this.dateFrom()) count++;
+    if (this.dateTo()) count++;
+    return count;
+  });
 
   protected readonly emptyText = computed(() => {
     const reason = this.facade.emptyReason();
@@ -107,6 +120,11 @@ export class DonationListPage {
   onPageChange(event: { first: number; rows: number }): void {
     const page = Math.floor(event.first / event.rows) + 1;
     this.#navigate({ page });
+  }
+
+  onClearFilters(): void {
+    this.orgContext.select(null);
+    this.filtersRef()?.reset();
   }
 
   onExport(): void {

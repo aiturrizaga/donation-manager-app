@@ -1,0 +1,69 @@
+@reference 'tailwindcss';
+
+// Transparent to layout — this component sits as a direct flex child of the
+// parent `.toolbar`, and its own children (trigger button, content) need to
+// act as if they were direct toolbar children too.
+:host {
+  display: contents;
+}
+
+.filters-panel-trigger {
+  @media (min-width: 640px) {
+    display: none;
+  }
+}
+
+.filters-panel-header {
+  display: none;
+}
+
+.filters-panel-backdrop {
+  display: none;
+}
+
+.filters-panel-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 639.98px) {
+  .filters-panel-content {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .filters-panel-content--open {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+  }
+
+  .filters-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .filters-panel-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+  }
+}

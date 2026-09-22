@@ -4,6 +4,7 @@ import { DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
+import { Tooltip } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Donation } from '@domain/donation';
 import { DonationApi } from '@shared/api/donation.api';
@@ -18,6 +19,7 @@ import { DonationDetailWebhooks } from '../donation-detail-webhooks/donation-det
     RouterLink,
     Button,
     Tag,
+    Tooltip,
     Tabs,
     TabList,
     Tab,
@@ -103,5 +105,11 @@ export class DonationDetailPage {
 
   goBack(): void {
     this.#router.navigate(['/donations']);
+  }
+
+  copyId(): void {
+    navigator.clipboard.writeText(this.donation().id).then(() => {
+      this.#message.add({ severity: 'success', summary: 'Copiado', detail: 'ID de la donación copiado.' });
+    });
   }
 }

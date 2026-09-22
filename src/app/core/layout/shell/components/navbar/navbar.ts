@@ -22,6 +22,4 @@ export class Navbar {
 
     return [items[0], { label: '...', disabled: true }, items[items.length - 1]];
   });
-
-  onSearchClick(): void {}
 }

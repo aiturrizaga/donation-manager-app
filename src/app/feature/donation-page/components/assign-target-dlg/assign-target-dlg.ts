@@ -10,6 +10,7 @@ import { DonationPageApi } from '../../api/donation-page.api';
 import { DonationTargetApi } from '@shared/api/donation-target.api';
 import { DonationTarget } from '@domain/donation-target';
 import { operationState } from '@shared/utils/operation-state';
+import { getTargetTypeLabel } from '@shared/utils/target-type.util';
 
 interface TargetSelection {
   target: DonationTarget;
@@ -86,13 +87,7 @@ export class AssignTargetDlg implements OnInit {
   }
 
   getTypeLabel(type: string): string {
-    const map: Record<string, string> = {
-      cause: 'Causa',
-      group: 'Grupo',
-      campaign: 'Campaña',
-      goal: 'Meta',
-    };
-    return map[type] ?? type;
+    return getTargetTypeLabel(type);
   }
 
   close(): void {

@@ -20,16 +20,19 @@
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <app-organization-multi-selector />
-    <app-donation-filters
-      class="flex-1"
-      (filtersChange)="onFiltersChange($event)"
-    />
+    <app-filters-panel [activeCount]="activeFilterCount()" (clear)="onClearFilters()">
+      <app-organization-multi-selector />
+      <app-donation-filters
+        class="flex-1"
+        (filtersChange)="onFiltersChange($event)"
+      />
+    </app-filters-panel>
     <div class="toolbar__actions">
       <p-button
         icon="ti ti-refresh"
         severity="secondary"
         [text]="true"
+        size="small"
         [loading]="facade.loading()"
         (onClick)="facade.reload()"
         pTooltip="Recargar"
@@ -40,6 +43,7 @@
         label="Exportar"
         severity="secondary"
         [outlined]="true"
+        size="small"
         [loading]="exporting()"
         (onClick)="onExport()"
       />

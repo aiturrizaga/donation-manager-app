@@ -55,4 +55,8 @@ export class DonationFilters {
         });
       });
   }
+
+  reset(): void {
+    this.form.reset();
+  }
 }

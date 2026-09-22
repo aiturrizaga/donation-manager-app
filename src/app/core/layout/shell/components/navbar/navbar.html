@@ -37,41 +37,8 @@
     </ng-template>
   </p-breadcrumb>
 
-  <!-- Desktop - Search bar -->
-  <div class="hidden lg:flex flex-1 items-center justify-center">
-    <button
-      type="button"
-      class="navbar__search flex items-center gap-2.5 h-9 px-2.5 rounded-lg w-96 border border-gray-300 cursor-pointer select-none transition-all duration-150 bg-transparent hover:border-gray-400"
-      aria-label="Buscar"
-      (click)="onSearchClick()"
-    >
-      <i class="ti ti-search text-base text-gray-400 shrink-0"></i>
-      <span class="flex-1 text-left text-sm text-gray-400 font-medium">Buscar</span>
-      <span class="flex items-center gap-1 shrink-0">
-        <kbd
-          class="inline-flex items-center justify-center h-5 min-w-5 px-1 rounded border border-gray-200 bg-gray-50 text-[11px] font-medium text-gray-400 font-sans leading-none">Ctrl</kbd>
-        <span class="text-[11px] text-gray-400 font-medium">+</span>
-        <kbd
-          class="inline-flex items-center justify-center h-5 min-w-5 px-1 rounded border border-gray-200 bg-gray-50 text-[11px] font-medium text-gray-400 font-sans leading-none">K</kbd>
-      </span>
-    </button>
-  </div>
-
   <!-- Right actions -->
   <div class="ml-auto flex items-center gap-1 lg:gap-2">
-
-    <!-- Mobile - Search button -->
-    <button
-      pButton
-      type="button"
-      class="navbar__action-btn lg:hidden!"
-      [text]="true"
-      severity="secondary"
-      aria-label="Buscar"
-      (click)="onSearchClick()"
-    >
-      <i class="ti ti-search"></i>
-    </button>
 
     <!-- User menu -->
     <app-user-menu />

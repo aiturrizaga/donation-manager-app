@@ -10,6 +10,8 @@ import { EmptyState } from '@shared/components';
 import { DonationPage, FormConfigTarget } from '@domain/donation-page';
 import { DonationPageApi } from '../../api/donation-page.api';
 import { AssignTargetDlg } from '../assign-target-dlg/assign-target-dlg';
+import { getTargetTypeLabel } from '@shared/utils/target-type.util';
+import { DonationPageFormConfigApi } from '@shared/api/donation-page-form-config.api';
 
 @Component({
   selector: 'app-page-tab-targets',
@@ -22,13 +24,17 @@ export class PageTabTargets implements OnInit {
   readonly page = input.required<DonationPage>();
 
   readonly #api = inject(DonationPageApi);
+  readonly #formConfigApi = inject(DonationPageFormConfigApi);
   readonly #dialog = inject(DialogService);
   readonly #confirm = inject(ConfirmationService);
 
   readonly items = signal<FormConfigTarget[]>([]);
   readonly loading = signal(true);
+  readonly allowNoneTarget = signal(false);
+  readonly savingAllowNoneTarget = signal(false);
 
   ngOnInit(): void {
+    this.allowNoneTarget.set(this.page().formConfig?.allowNoneTarget ?? false);
     this._load();
   }
 
@@ -47,13 +53,20 @@ export class PageTabTargets implements OnInit {
   }
 
   getTypeLabel(type: string): string {
-    const map: Record<string, string> = {
-      cause: 'Causa',
-      group: 'Grupo',
-      campaign: 'Campaña',
-      goal: 'Meta',
-    };
-    return map[type] ?? type;
+    return getTargetTypeLabel(type);
+  }
+
+  updateAllowNoneTarget(value: boolean): void {
+    const previous = this.allowNoneTarget();
+    this.allowNoneTarget.set(value);
+    this.savingAllowNoneTarget.set(true);
+    this.#formConfigApi.updateFormConfig(this.page().id, { allowNoneTarget: value }).subscribe({
+      next: () => this.savingAllowNoneTarget.set(false),
+      error: () => {
+        this.allowNoneTarget.set(previous);
+        this.savingAllowNoneTarget.set(false);
+      },
+    });
   }
 
   updateFlag(
