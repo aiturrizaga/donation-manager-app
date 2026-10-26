@@ -1,11 +1,13 @@
+const env = import.meta.env;
+
 export const environment = {
-  production: true,
-  apiUrl: 'https://api.adeu.org.pe/api',
+  production: env.NG_APP_ENV === 'production',
+  apiUrl: env.NG_APP_API_URL,
   keycloak: {
     config: {
-      url: 'https://identity.adeu.org.pe',
-      realm: 'donation-hub-staging',
-      clientId: 'donation-manager-app',
+      url: env.NG_APP_KEYCLOAK_URL,
+      realm: env.NG_APP_KEYCLOAK_REALM,
+      clientId: env.NG_APP_KEYCLOAK_CLIENT_ID,
     },
     initOptions: {
       onLoad: 'login-required',

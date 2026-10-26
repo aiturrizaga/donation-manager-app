@@ -4,6 +4,7 @@ dist
 .gitignore
 .env
 .env.*
+!.env.template
 *.md
 .angular
 .vscode
