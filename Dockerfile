@@ -3,6 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN cp .env.template .env
 RUN npm run build
 
 FROM nginx:1.27.4-alpine3.21
@@ -24,12 +25,6 @@ RUN chown -R appuser:appgroup /var/cache/nginx /var/log/nginx /etc/nginx/conf.d 
     chmod +x /entrypoint.sh
 
 USER appuser
-
-# No defaults are set here on purpose: this container must always be run with
-# all variables listed in .env.template passed explicitly, e.g.
-#   docker run -e NG_APP_API_URL=... -e NG_APP_KEYCLOAK_URL=... \
-#     -e NG_APP_KEYCLOAK_REALM=... -e NG_APP_KEYCLOAK_CLIENT_ID=... ...
-# Omitting one leaves it as an empty string in ngx-env.js (see entrypoint.sh).
 
 EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]

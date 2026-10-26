@@ -1,13 +1,13 @@
-const env = import.meta.env;
+import { isDevMode } from '@angular/core';
 
 export const environment = {
-  production: env.NG_APP_ENV === 'production',
-  apiUrl: env.NG_APP_API_URL,
+  production: !isDevMode(),
+  apiUrl: import.meta.env.NG_APP_API_URL,
   keycloak: {
     config: {
-      url: env.NG_APP_KEYCLOAK_URL,
-      realm: env.NG_APP_KEYCLOAK_REALM,
-      clientId: env.NG_APP_KEYCLOAK_CLIENT_ID,
+      url: import.meta.env.NG_APP_KEYCLOAK_URL,
+      realm: import.meta.env.NG_APP_KEYCLOAK_REALM,
+      clientId: import.meta.env.NG_APP_KEYCLOAK_CLIENT_ID,
     },
     initOptions: {
       onLoad: 'login-required',
