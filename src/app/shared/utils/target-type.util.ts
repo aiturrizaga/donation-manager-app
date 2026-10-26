@@ -8,6 +8,7 @@ export const TARGET_TYPE_OPTIONS = [
   { label: 'Labor', value: 'group' },
   { label: 'Campaña', value: 'campaign' },
   { label: 'Meta', value: 'goal' },
+  { label: 'Centro', value: 'center' },
 ];
 
 const TARGET_TYPE_LABELS: Record<string, string> = Object.fromEntries(
