@@ -111,6 +111,13 @@
             "routerLink": "/settings/lookups",
             "title": "Opciones de frecuencia, monedas, métodos de pago",
             "permission": "lookup:read"
+          },
+          {
+            "id": "030304-email-settings",
+            "label": "Configuración SMTP",
+            "routerLink": "/settings/email",
+            "title": "Servidor de correo propio por organización",
+            "permission": "email_settings:read"
           }
         ]
       }

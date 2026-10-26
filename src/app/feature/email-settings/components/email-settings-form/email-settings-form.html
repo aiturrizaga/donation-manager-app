@@ -1,0 +1,174 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4 w-full max-w-xl">
+
+  @if (settings(); as current) {
+    <div class="flex items-center gap-2">
+      <p-tag
+        [value]="current.isVerified ? 'Verificado' : 'Sin verificar'"
+        [severity]="current.isVerified ? 'success' : 'warn'"
+      />
+      @if (current.lastTestedAt) {
+        <span class="text-xs text-gray-400">
+          Última prueba: {{ current.lastTestedAt | date: 'dd/MM/yyyy HH:mm' }}
+        </span>
+      }
+    </div>
+  } @else {
+    <p-message severity="info" size="small" variant="simple">
+      Esta organización aún no tiene un servidor SMTP propio configurado — se
+      usa el servidor por defecto de la plataforma.
+    </p-message>
+  }
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="flex flex-col gap-1 sm:col-span-2">
+      <label for="txtSmtpHost" class="font-medium">Servidor SMTP</label>
+      <input
+        pInputText
+        type="text"
+        id="txtSmtpHost"
+        formControlName="smtpHost"
+        placeholder="smtp.gmail.com"
+        [invalid]="formValidator.hasError('smtpHost')"
+      />
+      @if (formValidator.hasError('smtpHost')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('smtpHost') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="numSmtpPort" class="font-medium">Puerto</label>
+      <p-inputnumber
+        inputId="numSmtpPort"
+        formControlName="smtpPort"
+        [useGrouping]="false"
+        [min]="1"
+        [max]="65535"
+        styleClass="w-full"
+        [invalid]="formValidator.hasError('smtpPort')"
+      />
+      @if (formValidator.hasError('smtpPort')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('smtpPort') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="txtSmtpUser" class="font-medium">Usuario SMTP</label>
+      <input
+        pInputText
+        type="text"
+        id="txtSmtpUser"
+        formControlName="smtpUser"
+        placeholder="donaciones@miorganizacion.pe"
+        [invalid]="formValidator.hasError('smtpUser')"
+      />
+      @if (formValidator.hasError('smtpUser')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('smtpUser') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="txtSmtpPassword" class="font-medium">
+        Contraseña SMTP
+        @if (settings()) {
+          <span class="text-gray-400 font-normal text-xs ml-1">
+            (dejar en blanco para mantener la actual)
+          </span>
+        }
+      </label>
+      <p-password
+        inputId="txtSmtpPassword"
+        formControlName="smtpPassword"
+        [feedback]="false"
+        [toggleMask]="true"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+        [invalid]="formValidator.hasError('smtpPassword')"
+      />
+      @if (formValidator.hasError('smtpPassword')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('smtpPassword') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="txtFromName" class="font-medium">Nombre del remitente</label>
+      <input
+        pInputText
+        type="text"
+        id="txtFromName"
+        formControlName="fromName"
+        placeholder="Ej. ACES Donaciones"
+        [invalid]="formValidator.hasError('fromName')"
+      />
+      @if (formValidator.hasError('fromName')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('fromName') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="txtFromEmail" class="font-medium">Correo del remitente</label>
+      <input
+        pInputText
+        type="email"
+        id="txtFromEmail"
+        formControlName="fromEmail"
+        placeholder="donaciones@miorganizacion.pe"
+        [invalid]="formValidator.hasError('fromEmail')"
+      />
+      @if (formValidator.hasError('fromEmail')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('fromEmail') }}
+        </p-message>
+      }
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <p-toggleswitch formControlName="useTls" inputId="chkUseTls" />
+    <label for="chkUseTls" class="font-medium">Usar TLS</label>
+  </div>
+
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small">
+      {{ err.message }}
+    </p-message>
+  }
+
+  <div class="flex flex-col sm:flex-row sm:justify-between gap-2 mt-2">
+    <div class="flex gap-2">
+      @if (settings()) {
+        <p-button
+          type="button"
+          label="Probar conexión"
+          severity="secondary"
+          [outlined]="true"
+          [loading]="testOp.isPending()"
+          (onClick)="test()"
+        />
+        <p-button
+          type="button"
+          label="Eliminar"
+          severity="danger"
+          [outlined]="true"
+          [loading]="deleteOp.isPending()"
+          (onClick)="confirmDelete()"
+        />
+      }
+    </div>
+    <p-button type="submit" label="Guardar cambios" [loading]="saveOp.isPending()" />
+  </div>
+
+</form>
