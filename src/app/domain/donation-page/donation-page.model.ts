@@ -55,6 +55,8 @@ export interface FormConfig {
   impactMessages: string[] | null;
   /** Si el portal muestra la opción "Ninguno" junto a los objetivos asignados (Paso 1). */
   allowNoneTarget: boolean;
+  /** Posición de la opción "Ninguno" entre las opciones del select de objetivos del portal. */
+  noneTargetPosition: 'start' | 'end';
   confirmHeading: string;
   confirmMessage: string | null;
   confirmQuoteText: string | null;
@@ -70,6 +72,7 @@ export interface FormConfigTarget {
   isDefault: boolean;
   isLocked: boolean;
   isVisible: boolean;
+  sortOrder: number;
   target: FormConfigTargetDetail;
 }
 

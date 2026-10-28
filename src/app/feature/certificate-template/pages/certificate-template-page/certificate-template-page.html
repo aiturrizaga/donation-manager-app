@@ -1,0 +1,39 @@
+<div class="card">
+
+  <!-- Encabezado: título, descripción breve y selector de organización. -->
+  <div class="cert-page-header">
+    <div>
+      <h1 class="cert-page-title">Plantilla de certificado</h1>
+      <p class="cert-page-subtitle">Personaliza el comprobante que reciben tus donantes.</p>
+    </div>
+    <app-organization-selector />
+  </div>
+
+  <!-- Empty state sin org seleccionada -->
+  @if (!orgContext.selectedId()) {
+    <div class="py-12 text-center">
+      <i class="ti ti-certificate text-5xl text-gray-300"></i>
+      <p class="text-sm text-gray-400 mt-3">
+        Selecciona una organización para editar su plantilla de certificado
+      </p>
+    </div>
+  } @else if (facade.error(); as err) {
+    <app-inline-error
+      message="No se pudo cargar la plantilla de certificado."
+      (retry)="facade.reload()"
+    />
+  } @else if (facade.loading()) {
+    <div class="py-12 text-center">
+      <i class="ti ti-loader-2 animate-spin text-3xl text-gray-300"></i>
+    </div>
+  } @else if (orgContext.selected(); as organization) {
+    <app-certificate-template-editor
+      [organization]="organization"
+      [template]="facade.template()"
+      [variables]="facade.variables()"
+      (saved)="facade.reload()"
+      (deleted)="facade.reload()"
+    />
+  }
+
+</div>

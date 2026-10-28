@@ -108,6 +108,13 @@ export const routes: Routes = [
           import('./feature/email-settings/email-settings.routes').then((r) => r.routes),
       },
       {
+        path: 'settings/certificate-template',
+        loadChildren: () =>
+          import('./feature/certificate-template/certificate-template.routes').then(
+            (r) => r.routes,
+          ),
+      },
+      {
         // Debe ser el último hijo — el router prueba las rutas en orden y
         // esta matchea cualquier cosa. Angular no cambia la URL al matchear
         // un wildcard: la barra de direcciones queda tal cual la escribió el

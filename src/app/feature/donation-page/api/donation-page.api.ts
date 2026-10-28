@@ -160,6 +160,14 @@ export class DonationPageApi {
     return this.#http.delete<void>(`${this.#base}/${pageId}/form-config/targets/${targetId}`);
   }
 
+  reorderTargets(pageId: string, orderedIds: number[]): Observable<FormConfigTarget[]> {
+    return this.#http
+      .put<
+        ApiResponse<FormConfigTarget[]>
+      >(`${this.#base}/${pageId}/form-config/targets/order`, { orderedIds })
+      .pipe(map((r) => r.data));
+  }
+
   // Payment gateway (propio de la página, distinto del de la organización)
   getGateway(pageId: string): Observable<DonationPageGateway> {
     return this.#http

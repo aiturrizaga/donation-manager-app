@@ -1,0 +1,24 @@
+.cert-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--p-gray-200, #e5e7eb);
+
+  .dark & {
+    border-bottom-color: var(--p-zinc-700, #3f3f46);
+  }
+}
+
+.cert-page-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.cert-page-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--p-gray-500, #6b7280);
+}

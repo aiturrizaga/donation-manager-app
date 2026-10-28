@@ -1,0 +1,353 @@
+<div class="cert-editor">
+
+  <!-- Toolbar — opera sobre el editor (párrafo, pie o firma) que tuvo el
+       foco por última vez. Dentro de la hoja solo queda el cursor. -->
+  <div class="cert-toolbar">
+    <button type="button" class="cert-toolbar-btn" (click)="undo()" title="Deshacer">
+      <i class="ti ti-arrow-back-up"></i>
+    </button>
+    <button type="button" class="cert-toolbar-btn" (click)="redo()" title="Rehacer">
+      <i class="ti ti-arrow-forward-up"></i>
+    </button>
+    <span class="cert-toolbar-sep"></span>
+    <button type="button" class="cert-toolbar-btn" (click)="preview()" title="Vista previa PDF">
+      <i class="ti ti-file-text"></i>
+    </button>
+    <span class="cert-toolbar-sep"></span>
+
+    <select
+      class="cert-toolbar-select cert-toolbar-zoom"
+      [ngModel]="zoomValue()"
+      (ngModelChange)="setZoom($event)"
+      title="Zoom"
+    >
+      @for (opt of zoomOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+      @if (isCustomZoom()) {
+        <option [value]="zoomValue()">{{ zoomPercent() }}%</option>
+      }
+    </select>
+    <span class="cert-toolbar-sep"></span>
+
+    <select
+      class="cert-toolbar-select"
+      [ngModel]="currentHeading()"
+      (ngModelChange)="setHeading($event)"
+      title="Estilo de texto"
+    >
+      @for (opt of headingOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <select
+      class="cert-toolbar-select"
+      [ngModel]="currentFont()"
+      (ngModelChange)="setFont($event)"
+      title="Fuente"
+    >
+      @for (opt of fontOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <select
+      class="cert-toolbar-select"
+      [ngModel]="currentSize()"
+      (ngModelChange)="setSize($event)"
+      title="Tamaño"
+    >
+      @for (opt of sizeOptions; track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+    <span class="cert-toolbar-sep"></span>
+
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['bold']"
+      (click)="toggleFormat('bold')"
+      title="Negrita"
+    >
+      <i class="ti ti-bold"></i>
+    </button>
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['italic']"
+      (click)="toggleFormat('italic')"
+      title="Cursiva"
+    >
+      <i class="ti ti-italic"></i>
+    </button>
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['underline']"
+      (click)="toggleFormat('underline')"
+      title="Subrayado"
+    >
+      <i class="ti ti-underline"></i>
+    </button>
+    <p-colorPicker
+      class="cert-toolbar-color"
+      [ngModel]="currentColor()"
+      (ngModelChange)="setColor($event)"
+      appendTo="body"
+      title="Color de texto"
+    />
+    <button type="button" class="cert-toolbar-btn" (click)="setLink()" title="Insertar enlace">
+      <i class="ti ti-link"></i>
+    </button>
+    <span class="cert-toolbar-sep"></span>
+
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="!activeFormats()['align']"
+      (click)="setAlign('')"
+      title="Alinear a la izquierda"
+    >
+      <i class="ti ti-align-left"></i>
+    </button>
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['align'] === 'center'"
+      (click)="setAlign('center')"
+      title="Centrar"
+    >
+      <i class="ti ti-align-center"></i>
+    </button>
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['align'] === 'right'"
+      (click)="setAlign('right')"
+      title="Alinear a la derecha"
+    >
+      <i class="ti ti-align-right"></i>
+    </button>
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['align'] === 'justify'"
+      (click)="setAlign('justify')"
+      title="Justificar"
+    >
+      <i class="ti ti-align-justified"></i>
+    </button>
+    <span class="cert-toolbar-sep"></span>
+
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['list'] === 'bullet'"
+      (click)="setList('bullet')"
+      title="Lista con viñetas"
+    >
+      <i class="ti ti-list"></i>
+    </button>
+    <button
+      type="button"
+      class="cert-toolbar-btn"
+      [class.active]="activeFormats()['list'] === 'ordered'"
+      (click)="setList('ordered')"
+      title="Lista numerada"
+    >
+      <i class="ti ti-list-numbers"></i>
+    </button>
+    <button type="button" class="cert-toolbar-btn" (click)="indent(-1)" title="Reducir sangría">
+      <i class="ti ti-indent-decrease"></i>
+    </button>
+    <button type="button" class="cert-toolbar-btn" (click)="indent(1)" title="Aumentar sangría">
+      <i class="ti ti-indent-increase"></i>
+    </button>
+  </div>
+
+  <!-- Área de trabajo: fondo gris, hoja A4 centrada, con scroll si excede el
+       espacio disponible. -->
+  <div class="cert-workspace" #workspace>
+    <form [formGroup]="form" class="cert-page-wrapper">
+      <div
+        class="cert-page-scale"
+        [style.width.px]="pageWidth * pageScale()"
+        [style.height.px]="pageHeight * pageScale()"
+      >
+        <div
+          class="cert-page"
+          [style.width.px]="pageWidth"
+          [style.height.px]="pageHeight"
+          [style.transform]="'scale(' + pageScale() + ')'"
+        >
+
+          <div class="cert-title">COMPROBANTE DE RECEPCIÓN DE DONACIONES</div>
+
+          <p-editor
+            #bodyEditor
+            formControlName="bodyHtml"
+            [modules]="quillModules"
+            [style]="{ border: 'none' }"
+            (onInit)="onEditorInit('body', $event)"
+            (onTextChange)="onEditorTextChange('body', $event)"
+            (onSelectionChange)="onEditorSelectionChange('body', $event)"
+            (onFocus)="onEditorFocus('body')"
+          />
+
+          <div class="cert-table">
+            @for (row of [
+              ['DONANTE', sample('donorName')],
+              ['DNI', sample('donorDocument')],
+              ['TIPO DE DONACIÓN', sample('donationType')],
+              ['TIPO DE OPERACIÓN', sample('operationType')],
+              ['BANCO', sample('bankName')],
+              ['N° OPERACIÓN', sample('operationNumber')],
+              ['VALOR DE LA DONACIÓN', sample('amountInWords')],
+              ['FECHA DE LA DONACIÓN', sample('donationDate')],
+            ]; track row[0]) {
+              <div class="cert-table-row">
+                <span class="cert-table-label">{{ row[0] }}</span>
+                <span class="cert-table-value">: {{ row[1] }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="cert-number">Comprobante N° {{ sample('certificateNumber') }}</div>
+
+          <!-- Línea + fecha + nombre + cargo: fluye en el documento justo
+               después de la tabla (igual que el backend calcula
+               sign_y = cert_y + 18 en app/core/certificate/
+               template_generator.py), independiente de dónde se arrastre la
+               imagen de la firma — una posición fija aquí se superponía con
+               la tabla en cuanto el párrafo o los datos ocupaban más que el
+               contenido por defecto. -->
+          <div class="signature-caption-flow" [style.margin-left.px]="signatureTextX" [style.width.px]="signatureTextW">
+            <div class="signature-caption-date">Lima, {{ sample('issuedDate') }}</div>
+            <div class="signature-caption-line"></div>
+            <p-editor
+              #signatureEditor
+              formControlName="signatureHtml"
+              [modules]="quillModules"
+              [style]="{ border: 'none' }"
+              (onInit)="onEditorInit('signature', $event)"
+              (onTextChange)="onEditorTextChange('signature', $event)"
+              (onSelectionChange)="onEditorSelectionChange('signature', $event)"
+              (onFocus)="onEditorFocus('signature')"
+            />
+          </div>
+
+          <div class="cert-footer">
+            <div class="cert-footer-line"></div>
+            <p-editor
+              #footerEditor
+              formControlName="footerHtml"
+              [modules]="quillModules"
+              [style]="{ border: 'none' }"
+              (onInit)="onEditorInit('footer', $event)"
+              (onTextChange)="onEditorTextChange('footer', $event)"
+              (onSelectionChange)="onEditorSelectionChange('footer', $event)"
+              (onFocus)="onEditorFocus('footer')"
+            />
+          </div>
+
+          @if (logoUrl(); as url) {
+            <app-draggable-resizable
+              [x]="logoRect().x"
+              [y]="logoRect().y"
+              [w]="logoRect().w"
+              [h]="logoRect().h"
+              [containerWidth]="pageWidth"
+              [containerHeight]="pageHeight"
+              [scale]="pageScale()"
+              (changed)="logoRect.set($event)"
+            >
+              <img [src]="url" alt="Logo" class="overlay-image" />
+            </app-draggable-resizable>
+          }
+
+          @if (signatureUrl(); as url) {
+            <app-draggable-resizable
+              [x]="signatureRect().x"
+              [y]="signatureRect().y"
+              [w]="signatureRect().w"
+              [h]="signatureRect().h"
+              [containerWidth]="pageWidth"
+              [containerHeight]="pageHeight"
+              [scale]="pageScale()"
+              (changed)="signatureRect.set($event)"
+            >
+              <img [src]="url" alt="Firma" class="overlay-image" />
+            </app-draggable-resizable>
+          }
+
+          @if (sealUrl(); as url) {
+            <app-draggable-resizable
+              [x]="sealRect().x"
+              [y]="sealRect().y"
+              [w]="sealRect().w"
+              [h]="sealRect().h"
+              [containerWidth]="pageWidth"
+              [containerHeight]="pageHeight"
+              [scale]="pageScale()"
+              (changed)="sealRect.set($event)"
+            >
+              <img [src]="url" alt="Sello" class="overlay-image" />
+            </app-draggable-resizable>
+          }
+
+        </div>
+      </div>
+    </form>
+
+    @if (!logoUrl() && !sealUrl() && !signatureUrl()) {
+      <p-message severity="info" size="small" variant="simple" class="cert-empty-assets">
+        Esta organización todavía no tiene logo, sello ni firma subidos — súbelos
+        desde su ficha en Organizaciones para poder ubicarlos aquí.
+      </p-message>
+    }
+  </div>
+
+  <!-- Menú "/" — se abre cerca del cursor al escribir "/" dentro de
+       cualquiera de los tres editores. -->
+  @if (slash().open) {
+    <div class="slash-menu" [style.left.px]="slash().x" [style.top.px]="slash().y">
+      @if (slash().mode === 'variables') {
+        <div class="slash-menu-header">Insertar variable</div>
+      }
+      @for (item of slashActiveItems(); track item.id; let i = $index) {
+        <button
+          type="button"
+          class="slash-menu-item"
+          [class.active]="i === slash().activeIndex"
+          (click)="onSlashItemActivate(item)"
+        >
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+          @if (item.kind === 'variable') {
+            <span class="slash-menu-sample">{{ item.variable?.sampleValue || 'Sin valor' }}</span>
+          }
+        </button>
+      } @empty {
+        <div class="slash-menu-empty">Sin resultados</div>
+      }
+    </div>
+  }
+
+  @if (saveOp.error(); as err) {
+    <p-message severity="error" size="small">{{ err.message }}</p-message>
+  }
+
+  <div class="cert-actions">
+    @if (template()) {
+      <p-button
+        label="Restablecer"
+        severity="danger"
+        [outlined]="true"
+        [loading]="deleteOp.isPending()"
+        (onClick)="confirmDelete()"
+      />
+    }
+    <p-button label="Guardar cambios" [loading]="saveOp.isPending()" (onClick)="save()" />
+  </div>
+
+</div>

@@ -118,6 +118,13 @@
             "routerLink": "/settings/email",
             "title": "Servidor de correo propio por organización",
             "permission": "email_settings:read"
+          },
+          {
+            "id": "030305-certificate-template",
+            "label": "Plantilla de certificado",
+            "routerLink": "/settings/certificate-template",
+            "title": "Diseño del certificado de donación por organización",
+            "permission": "certificate_template:read"
           }
         ]
       }

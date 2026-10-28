@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableRowReorderEvent } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { ToggleSwitch } from 'primeng/toggleswitch';
+import { Select } from 'primeng/select';
 import { Skeleton } from 'primeng/skeleton';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService } from 'primeng/api';
@@ -13,9 +14,14 @@ import { AssignTargetDlg } from '../assign-target-dlg/assign-target-dlg';
 import { getTargetTypeLabel } from '@shared/utils/target-type.util';
 import { DonationPageFormConfigApi } from '@shared/api/donation-page-form-config.api';
 
+interface NonePositionOption {
+  label: string;
+  value: 'start' | 'end';
+}
+
 @Component({
   selector: 'app-page-tab-targets',
-  imports: [FormsModule, TableModule, Button, ToggleSwitch, Skeleton, EmptyState],
+  imports: [FormsModule, TableModule, Button, ToggleSwitch, Select, Skeleton, EmptyState],
   providers: [DialogService],
   templateUrl: './page-tab-targets.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,9 +38,17 @@ export class PageTabTargets implements OnInit {
   readonly loading = signal(true);
   readonly allowNoneTarget = signal(false);
   readonly savingAllowNoneTarget = signal(false);
+  readonly noneTargetPosition = signal<'start' | 'end'>('end');
+  readonly savingNoneTargetPosition = signal(false);
+
+  readonly nonePositionOptions: NonePositionOption[] = [
+    { label: 'Al inicio', value: 'start' },
+    { label: 'Al final', value: 'end' },
+  ];
 
   ngOnInit(): void {
     this.allowNoneTarget.set(this.page().formConfig?.allowNoneTarget ?? false);
+    this.noneTargetPosition.set(this.page().formConfig?.noneTargetPosition ?? 'end');
     this._load();
   }
 
@@ -66,6 +80,51 @@ export class PageTabTargets implements OnInit {
         this.allowNoneTarget.set(previous);
         this.savingAllowNoneTarget.set(false);
       },
+    });
+  }
+
+  updateNoneTargetPosition(value: 'start' | 'end'): void {
+    const previous = this.noneTargetPosition();
+    this.noneTargetPosition.set(value);
+    this.savingNoneTargetPosition.set(true);
+    this.#formConfigApi.updateFormConfig(this.page().id, { noneTargetPosition: value }).subscribe({
+      next: () => this.savingNoneTargetPosition.set(false),
+      error: () => {
+        this.noneTargetPosition.set(previous);
+        this.savingNoneTargetPosition.set(false);
+      },
+    });
+  }
+
+  onRowReorder(event: TableRowReorderEvent): void {
+    if (event.dragIndex === undefined || event.dropIndex === undefined) return;
+    if (event.dragIndex === event.dropIndex) return;
+    const reordered = [...this.items()];
+    const [moved] = reordered.splice(event.dragIndex, 1);
+    reordered.splice(event.dropIndex, 0, moved);
+    this._persistOrder(reordered);
+  }
+
+  moveUp(index: number): void {
+    if (index <= 0) return;
+    const reordered = [...this.items()];
+    [reordered[index - 1], reordered[index]] = [reordered[index], reordered[index - 1]];
+    this._persistOrder(reordered);
+  }
+
+  moveDown(index: number): void {
+    if (index >= this.items().length - 1) return;
+    const reordered = [...this.items()];
+    [reordered[index], reordered[index + 1]] = [reordered[index + 1], reordered[index]];
+    this._persistOrder(reordered);
+  }
+
+  private _persistOrder(reordered: FormConfigTarget[]): void {
+    const previous = this.items();
+    this.items.set(reordered);
+    this.#api.reorderTargets(this.page().id, reordered.map((t) => t.id)).subscribe({
+      next: (updated) => this.items.set(updated),
+      error: () => this.items.set(previous),
     });
   }
 

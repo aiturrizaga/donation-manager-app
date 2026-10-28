@@ -1,0 +1,436 @@
+.cert-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────────
+// A compact, horizontal, document-editor-style toolbar sitting directly
+// below the page header, operating on whichever of the three editors
+// (párrafo / pie / firma) last had focus — see certificate-template-
+// editor.ts's toggleFormat/setAlign/setHeading/etc.
+.cert-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--p-gray-200, #e5e7eb);
+  background: var(--p-surface-0, #fff);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+
+  .dark & {
+    background: var(--p-zinc-900, #18181b);
+    border-color: var(--p-zinc-700, #3f3f46);
+  }
+}
+
+.cert-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 15px;
+
+  &:hover {
+    background: var(--p-gray-100, #f3f4f6);
+
+    .dark & {
+      background: var(--p-zinc-800, #27272a);
+    }
+  }
+
+  &.active {
+    background: var(--p-primary-100, #dbeafe);
+    color: var(--p-primary-700, #1d4ed8);
+
+    .dark & {
+      background: var(--p-primary-900, #1e3a8a);
+      color: var(--p-primary-300, #93c5fd);
+    }
+  }
+}
+
+.cert-toolbar-sep {
+  flex-shrink: 0;
+  width: 1px;
+  height: 20px;
+  background: var(--p-gray-200, #e5e7eb);
+  margin: 0 6px;
+
+  .dark & {
+    background: var(--p-zinc-700, #3f3f46);
+  }
+}
+
+.cert-toolbar-select {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 6px;
+  margin-right: 2px;
+  border: 1px solid var(--p-gray-200, #e5e7eb);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  cursor: pointer;
+
+  .dark & {
+    border-color: var(--p-zinc-700, #3f3f46);
+  }
+}
+
+.cert-toolbar-zoom {
+  width: 84px;
+}
+
+.cert-toolbar-color {
+  flex-shrink: 0;
+  margin: 0 4px;
+
+  ::ng-deep .p-colorpicker-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
+
+// ── Workspace ────────────────────────────────────────────────────────────
+// Light gray background, document centered. No scrollbar of its own — the
+// page defaults to "Ajustar" zoom (see setZoom('fit') in
+// certificate-template-editor.ts's ngAfterViewInit) so it always fits the
+// available width, and any vertical overflow scrolls with the surrounding
+// page like a normal document, not inside a boxed, Word-style viewport.
+.cert-workspace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  background: var(--p-gray-50, #f4f5f7);
+  overflow: visible;
+
+  .dark & {
+    background: var(--p-zinc-950, #09090b);
+  }
+}
+
+.cert-empty-assets {
+  max-width: 600px;
+}
+
+.cert-page-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+// Outer box reserves the SCALED footprint in normal page flow (so
+// surrounding layout doesn't leave a 1123px gap behind the shrunk page);
+// the inner .cert-page keeps its true A4 size and is visually scaled down
+// via CSS transform — real A4 proportions, compact on screen.
+.cert-page-scale {
+  position: relative;
+  flex-shrink: 0;
+}
+
+// 25mm left/right margin, same as app/core/certificate/template_generator.py's
+// _LEFT/_RIGHT_EDGE — keeps this preview's text column roughly aligned with
+// the real PDF's.
+$page-margin-x: 94.5px;
+
+.cert-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  border-radius: 2px;
+  // Top padding matches where app/core/certificate/template_generator.py
+  // actually draws the title (y=46mm ≈ 174px) — not an arbitrary value —
+  // so there's always clearance below the logo's default position (y=8mm)
+  // instead of the two overlapping, which is what happened at the old 48px.
+  padding: 174px $page-margin-x 24px;
+  color: #141414;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  // Quill's own toolbar module is disabled via `modules.toolbar: false`
+  // already — this is just a safety net in case anything still renders a
+  // toolbar container.
+  ::ng-deep .p-editor-toolbar {
+    display: none;
+  }
+
+  ::ng-deep .p-editor-content {
+    border: none;
+  }
+
+  // PrimeNG's own editor styles (@primeuix/styles/editor, injected at
+  // runtime — not quill.snow.css, see below) give .ql-editor a default
+  // 15px left/right padding. That's invisible on its own, but it shifted
+  // the paragraph/footer text 15px to the right of the table/cert-number/
+  // signature divs next to it (which have no such padding) — exactly the
+  // "left margin not respected" the user reported with a screenshot.
+  ::ng-deep .ql-editor {
+    padding: 0;
+  }
+
+  // The project never imports quill's own quill.snow.css (confirmed — no
+  // stylesheet anywhere defines .ql-align-*/.ql-font-*/.ql-size-*), so
+  // without these the align/font/size toolbar controls would store the
+  // right Delta attributes but render with zero visible effect here (the
+  // final PDF is unaffected either way, since app/core/certificate/
+  // template_generator.py reads the class names directly from the saved
+  // HTML, not from any browser CSS). Scoped to this page only.
+  ::ng-deep .ql-align-center {
+    text-align: center;
+  }
+  ::ng-deep .ql-align-right {
+    text-align: right;
+  }
+  ::ng-deep .ql-align-justify {
+    text-align: justify;
+  }
+  ::ng-deep .ql-font-serif {
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  ::ng-deep .ql-font-monospace {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+  }
+  ::ng-deep .ql-size-small {
+    font-size: 0.75em;
+  }
+  ::ng-deep .ql-size-large {
+    font-size: 1.5em;
+  }
+  ::ng-deep .ql-size-huge {
+    font-size: 2.5em;
+  }
+}
+
+.cert-title {
+  text-align: center;
+  font-weight: 700;
+  text-decoration: underline;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.cert-table {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cert-table-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cert-table-label {
+  width: 180px;
+  flex-shrink: 0;
+  color: #606060;
+}
+
+.cert-table-value {
+  font-weight: 700;
+}
+
+.cert-number {
+  margin-top: 20px;
+}
+
+.cert-footer {
+  position: absolute;
+  left: $page-margin-x;
+  right: $page-margin-x;
+  bottom: 24px;
+  text-align: center;
+  font-size: 10px;
+  color: #505050;
+}
+
+.cert-footer-line {
+  border-top: 1px solid #c0c0c0;
+  margin-bottom: 8px;
+}
+
+.overlay-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+// Signature block — line/date/name/title flow in normal document order
+// right after .cert-number (see certificate-template-editor.html), the same
+// way app/core/certificate/template_generator.py computes sign_y = cert_y +
+// 18 — NOT a fixed y, so it never overlaps the table/paragraph above it
+// regardless of how much content they hold. Only its horizontal position
+// (margin-left/width, set from the component) is fixed, matching the
+// backend's _SIGNATURE_TEXT_X/_W; the draggable signature IMAGE above moves
+// independently via image_layout. Name/title are editable via the embedded
+// p-editor.
+.signature-caption-flow {
+  // mm matches CSS's own mm unit exactly at 96dpi (see PX_PER_MM in
+  // certificate-template-editor.ts), so these line up with the backend's
+  // own mm gaps around sign_y/date_y/line_y without duplicating the math.
+  margin-top: 10mm; // cert_y -> date_y (sign_y - 8)
+  text-align: center;
+  font-size: 12px;
+}
+
+.signature-caption-date {
+  margin-bottom: 38mm; // date_y -> line_y (sign_y + 30)
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.signature-caption-line {
+  border-top: 1px solid #141414;
+  margin: 0 20px 6px;
+}
+
+.signature-caption-flow ::ng-deep .p-editor-content {
+  border: none;
+}
+
+.signature-caption-flow ::ng-deep .ql-editor {
+  padding: 0;
+  text-align: center;
+  font-size: 12px;
+}
+
+.signature-caption-flow ::ng-deep .ql-editor strong {
+  font-weight: 700;
+}
+
+// ── Variables ────────────────────────────────────────────────────────────
+// Rendered by variable-blot.ts's VariableBlot — a non-editable inline span
+// showing the variable's sample value (or "Sin valor"), never the literal
+// {{token}}. Plain text (no pill/background) so it reads exactly like the
+// surrounding paragraph — display:inline with normal white-space lets it
+// wrap at its own internal spaces like regular text, which is also what
+// keeps justify/align spacing even (a long value like an org's full legal
+// name is never treated as one atomic unbreakable "word"). Hover-only
+// underline plus the native `title` tooltip (set in variable-blot.ts) is
+// the only cue that it's a variable, not plain text.
+::ng-deep .variable-badge {
+  display: inline;
+  cursor: help;
+
+  &:hover {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+}
+
+// ── Slash command menu ───────────────────────────────────────────────────
+// Floating panel opened near the cursor when the user types "/" inside any
+// of the three editors — see certificate-template-editor.ts's
+// #updateSlashFromCursor/#onEditorKeydown.
+.slash-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 240px;
+  max-width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--p-gray-200, #e5e7eb);
+  border-radius: 10px;
+  background: var(--p-surface-0, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+  .dark & {
+    background: var(--p-zinc-900, #18181b);
+    border-color: var(--p-zinc-700, #3f3f46);
+  }
+}
+
+.slash-menu-header {
+  padding: 6px 10px 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--p-gray-400, #9ca3af);
+}
+
+.slash-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+
+  i {
+    flex-shrink: 0;
+    color: var(--p-gray-400, #9ca3af);
+  }
+
+  span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .slash-menu-sample {
+    flex: 0 0 auto;
+    color: var(--p-gray-400, #9ca3af);
+    font-size: 11px;
+  }
+
+  &.active,
+  &:hover {
+    background: var(--p-primary-50, #eff6ff);
+
+    .dark & {
+      background: var(--p-primary-950, #172554);
+    }
+  }
+}
+
+.slash-menu-empty {
+  padding: 10px;
+  color: var(--p-gray-400, #9ca3af);
+  font-size: 13px;
+  text-align: center;
+}
+
+// ── Footer actions ───────────────────────────────────────────────────────
+.cert-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--p-gray-200, #e5e7eb);
+  background: var(--p-surface-0, #fff);
+
+  .dark & {
+    background: var(--p-zinc-900, #18181b);
+    border-color: var(--p-zinc-700, #3f3f46);
+  }
+}
