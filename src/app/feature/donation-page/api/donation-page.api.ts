@@ -12,6 +12,8 @@ import {
   DonationPageGateway,
   FormConfigTarget,
   PageBranding,
+  PageSeo,
+  PageSeoUpsertRequest,
 } from '@domain/donation-page';
 import { environment } from '@env/environment';
 
@@ -132,6 +134,27 @@ export class DonationPageApi {
   deleteBrandingFavicon(pageId: string): Observable<PageBranding> {
     return this.#http
       .delete<ApiResponse<PageBranding>>(`${this.#base}/${pageId}/branding/favicon`)
+      .pipe(map((r) => r.data));
+  }
+
+  // SEO / vista previa al compartir
+  upsertSeo(pageId: string, payload: PageSeoUpsertRequest): Observable<PageSeo> {
+    return this.#http
+      .put<ApiResponse<PageSeo>>(`${this.#base}/${pageId}/seo`, payload)
+      .pipe(map((r) => r.data));
+  }
+
+  uploadSeoImage(pageId: string, file: File): Observable<PageSeo> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.#http
+      .post<ApiResponse<PageSeo>>(`${this.#base}/${pageId}/seo/image`, formData)
+      .pipe(map((r) => r.data));
+  }
+
+  deleteSeoImage(pageId: string): Observable<PageSeo> {
+    return this.#http
+      .delete<ApiResponse<PageSeo>>(`${this.#base}/${pageId}/seo/image`)
       .pipe(map((r) => r.data));
   }
 

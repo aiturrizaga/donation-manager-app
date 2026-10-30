@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 
@@ -23,6 +32,8 @@ export class ImageUpload {
   readonly disabledHint = input<string | null>(null);
   readonly loading = input(false);
   readonly removing = input(false);
+  // Los previews de redes sociales no muestran SVG — el tab SEO lo excluye.
+  readonly allowedTypes = input<string[]>(ALLOWED_TYPES);
 
   readonly fileSelected = output<File>();
   readonly removeRequested = output<void>();
@@ -30,7 +41,7 @@ export class ImageUpload {
   private readonly fileInputRef = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
   readonly validationError = signal<string | null>(null);
 
-  readonly accept = ALLOWED_TYPES.join(',');
+  readonly accept = computed(() => this.allowedTypes().join(','));
 
   pickFile(): void {
     this.fileInputRef().nativeElement.click();
@@ -42,8 +53,11 @@ export class ImageUpload {
     input.value = '';
     if (!file) return;
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      this.validationError.set('Formato no soportado. Usa PNG, JPEG, WEBP o SVG.');
+    if (!this.allowedTypes().includes(file.type)) {
+      const names = this.allowedTypes().map((t) =>
+        t.split('/')[1].replace('+xml', '').toUpperCase(),
+      );
+      this.validationError.set(`Formato no soportado. Usa ${names.join(', ')}.`);
       return;
     }
     if (file.size > MAX_SIZE_BYTES) {

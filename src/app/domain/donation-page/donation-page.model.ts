@@ -12,6 +12,7 @@ export interface DonationPage {
   isDefault: boolean;
   metadata: Record<string, unknown> | null;
   branding: PageBranding | null;
+  seo: PageSeo | null;
   formConfig: FormConfig | null;
   organization?: PageOrganization;
 }
@@ -35,6 +36,26 @@ export interface PageBranding {
   // NULL falls back to the frontend's own default copy.
   heroHeading: string | null;
   welcomeText: string | null;
+}
+
+/**
+ * Metadatos para buscadores y para la vista previa al compartir el link
+ * (Open Graph / Twitter). Todo es opcional: el portal usa el nombre de la
+ * página, el texto de bienvenida y la imagen hero/logo como respaldo.
+ */
+export interface PageSeo {
+  id: number;
+  donationPageId: string;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  ogImageUrl: string | null;
+  noIndex: boolean;
+}
+
+export interface PageSeoUpsertRequest {
+  metaTitle: string | null;
+  metaDescription: string | null;
+  noIndex: boolean;
 }
 
 export interface FormConfig {

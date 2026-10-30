@@ -84,6 +84,12 @@
             <span>General</span>
           </div>
         </p-tab>
+        <p-tab value="seo">
+          <div class="flex items-center gap-2">
+            <i class="ti ti-share" aria-hidden="true"></i>
+            <span>SEO</span>
+          </div>
+        </p-tab>
         <p-tab value="branding">
           <div class="flex items-center gap-2">
             <i class="ti ti-palette" aria-hidden="true"></i>
@@ -110,6 +116,10 @@
             [page]="resolvedPage()"
             (saved)="onPageSaved($event)"
           />
+        </p-tabpanel>
+
+        <p-tabpanel value="seo">
+          <app-page-tab-seo [page]="resolvedPage()" />
         </p-tabpanel>
 
         <p-tabpanel value="branding">

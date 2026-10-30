@@ -17,7 +17,7 @@
     <input
       #fileInput
       type="file"
-      [accept]="accept"
+      [accept]="accept()"
       (change)="onFileChange($event)"
       class="hidden"
     />
