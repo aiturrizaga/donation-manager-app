@@ -51,6 +51,7 @@ export interface DonationPage {
 
 export interface DonationOrganization {
   id: number;
+  alias: string;
   legalName: string;
   tradeName: string | null;
 }

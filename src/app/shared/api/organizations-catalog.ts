@@ -17,12 +17,7 @@ export class OrganizationsCatalog {
     params: { page: 1, size: 100 },
   }));
 
-  readonly items = computed(() =>
-    (this.#resource.hasValue() ? this.#resource.value().data.items : []).map((o) => ({
-      ...o,
-      tradeName: o.tradeName ?? o.legalName,
-    })),
-  );
+  readonly items = computed(() => (this.#resource.hasValue() ? this.#resource.value().data.items : []));
   readonly loading = this.#resource.isLoading;
   readonly error = this.#resource.error;
 

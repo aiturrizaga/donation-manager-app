@@ -18,6 +18,28 @@
   </div>
 
   <div class="flex flex-col gap-1">
+    <label for="txtAlias" class="font-medium">Alias</label>
+    <input
+      pInputText
+      type="text"
+      id="txtAlias"
+      formControlName="alias"
+      placeholder="Ej. ALIMSUR-LIMA"
+      maxlength="30"
+      [invalid]="formValidator.hasError('alias')"
+    />
+    @if (formValidator.hasError('alias')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('alias') }}
+      </p-message>
+    } @else {
+      <small class="text-xs text-gray-500 dark:text-zinc-400">
+        Nombre corto y único con el que se identifica la organización en las listas de selección.
+      </small>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
     <label for="txtTradeName" class="font-medium">Nombre comercial</label>
     <input
       pInputText

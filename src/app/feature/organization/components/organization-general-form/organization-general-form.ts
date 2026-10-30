@@ -5,7 +5,7 @@ import { Textarea } from 'primeng/textarea';
 import { Button } from 'primeng/button';
 import { Message } from 'primeng/message';
 import { Organization } from '@domain/organization';
-import { OrganizationGeneralFormFields } from '../../organization.forms';
+import { ALIAS_TAKEN_ERROR, OrganizationGeneralFormFields } from '../../organization.forms';
 import { OrganizationApi } from '@shared/api/organization.api';
 import { FormValidator } from '@shared/utils/form-validator.util';
 import { operationState } from '@shared/utils/operation-state';
@@ -42,6 +42,10 @@ export class OrganizationGeneralForm {
   readonly signatureUrl = signal<string | null>(null);
 
   readonly form: FormGroup<OrganizationGeneralFormFields> = this.#fb.group({
+    alias: this.#fb.control('', {
+      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(30)],
+      nonNullable: true,
+    }),
     legalName: this.#fb.control('', { validators: [Validators.required], nonNullable: true }),
     tradeName: this.#fb.control<string | null>(null),
     ruc: this.#fb.control('', {
@@ -83,6 +87,8 @@ export class OrganizationGeneralForm {
         next: (organization) => this.saved.emit(organization),
         error: (err: AppError) => {
           if (err.fieldErrors) this.formValidator.applyServerErrors(err.fieldErrors);
+          // The only unique field on an organization is its alias.
+          if (err.status === 409) this.formValidator.applyServerErrors(ALIAS_TAKEN_ERROR);
         },
       });
   }

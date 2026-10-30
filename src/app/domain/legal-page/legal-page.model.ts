@@ -2,6 +2,7 @@ export type LegalPageType = 'privacy_policy' | 'terms_of_service' | null;
 
 export interface LegalPageOrganization {
   id: number;
+  alias: string;
   legalName: string;
   tradeName: string | null;
 }

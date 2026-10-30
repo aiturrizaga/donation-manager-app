@@ -1,5 +1,8 @@
 export interface Organization {
   id: number;
+  // Short unique name shown in every organization select, since tradeName
+  // may change or repeat across organizations.
+  alias: string;
   legalName: string;
   tradeName: string | null;
   ruc: string;
@@ -39,6 +42,7 @@ export interface OrganizationFilterParams {
 }
 
 export interface OrganizationCreateRequest {
+  alias: string;
   legalName: string;
   tradeName: string | null;
   ruc: string;
@@ -47,6 +51,7 @@ export interface OrganizationCreateRequest {
 }
 
 export interface OrganizationUpdateRequest {
+  alias?: string;
   legalName?: string;
   tradeName?: string | null;
   ruc?: string;

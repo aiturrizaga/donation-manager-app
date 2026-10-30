@@ -4,6 +4,7 @@ export type ComplaintStatus = 'pending' | 'in_review' | 'resolved' | 'closed';
 
 export interface ComplaintOrganization {
   id: number;
+  alias: string;
   legalName: string;
   tradeName: string | null;
 }

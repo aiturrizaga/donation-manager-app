@@ -19,6 +19,7 @@ export interface DonationPage {
 
 export interface PageOrganization {
   id: number;
+  alias: string;
   legalName: string;
   tradeName: string | null;
 }
