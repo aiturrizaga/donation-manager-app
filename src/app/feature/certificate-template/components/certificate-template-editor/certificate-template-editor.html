@@ -163,6 +163,44 @@
     <button type="button" class="cert-toolbar-btn" (click)="indent(1)" title="Aumentar sangría">
       <i class="ti ti-indent-increase"></i>
     </button>
+
+    <!-- Imagen seleccionada (logo/sello/firma): recortar, quitar recorte y
+         restablecer proporción. -->
+    @if (images().length) {
+      <span class="cert-toolbar-sep"></span>
+      <!-- data-image-toolbar: clicking these doesn't deselect the image
+           (see IMAGE_TOOLBAR_ATTR in croppable-image.ts). -->
+      <div class="cert-toolbar-group" data-image-toolbar>
+        <button
+          type="button"
+          class="cert-toolbar-btn"
+          [class.active]="!!croppingImage() && croppingImage() === selectedImage()"
+          [disabled]="!selectedImage()"
+          (click)="toggleCrop()"
+          title="Recortar imagen (o doble clic sobre la imagen)"
+        >
+          <i class="ti ti-crop"></i>
+        </button>
+        <button
+          type="button"
+          class="cert-toolbar-btn"
+          [disabled]="!selectedHasCrop()"
+          (click)="resetCrop()"
+          title="Quitar recorte"
+        >
+          <i class="ti ti-refresh"></i>
+        </button>
+        <button
+          type="button"
+          class="cert-toolbar-btn"
+          [disabled]="!selectedImage()"
+          (click)="resetAspectRatio()"
+          title="Restablecer proporción original"
+        >
+          <i class="ti ti-aspect-ratio"></i>
+        </button>
+      </div>
+    }
   </div>
 
   <!-- Área de trabajo: fondo gris, hoja A4 centrada, con scroll si excede el
@@ -185,6 +223,7 @@
 
           <p-editor
             #bodyEditor
+            class="cert-body"
             formControlName="bodyHtml"
             [modules]="quillModules"
             [style]="{ border: 'none' }"
@@ -223,7 +262,14 @@
                contenido por defecto. -->
           <div class="signature-caption-flow" [style.margin-left.px]="signatureTextX" [style.width.px]="signatureTextW">
             <div class="signature-caption-date">Lima, {{ sample('issuedDate') }}</div>
-            <div class="signature-caption-line"></div>
+            <app-adjustable-line
+              [x]="signatureLineX()"
+              [w]="signatureLineW()"
+              [minX]="signatureLineMinX"
+              [maxRight]="signatureLineMaxRight"
+              [scale]="pageScale()"
+              (changed)="onSignatureLineChanged($event)"
+            />
             <p-editor
               #signatureEditor
               formControlName="signatureHtml"
@@ -250,49 +296,22 @@
             />
           </div>
 
-          @if (logoUrl(); as url) {
-            <app-draggable-resizable
-              [x]="logoRect().x"
-              [y]="logoRect().y"
-              [w]="logoRect().w"
-              [h]="logoRect().h"
+          @for (img of images(); track img.key) {
+            <app-croppable-image
+              [src]="img.url"
+              [alt]="img.alt"
+              [rect]="imageLayout()[img.key].rect"
+              [crop]="imageLayout()[img.key].crop"
               [containerWidth]="pageWidth"
               [containerHeight]="pageHeight"
               [scale]="pageScale()"
-              (changed)="logoRect.set($event)"
-            >
-              <img [src]="url" alt="Logo" class="overlay-image" />
-            </app-draggable-resizable>
-          }
-
-          @if (signatureUrl(); as url) {
-            <app-draggable-resizable
-              [x]="signatureRect().x"
-              [y]="signatureRect().y"
-              [w]="signatureRect().w"
-              [h]="signatureRect().h"
-              [containerWidth]="pageWidth"
-              [containerHeight]="pageHeight"
-              [scale]="pageScale()"
-              (changed)="signatureRect.set($event)"
-            >
-              <img [src]="url" alt="Firma" class="overlay-image" />
-            </app-draggable-resizable>
-          }
-
-          @if (sealUrl(); as url) {
-            <app-draggable-resizable
-              [x]="sealRect().x"
-              [y]="sealRect().y"
-              [w]="sealRect().w"
-              [h]="sealRect().h"
-              [containerWidth]="pageWidth"
-              [containerHeight]="pageHeight"
-              [scale]="pageScale()"
-              (changed)="sealRect.set($event)"
-            >
-              <img [src]="url" alt="Sello" class="overlay-image" />
-            </app-draggable-resizable>
+              [selected]="selectedImage() === img.key"
+              (selectedChange)="onImageSelected(img.key, $event)"
+              [cropping]="croppingImage() === img.key"
+              (croppingChange)="onImageCropping(img.key, $event)"
+              (changed)="onImageChanged(img.key, $event)"
+              (loaded)="onImageLoaded(img.key, $event)"
+            />
           }
 
         </div>

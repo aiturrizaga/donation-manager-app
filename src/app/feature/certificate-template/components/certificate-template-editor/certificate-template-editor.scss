@@ -39,6 +39,12 @@
   cursor: pointer;
   font-size: 15px;
 
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+
   &:hover {
     background: var(--p-gray-100, #f3f4f6);
 
@@ -141,10 +147,20 @@
   flex-shrink: 0;
 }
 
-// 25mm left/right margin, same as app/core/certificate/template_generator.py's
-// _LEFT/_RIGHT_EDGE — keeps this preview's text column roughly aligned with
-// the real PDF's.
-$page-margin-x: 94.5px;
+// Every vertical metric on the page below is expressed in mm/pt and mirrors
+// app/core/certificate/template_generator.py EXACTLY (fpdf2 uses mm as its
+// unit and pt for fonts). CSS mm/pt are exact at 96dpi — the same ratio as
+// PX_PER_MM in certificate-template-editor.ts, which positions the images —
+// so text and images line up on screen the same way they do in the PDF.
+// Approximating these with px/default line-heights used to accumulate
+// several mm of drift, pushing the signature block far below where the PDF
+// draws it relative to the seal/signature images.
+//
+// 25mm left/right margin = _LEFT / (210 - _RIGHT_EDGE).
+$page-margin-x: 25mm;
+// fpdf2's default cell padding (c_margin = 1mm): text in every cell /
+// multi_cell starts 1mm inside its box.
+$cell-padding: 1mm;
 
 .cert-page {
   position: absolute;
@@ -154,14 +170,14 @@ $page-margin-x: 94.5px;
   background: #ffffff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   border-radius: 2px;
-  // Top padding matches where app/core/certificate/template_generator.py
-  // actually draws the title (y=46mm ≈ 174px) — not an arbitrary value —
-  // so there's always clearance below the logo's default position (y=8mm)
-  // instead of the two overlapping, which is what happened at the old 48px.
-  padding: 174px $page-margin-x 24px;
+  // Title cell is drawn at y=46mm.
+  padding: 46mm $page-margin-x 0;
   color: #141414;
-  font-size: 13px;
-  font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  // Helvetica 10pt like the PDF; Arial shares Helvetica's metrics, so the
+  // paragraph wraps at (nearly) the same words.
+  font-size: 10pt;
+  line-height: 6mm;
+  font-family: Helvetica, Arial, sans-serif;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -182,8 +198,22 @@ $page-margin-x: 94.5px;
   // the paragraph/footer text 15px to the right of the table/cert-number/
   // signature divs next to it (which have no such padding) — exactly the
   // "left margin not respected" the user reported with a screenshot.
+  // PrimeNG's editor styles hardcode 13px on .ql-container; inherit the
+  // page's pt sizes instead so each block uses the PDF's font size.
+  ::ng-deep .ql-container {
+    font-size: inherit;
+    font-family: inherit;
+  }
+
   ::ng-deep .ql-editor {
-    padding: 0;
+    padding: 0 $cell-padding;
+    font-size: inherit;
+    line-height: inherit;
+    text-align: left;
+
+    p {
+      margin: 0;
+    }
   }
 
   // The project never imports quill's own quill.snow.css (confirmed — no
@@ -219,61 +249,84 @@ $page-margin-x: 94.5px;
   }
 }
 
+// cell(_CONTENT_W, 8, ..., align="C") at y=46, Helvetica BU 14.
 .cert-title {
+  height: 8mm;
+  line-height: 8mm;
   text-align: center;
   font-weight: 700;
   text-decoration: underline;
-  font-size: 15px;
-  margin-bottom: 20px;
+  font-size: 14pt;
+  white-space: nowrap;
+  margin-bottom: 8mm; // paragraph starts at y=62 (46 + 8 + 8)
 }
 
+// Intro paragraph: multi_cell(_CONTENT_W, 6, ...) per <p>; an empty <p>
+// is pdf.ln(4).
+.cert-body ::ng-deep .ql-editor p:has(> br:only-child) {
+  height: 4mm;
+}
+
+// table_y = paragraph end + 10; 8 rows of 8mm; value column at _LEFT + 55.
 .cert-table {
-  margin-top: 28px;
+  margin-top: 10mm;
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .cert-table-row {
   display: flex;
-  gap: 8px;
+  height: 8mm;
+  line-height: 8mm;
+  white-space: nowrap;
 }
 
 .cert-table-label {
-  width: 180px;
+  width: 55mm;
   flex-shrink: 0;
-  color: #606060;
+  box-sizing: border-box;
+  padding-left: $cell-padding;
+  color: #3c3c3c;
 }
 
 .cert-table-value {
+  padding-left: $cell-padding;
   font-weight: 700;
 }
 
+// cert_y = table end + 8; cell height 6.
 .cert-number {
-  margin-top: 20px;
+  margin-top: 8mm;
+  height: 6mm;
+  line-height: 6mm;
+  padding-left: $cell-padding;
 }
 
+// Footer: separator line at y=278 (0.3mm, rgb 180), text from y=282 in
+// Helvetica 8 with 4mm lines; an empty <p> is pdf.ln(3).
 .cert-footer {
   position: absolute;
   left: $page-margin-x;
   right: $page-margin-x;
-  bottom: 24px;
-  text-align: center;
-  font-size: 10px;
+  top: 278mm;
+  font-size: 8pt;
+  line-height: 4mm;
   color: #505050;
+
+  ::ng-deep .ql-editor p:has(> br:only-child) {
+    height: 3mm;
+  }
 }
 
 .cert-footer-line {
-  border-top: 1px solid #c0c0c0;
-  margin-bottom: 8px;
+  border-top: 0.3mm solid #b4b4b4;
+  margin-bottom: 3.7mm;
 }
 
-.overlay-image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-  object-fit: contain;
+.cert-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 // Signature block — line/date/name/title flow in normal document order
@@ -285,34 +338,35 @@ $page-margin-x: 94.5px;
 // backend's _SIGNATURE_TEXT_X/_W; the draggable signature IMAGE above moves
 // independently via image_layout. Name/title are editable via the embedded
 // p-editor.
+// Backend: date_y = cert_y + 10, line_y = cert_y + 48, name/title from
+// line_y + 2 — all measured from the TOP of the 6mm-high .cert-number cell.
 .signature-caption-flow {
-  // mm matches CSS's own mm unit exactly at 96dpi (see PX_PER_MM in
-  // certificate-template-editor.ts), so these line up with the backend's
-  // own mm gaps around sign_y/date_y/line_y without duplicating the math.
-  margin-top: 10mm; // cert_y -> date_y (sign_y - 8)
-  text-align: center;
-  font-size: 12px;
+  margin-top: 4mm; // cert_y + 6 (cell bottom) -> date_y
 }
 
+// cell(text_w, 6, "Lima, <date>", align="C")
 .signature-caption-date {
-  margin-bottom: 38mm; // date_y -> line_y (sign_y + 30)
-  font-size: 13px;
+  height: 6mm;
+  line-height: 6mm;
+  // date_y + 6 -> line_y - 2: app-adjustable-line is a 4mm hit area
+  // centered on line_y, so its bottom is exactly where the name starts
+  // (line_y + 2).
+  margin-bottom: 30mm;
+  text-align: center;
   white-space: nowrap;
-}
-
-.signature-caption-line {
-  border-top: 1px solid #141414;
-  margin: 0 20px 6px;
 }
 
 .signature-caption-flow ::ng-deep .p-editor-content {
   border: none;
 }
 
+// multi_cell(text_w, 5, ...) per <p>; an empty <p> is pdf.ln(2).
 .signature-caption-flow ::ng-deep .ql-editor {
-  padding: 0;
-  text-align: center;
-  font-size: 12px;
+  line-height: 5mm;
+
+  p:has(> br:only-child) {
+    height: 2mm;
+  }
 }
 
 .signature-caption-flow ::ng-deep .ql-editor strong {

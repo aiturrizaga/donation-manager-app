@@ -21,9 +21,22 @@ import { ColorPicker } from 'primeng/colorpicker';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import Quill from 'quill';
 import { CertificateTemplateApi } from '@shared/api/organization-certificate-template.api';
-import { CertificateTemplate, CertificateVariable, ImagePosition } from '@domain/certificate-template';
+import {
+  CertificateTemplate,
+  CertificateVariable,
+  ImagePosition,
+  SignatureLinePosition,
+} from '@domain/certificate-template';
+import { AdjustableLine, AdjustableLineValue } from '@shared/ui/adjustable-line/adjustable-line';
 import { Organization } from '@domain/organization';
-import { DraggableResizable, DraggableResizableRect } from '@shared/ui/draggable-resizable/draggable-resizable';
+import {
+  CroppableImage,
+  CroppableImageValue,
+  ImageCrop,
+  ImageFrameRect,
+  ImageNaturalSize,
+  NO_CROP,
+} from '@shared/ui/croppable-image/croppable-image';
 import { CertificateTemplateFormFields } from '../../certificate-template.forms';
 import { operationState } from '@shared/utils/operation-state';
 import { environment } from '@env/environment';
@@ -116,19 +129,40 @@ type AlignValue = '' | 'center' | 'right' | 'justify';
 const SIGNATURE_TEXT_X_PX = Math.round((105 - 25) * PX_PER_MM);
 const SIGNATURE_TEXT_W_PX = Math.round(80 * PX_PER_MM);
 
-function mmToPx(pos: ImagePosition, aspectRatio: number): DraggableResizableRect {
+// Signature line default (mm), same as the backend's fixed line before it
+// became configurable: from _SIGNATURE_TEXT_X (105) to 105 + 80 - 5.
+const SIGNATURE_TEXT_X_MM = 105;
+const DEFAULT_SIGNATURE_LINE_MM: SignatureLinePosition = { x: SIGNATURE_TEXT_X_MM, w: 75 };
+
+// Fallback aspect ratios (w/h) used only until the real image loads — see
+// onImageLoaded(), which replaces the height with the image's natural one
+// whenever no explicit height was saved.
+const FALLBACK_ASPECT_RATIO: Record<ImageKey, number> = { logo: 2.5, seal: 1, signature: 2.2 };
+
+const IMAGE_ALT: Record<ImageKey, string> = { logo: 'Logo', seal: 'Sello', signature: 'Firma' };
+
+function mmToPx(pos: ImagePosition, aspectRatio: number): CroppableImageValue {
   const w = pos.w * PX_PER_MM;
   const h = (pos.h ?? pos.w / aspectRatio) * PX_PER_MM;
-  return { x: pos.x * PX_PER_MM, y: pos.y * PX_PER_MM, w, h };
+  return { rect: { x: pos.x * PX_PER_MM, y: pos.y * PX_PER_MM, w, h }, crop: normalizeCrop(pos.crop) };
 }
 
-function pxToMm(rect: DraggableResizableRect): ImagePosition {
+function pxToMm({ rect, crop }: CroppableImageValue): ImagePosition {
   return {
     x: rect.x / PX_PER_MM,
     y: rect.y / PX_PER_MM,
     w: rect.w / PX_PER_MM,
     h: rect.h / PX_PER_MM,
+    crop: hasCrop(crop) ? crop : null,
   };
+}
+
+function normalizeCrop(crop: ImageCrop | null | undefined): ImageCrop {
+  return crop ? { ...NO_CROP, ...crop } : NO_CROP;
+}
+
+function hasCrop(crop: ImageCrop): boolean {
+  return crop.left > 0 || crop.top > 0 || crop.right > 0 || crop.bottom > 0;
 }
 
 // ── Slash command menu ────────────────────────────────────────────────────
@@ -189,7 +223,7 @@ const SLASH_CLOSED: SlashState = {
  */
 @Component({
   selector: 'app-certificate-template-editor',
-  imports: [ReactiveFormsModule, FormsModule, Editor, Button, Message, ColorPicker, DraggableResizable],
+  imports: [ReactiveFormsModule, FormsModule, Editor, Button, Message, ColorPicker, CroppableImage, AdjustableLine],
   templateUrl: './certificate-template-editor.html',
   styleUrl: './certificate-template-editor.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -229,6 +263,15 @@ export class CertificateTemplateEditor implements AfterViewInit {
 
   protected readonly signatureTextX = SIGNATURE_TEXT_X_PX;
   protected readonly signatureTextW = SIGNATURE_TEXT_W_PX;
+
+  // Signature line in mm (saved as-is). On screen it lives inside the
+  // signature block, which starts at x=105mm, so its px x is relative to
+  // that, bounded by the page edges.
+  protected readonly signatureLine = signal<SignatureLinePosition>(DEFAULT_SIGNATURE_LINE_MM);
+  protected readonly signatureLineX = computed(() => (this.signatureLine().x - SIGNATURE_TEXT_X_MM) * PX_PER_MM);
+  protected readonly signatureLineW = computed(() => this.signatureLine().w * PX_PER_MM);
+  protected readonly signatureLineMinX = -SIGNATURE_TEXT_X_MM * PX_PER_MM;
+  protected readonly signatureLineMaxRight = (PAGE_WIDTH_MM - SIGNATURE_TEXT_X_MM) * PX_PER_MM;
 
   // Custom clipboard matcher turns {{variableName}} tokens in the loaded
   // HTML into badge blots; no built-in toolbar module (the external shared
@@ -299,13 +342,39 @@ export class CertificateTemplateEditor implements AfterViewInit {
     signatureHtml: this.#fb.control(DEFAULT_SIGNATURE_HTML, { nonNullable: true }),
   });
 
-  protected readonly logoRect = signal<DraggableResizableRect>(mmToPx(DEFAULT_LAYOUT_MM.logo, 2.5));
-  protected readonly sealRect = signal<DraggableResizableRect>(mmToPx(DEFAULT_LAYOUT_MM.seal, 1));
-  protected readonly signatureRect = signal<DraggableResizableRect>(mmToPx(DEFAULT_LAYOUT_MM.signature, 2.2));
+  // Position/size (page px) + crop of each image overlay; converted to mm
+  // only on save (pxToMm).
+  protected readonly imageLayout = signal<Record<ImageKey, CroppableImageValue>>({
+    logo: mmToPx(DEFAULT_LAYOUT_MM.logo, FALLBACK_ASPECT_RATIO.logo),
+    seal: mmToPx(DEFAULT_LAYOUT_MM.seal, FALLBACK_ASPECT_RATIO.seal),
+    signature: mmToPx(DEFAULT_LAYOUT_MM.signature, FALLBACK_ASPECT_RATIO.signature),
+  });
 
   protected readonly logoUrl = () => this.#imageUrl(this.organization().logoPath);
   protected readonly sealUrl = () => this.#imageUrl(this.organization().sealPath);
   protected readonly signatureUrl = () => this.#imageUrl(this.organization().signaturePath);
+
+  /** Images actually uploaded for this organization, in drawing order. */
+  protected readonly images = computed(() =>
+    (['logo', 'signature', 'seal'] as const)
+      .map((key) => ({ key, alt: IMAGE_ALT[key], url: this.#imageUrlFor(key) }))
+      .filter((img): img is { key: ImageKey; alt: string; url: string } => !!img.url),
+  );
+
+  protected readonly selectedImage = signal<ImageKey | null>(null);
+  protected readonly croppingImage = signal<ImageKey | null>(null);
+  protected readonly selectedHasCrop = computed(() => {
+    const key = this.selectedImage();
+    return !!key && hasCrop(this.imageLayout()[key].crop);
+  });
+
+  // Keyed by image URL (not ImageKey) so switching organization never reuses
+  // another organization's image proportions.
+  readonly #naturalSizeByUrl = new Map<string, ImageNaturalSize>();
+  // Images whose height wasn't saved explicitly (new template, or a legacy
+  // layout with h: null) — their height is derived from the real image once
+  // it loads, the same way the PDF keeps the natural ratio when h is null.
+  readonly #pendingNaturalHeight = new Set<ImageKey>();
 
   readonly #quillByKey: Partial<Record<EditorKey, QuillInstance>> = {};
 
@@ -333,9 +402,15 @@ export class CertificateTemplateEditor implements AfterViewInit {
         footerHtml: current?.footerHtml || DEFAULT_FOOTER_HTML,
         signatureHtml: current?.signatureHtml || DEFAULT_SIGNATURE_HTML,
       });
-      this.logoRect.set(this.#resolveRect('logo', current, 2.5));
-      this.sealRect.set(this.#resolveRect('seal', current, 1));
-      this.signatureRect.set(this.#resolveRect('signature', current, 2.2));
+      this.#pendingNaturalHeight.clear();
+      this.imageLayout.set({
+        logo: this.#resolveLayout('logo', current),
+        seal: this.#resolveLayout('seal', current),
+        signature: this.#resolveLayout('signature', current),
+      });
+      this.signatureLine.set(current?.imageLayout?.signatureLine ?? DEFAULT_SIGNATURE_LINE_MM);
+      this.selectedImage.set(null);
+      this.croppingImage.set(null);
       this.#closeSlash();
     });
 
@@ -597,6 +672,72 @@ export class CertificateTemplateEditor implements AfterViewInit {
     this.slash.set(SLASH_CLOSED);
   }
 
+  // ── Image overlays: move/resize/crop ────────────────────────────────────
+
+  protected onImageChanged(key: ImageKey, value: CroppableImageValue): void {
+    this.#pendingNaturalHeight.delete(key);
+    this.imageLayout.update((layout) => ({ ...layout, [key]: value }));
+  }
+
+  protected onImageLoaded(key: ImageKey, natural: ImageNaturalSize): void {
+    const url = this.#imageUrlFor(key);
+    if (url) this.#naturalSizeByUrl.set(url, natural);
+    if (this.#pendingNaturalHeight.delete(key)) this.resetAspectRatio(key);
+  }
+
+  protected onImageSelected(key: ImageKey, selected: boolean): void {
+    if (selected) this.selectedImage.set(key);
+    else if (this.selectedImage() === key) this.selectedImage.set(null);
+  }
+
+  protected onImageCropping(key: ImageKey, cropping: boolean): void {
+    if (cropping) this.croppingImage.set(key);
+    else if (this.croppingImage() === key) this.croppingImage.set(null);
+  }
+
+  toggleCrop(): void {
+    const key = this.selectedImage();
+    if (!key) return;
+    this.croppingImage.set(this.croppingImage() === key ? null : key);
+  }
+
+  resetCrop(): void {
+    const key = this.selectedImage();
+    if (!key) return;
+    const { rect, crop } = this.imageLayout()[key];
+    // Restore the full image at its current scale, anchored where the
+    // uncropped image sat, so removing the crop doesn't zoom the image.
+    const fullW = rect.w / (1 - crop.left - crop.right);
+    const fullH = rect.h / (1 - crop.top - crop.bottom);
+    const next: ImageFrameRect = {
+      x: Math.max(0, rect.x - crop.left * fullW),
+      y: Math.max(0, rect.y - crop.top * fullH),
+      w: Math.min(fullW, PAGE_WIDTH_PX),
+      h: Math.min(fullH, PAGE_HEIGHT_PX),
+    };
+    this.croppingImage.set(null);
+    this.onImageChanged(key, { rect: next, crop: NO_CROP });
+  }
+
+  /** Undoes any stretching: keeps the width and sets the height matching
+   * the (cropped) image's real proportions. */
+  resetAspectRatio(key: ImageKey | null = this.selectedImage()): void {
+    if (!key) return;
+    const natural = this.#naturalSizeFor(key);
+    if (!natural) return;
+    const { rect, crop } = this.imageLayout()[key];
+    const h = rect.w / this.#visibleAspectRatio(natural, crop);
+    this.imageLayout.update((layout) => ({ ...layout, [key]: { crop, rect: { ...rect, h } } }));
+  }
+
+  protected onSignatureLineChanged({ x, w }: AdjustableLineValue): void {
+    // Rounded to 0.01mm and re-clamped so float noise can never push x + w
+    // past the page width the backend validates (x >= 0, x + w <= 210).
+    const xMm = Math.max(0, Math.round((x / PX_PER_MM + SIGNATURE_TEXT_X_MM) * 100) / 100);
+    const wMm = Math.min(Math.round((w / PX_PER_MM) * 100) / 100, PAGE_WIDTH_MM - xMm);
+    this.signatureLine.set({ x: xMm, w: wMm });
+  }
+
   // ── Save / preview / reset ──────────────────────────────────────────────
 
   save(): void {
@@ -608,9 +749,10 @@ export class CertificateTemplateEditor implements AfterViewInit {
           footerHtml: raw.footerHtml,
           signatureHtml: raw.signatureHtml,
           imageLayout: {
-            logo: pxToMm(this.logoRect()),
-            seal: pxToMm(this.sealRect()),
-            signature: pxToMm(this.signatureRect()),
+            logo: pxToMm(this.imageLayout().logo),
+            seal: pxToMm(this.imageLayout().seal),
+            signature: pxToMm(this.imageLayout().signature),
+            signatureLine: this.signatureLine(),
           },
         }),
         'Plantilla de certificado guardada.',
@@ -662,9 +804,34 @@ export class CertificateTemplateEditor implements AfterViewInit {
       .subscribe({ next: () => this.deleted.emit() });
   }
 
-  #resolveRect(key: ImageKey, current: CertificateTemplate | null, aspectRatio: number): DraggableResizableRect {
-    const saved = current?.imageLayout?.[key];
-    return mmToPx(saved ?? DEFAULT_LAYOUT_MM[key], aspectRatio);
+  #resolveLayout(key: ImageKey, current: CertificateTemplate | null): CroppableImageValue {
+    const position = current?.imageLayout?.[key] ?? DEFAULT_LAYOUT_MM[key];
+    const natural = this.#naturalSizeFor(key);
+    if (position.h == null) {
+      if (natural) return mmToPx(position, this.#visibleAspectRatio(natural, normalizeCrop(position.crop)));
+      this.#pendingNaturalHeight.add(key);
+    }
+    return mmToPx(position, FALLBACK_ASPECT_RATIO[key]);
+  }
+
+  #visibleAspectRatio(natural: ImageNaturalSize, crop: ImageCrop): number {
+    return (natural.width * (1 - crop.left - crop.right)) / (natural.height * (1 - crop.top - crop.bottom));
+  }
+
+  #naturalSizeFor(key: ImageKey): ImageNaturalSize | undefined {
+    const url = this.#imageUrlFor(key);
+    return url ? this.#naturalSizeByUrl.get(url) : undefined;
+  }
+
+  #imageUrlFor(key: ImageKey): string | null {
+    switch (key) {
+      case 'logo':
+        return this.logoUrl();
+      case 'seal':
+        return this.sealUrl();
+      default:
+        return this.signatureUrl();
+    }
   }
 
   #imageUrl(path: string | null): string | null {

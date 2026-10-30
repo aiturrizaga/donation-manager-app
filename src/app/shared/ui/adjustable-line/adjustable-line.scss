@@ -1,0 +1,59 @@
+// The host is a 4mm-tall hit area; the visible line sits in its vertical
+// center so the parent can place the host's center exactly on the PDF's
+// line_y.
+:host {
+  position: relative;
+  // Above the signature/seal images that usually overlap it, so the line
+  // can still be picked; only this thin 4mm strip takes precedence.
+  z-index: 3;
+  display: block;
+  height: 4mm;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+.line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 0.2mm);
+  border-top: 0.4mm solid #141414;
+  pointer-events: none;
+}
+
+:host(:hover) .line {
+  outline: 1px dashed rgba(99, 102, 241, 0.5);
+  outline-offset: 3px;
+}
+
+:host(.selected) .line {
+  outline: 1px solid var(--p-primary-color, #6366f1);
+  outline-offset: 3px;
+}
+
+.grip {
+  position: absolute;
+  top: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid var(--p-primary-color, #6366f1);
+  cursor: ew-resize;
+  opacity: 0;
+  pointer-events: none;
+
+  :host(.selected) & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.grip-start {
+  left: -5px;
+}
+
+.grip-end {
+  right: -5px;
+}

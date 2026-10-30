@@ -1,0 +1,26 @@
+@if (cropping()) {
+  <img
+    class="ghost"
+    [src]="src()"
+    alt=""
+    [style.left.px]="ghostRect().x"
+    [style.top.px]="ghostRect().y"
+    [style.width.px]="ghostRect().w"
+    [style.height.px]="ghostRect().h"
+  />
+}
+<div class="frame">
+  <img
+    class="image"
+    [src]="src()"
+    [alt]="alt()"
+    [style.left.%]="imageStyle().left"
+    [style.top.%]="imageStyle().top"
+    [style.width.%]="imageStyle().width"
+    [style.height.%]="imageStyle().height"
+    (load)="onImageLoad($event)"
+  />
+</div>
+@for (handle of handles; track handle) {
+  <div [class]="'handle handle-' + handle" (pointerdown)="onHandlePointerDown($event, handle)"></div>
+}

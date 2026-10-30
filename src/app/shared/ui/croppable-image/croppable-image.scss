@@ -1,0 +1,78 @@
+:host {
+  position: absolute;
+  display: block;
+  cursor: move;
+  touch-action: none;
+  outline: 1px dashed transparent;
+  user-select: none;
+
+  &:hover {
+    outline-color: rgba(99, 102, 241, 0.5);
+  }
+
+  // Word/Docs-style: outline + handles only once the image is selected.
+  &.selected {
+    outline: 1px solid var(--p-primary-color, #6366f1);
+  }
+
+  &.cropping {
+    outline: 1px solid #141414;
+    z-index: 2;
+  }
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+// Stretched to fill the frame on purpose (no object-fit) — the PDF draws the
+// image at exactly x/y/w/h, so the editor must show the same distortion.
+.image,
+.ghost {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+// The cropped-away part, shown around the frame while in crop mode.
+.ghost {
+  opacity: 0.35;
+  outline: 1px dashed rgba(0, 0, 0, 0.45);
+}
+
+.handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid var(--p-primary-color, #6366f1);
+  touch-action: none;
+  opacity: 0;
+  pointer-events: none;
+
+  :host(.selected) & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // Crop mode: dark square handles, like Word's crop marks.
+  :host(.cropping) & {
+    border-radius: 1px;
+    background: #141414;
+    border-color: #ffffff;
+  }
+}
+
+.handle-nw { left: -5px; top: -5px; cursor: nwse-resize; }
+.handle-n { left: calc(50% - 5px); top: -5px; cursor: ns-resize; }
+.handle-ne { right: -5px; top: -5px; cursor: nesw-resize; }
+.handle-e { right: -5px; top: calc(50% - 5px); cursor: ew-resize; }
+.handle-se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+.handle-s { left: calc(50% - 5px); bottom: -5px; cursor: ns-resize; }
+.handle-sw { left: -5px; bottom: -5px; cursor: nesw-resize; }
+.handle-w { left: -5px; top: calc(50% - 5px); cursor: ew-resize; }
