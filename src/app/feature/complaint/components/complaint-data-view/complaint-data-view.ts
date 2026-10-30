@@ -5,6 +5,7 @@ import { TableModule, TablePageEvent } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
+import { OrganizationLabel } from '@shared/ui/organization-label/organization-label';
 import { Skeleton } from 'primeng/skeleton';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { EmptyState } from '@shared/components';
@@ -26,7 +27,7 @@ const STATUS_SEVERITIES: Record<string, 'success' | 'warn' | 'danger' | 'seconda
 
 @Component({
   selector: 'app-complaint-data-view',
-  imports: [DatePipe, RouterLink, TableModule, Tag, Button, Tooltip, Skeleton, Paginator, EmptyState],
+  imports: [DatePipe, RouterLink, TableModule, Tag, Button, Tooltip, Skeleton, Paginator, EmptyState, OrganizationLabel],
   templateUrl: './complaint-data-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -58,7 +58,7 @@
         <td>
           @if (complaint.organization) {
             <span class="text-sm text-gray-700 dark:text-zinc-300">
-              {{ complaint.organization.tradeName ?? complaint.organization.legalName }}
+              <app-organization-label [organization]="complaint.organization" />
             </span>
           } @else {
             <p-tag value="Sin organización" severity="danger" />
@@ -141,7 +141,7 @@
             </span>
             @if (complaint.organization) {
               <span class="text-xs text-gray-400">
-                {{ complaint.organization.tradeName ?? complaint.organization.legalName }}
+                <app-organization-label [organization]="complaint.organization" />
                 @if (complaint.donationPage) {
                   · {{ complaint.donationPage.name }}
                 }

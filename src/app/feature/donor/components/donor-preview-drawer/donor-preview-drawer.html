@@ -143,6 +143,9 @@
 
   <ng-template #footer>
     <div class="flex justify-between items-center">
+      <!-- Navigates without closing the drawer first: PrimeNG's Drawer only
+           removes its mask/scroll lock on destroy while still visible, so
+           closing and navigating together left the overlay stuck. -->
       <p-button
         label="Ver perfil completo"
         icon="ti ti-arrow-right"
@@ -150,7 +153,6 @@
         severity="secondary"
         [outlined]="true"
         [routerLink]="['/donors', donor().id]"
-        (click)="close()"
       />
       <p-button
         label="Cerrar"

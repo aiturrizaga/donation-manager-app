@@ -130,10 +130,10 @@ export class DonationListPage {
   onExport(): void {
     this.exporting.set(true);
     this.facade
-      .exportCsv()
+      .exportXlsx()
       .pipe(finalize(() => this.exporting.set(false)))
       .subscribe((blob) => {
-        this.#fileDownload.download(blob, `donaciones_${new Date().toISOString().slice(0, 10)}.csv`);
+        this.#fileDownload.download(blob, `donaciones_${new Date().toISOString().slice(0, 10)}.xlsx`);
       });
   }
 

@@ -10,6 +10,8 @@ import { Donation } from '@domain/donation';
 import { DonationApi } from '@shared/api/donation.api';
 import { DonationDetailCertificate } from '../donation-detail-certificate/donation-detail-certificate';
 import { DonationDetailWebhooks } from '../donation-detail-webhooks/donation-detail-webhooks';
+import { getDonationStatusLabel, getDonationStatusSeverity } from '@shared/utils/donation-status.util';
+import { getTargetTypeLabel } from '@shared/utils/target-type.util';
 
 @Component({
   selector: 'app-donation-detail-page',
@@ -49,26 +51,16 @@ export class DonationDetailPage {
       '—',
   );
 
-  getStatusLabel(status: string): string {
-    const map: Record<string, string> = {
-      completed: 'Completado',
-      pending: 'Pendiente',
-      failed: 'Fallido',
-      refunded: 'Reembolsado',
-      expired: 'Expirado',
-    };
-    return map[status] ?? status;
+  getTargetTypeLabel(type: string): string {
+    return getTargetTypeLabel(type);
   }
 
-  getStatusSeverity(status: string): 'success' | 'warn' | 'danger' | 'secondary' {
-    const map: Record<string, any> = {
-      completed: 'success',
-      pending: 'warn',
-      failed: 'danger',
-      refunded: 'secondary',
-      expired: 'secondary',
-    };
-    return map[status] ?? 'secondary';
+  getStatusLabel(status: string): string {
+    return getDonationStatusLabel(status);
+  }
+
+  getStatusSeverity(status: string) {
+    return getDonationStatusSeverity(status);
   }
 
   getTypeLabel(type: string): string {

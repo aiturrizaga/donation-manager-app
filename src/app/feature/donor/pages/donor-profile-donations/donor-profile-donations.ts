@@ -5,6 +5,7 @@ import { Tag } from 'primeng/tag';
 import { EmptyState } from '@shared/components';
 import { DonationApi } from '@shared/api/donation.api';
 import { Donation } from '@domain/donation';
+import { getDonationStatusLabel, getDonationStatusSeverity } from '@shared/utils/donation-status.util';
 
 @Component({
   selector: 'app-donor-profile-donations',
@@ -46,24 +47,10 @@ export class DonorProfileDonations implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const map: Record<string, string> = {
-      completed: 'Completado',
-      pending: 'Pendiente',
-      failed: 'Fallido',
-      refunded: 'Reembolsado',
-      expired: 'Expirado',
-    };
-    return map[status] ?? status;
+    return getDonationStatusLabel(status);
   }
 
-  getStatusSeverity(status: string): 'success' | 'warn' | 'danger' | 'secondary' {
-    const map: Record<string, any> = {
-      completed: 'success',
-      pending: 'warn',
-      failed: 'danger',
-      refunded: 'secondary',
-      expired: 'secondary',
-    };
-    return map[status] ?? 'secondary';
+  getStatusSeverity(status: string) {
+    return getDonationStatusSeverity(status);
   }
 }

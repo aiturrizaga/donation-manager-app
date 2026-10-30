@@ -9,6 +9,9 @@ import { Paginator, PaginatorState } from 'primeng/paginator';
 import { Tooltip } from 'primeng/tooltip';
 import { EmptyState } from '@shared/components';
 import { Donation } from '@domain/donation';
+import { OrganizationLabel } from '@shared/ui/organization-label/organization-label';
+import { getTargetTypeLabel } from '@shared/utils/target-type.util';
+import { getDonationStatusLabel, getDonationStatusSeverity } from '@shared/utils/donation-status.util';
 
 @Component({
   selector: 'app-donation-data-view',
@@ -23,6 +26,7 @@ import { Donation } from '@domain/donation';
     Paginator,
     Tooltip,
     EmptyState,
+    OrganizationLabel,
   ],
   templateUrl: './donation-data-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,25 +46,15 @@ export class DonationDataView {
   readonly skeletonRows = Array(5).fill({});
 
   getStatusLabel(status: string): string {
-    const map: Record<string, string> = {
-      completed: 'Completado',
-      pending: 'Pendiente',
-      failed: 'Fallido',
-      refunded: 'Reembolsado',
-      expired: 'Expirado',
-    };
-    return map[status] ?? status;
+    return getDonationStatusLabel(status);
   }
 
-  getStatusSeverity(status: string): 'success' | 'warn' | 'danger' | 'secondary' | 'info' {
-    const map: Record<string, any> = {
-      completed: 'success',
-      pending: 'warn',
-      failed: 'danger',
-      refunded: 'secondary',
-      expired: 'secondary',
-    };
-    return map[status] ?? 'secondary';
+  getStatusSeverity(status: string) {
+    return getDonationStatusSeverity(status);
+  }
+
+  getTargetTypeLabel(type: string): string {
+    return getTargetTypeLabel(type);
   }
 
   getTypeLabel(type: string): string {

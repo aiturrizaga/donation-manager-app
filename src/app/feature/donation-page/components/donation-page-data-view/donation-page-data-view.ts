@@ -12,6 +12,7 @@ import { Paginator, PaginatorState } from 'primeng/paginator';
 import { Tooltip } from 'primeng/tooltip';
 import { EmptyState } from '@shared/components';
 import { DonationPageSummary } from '@domain/donation-page';
+import { OrganizationLabel } from '@shared/ui/organization-label/organization-label';
 
 @Component({
   selector: 'app-donation-page-data-view',
@@ -27,6 +28,7 @@ import { DonationPageSummary } from '@domain/donation-page';
     Paginator,
     Tooltip,
     EmptyState,
+    OrganizationLabel,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './donation-page-data-view.html',

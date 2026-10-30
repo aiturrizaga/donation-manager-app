@@ -22,8 +22,11 @@ export class DonationCertificateApi {
       .pipe(map((r) => r.data));
   }
 
-  resendEmail(donationId: string): Observable<void> {
-    return this.#http.post<void>(`${this.#base}/${donationId}/certificate/resend-email`, {});
+  /** Sends the certificate now and returns it with sentByEmail/sentAt updated. */
+  resendEmail(donationId: string): Observable<any> {
+    return this.#http
+      .post<ApiResponse<any>>(`${this.#base}/${donationId}/certificate/resend-email`, {})
+      .pipe(map((r) => r.data));
   }
 
   // fileUrl comes from the certificate response (e.g. DonationCertificateResponse.fileUrl) —

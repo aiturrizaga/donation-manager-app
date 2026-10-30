@@ -21,6 +21,7 @@ export class DonationDetailCertificate implements OnInit {
   readonly certificate = signal<any | null>(null);
   readonly loading = signal(true);
   readonly generating = signal(false);
+  readonly sending = signal(false);
 
   ngOnInit(): void {
     this._load();
@@ -50,6 +51,18 @@ export class DonationDetailCertificate implements OnInit {
         this.#message.add({ severity: 'success', summary: 'Listo', detail: 'Certificado generado.' });
       },
       error: () => this.generating.set(false),
+    });
+  }
+
+  resendEmail(): void {
+    this.sending.set(true);
+    this.#api.resendEmail(this.donationId()).subscribe({
+      next: (cert) => {
+        this.certificate.set(cert);
+        this.sending.set(false);
+        this.#message.add({ severity: 'success', summary: 'Listo', detail: 'Certificado enviado por correo.' });
+      },
+      error: () => this.sending.set(false),
     });
   }
 

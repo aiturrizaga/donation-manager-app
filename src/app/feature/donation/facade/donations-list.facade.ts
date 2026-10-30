@@ -74,9 +74,9 @@ export class DonationsListFacade {
     this.#listResource.reload();
   }
 
-  exportCsv(): Observable<Blob> {
+  exportXlsx(): Observable<Blob> {
     const c = this.#criteria();
-    return this.#api.exportCsv({
+    return this.#api.exportXlsx({
       organizationIds: c.organizationIds,
       status: c.status,
       donationType: c.donationType,

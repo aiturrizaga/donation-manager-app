@@ -4,6 +4,7 @@ import { TableModule, TablePageEvent } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
+import { OrganizationLabel } from '@shared/ui/organization-label/organization-label';
 import { Skeleton } from 'primeng/skeleton';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { EmptyState } from '@shared/components';
@@ -11,7 +12,7 @@ import { LegalPage } from '@domain/legal-page';
 
 @Component({
   selector: 'app-legal-page-data-view',
-  imports: [RouterLink, TableModule, Tag, Button, Tooltip, Skeleton, Paginator, EmptyState],
+  imports: [RouterLink, TableModule, Tag, Button, Tooltip, Skeleton, Paginator, EmptyState, OrganizationLabel],
   templateUrl: './legal-page-data-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

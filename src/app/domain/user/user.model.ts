@@ -20,6 +20,16 @@ export interface UserPartner {
   documentVerified: boolean;
 }
 
+/** The password is returned only in this response; the API never shows it again. */
+export interface UserCreatedResponse {
+  user: User;
+  temporaryPassword: string;
+}
+
+export interface TemporaryPasswordResponse {
+  temporaryPassword: string;
+}
+
 export interface UserFilterParams {
   search?: string | null;
   isActive?: boolean | null;

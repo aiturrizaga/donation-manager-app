@@ -43,7 +43,7 @@
         </td>
         <td>
           <span class="text-sm text-gray-600 dark:text-zinc-300">
-            {{ page.organization?.tradeName ?? page.organization?.legalName ?? '—' }}
+            <app-organization-label [organization]="page.organization" />
           </span>
         </td>
         <td>
@@ -148,7 +148,7 @@
             </a>
             <span class="text-xs font-mono text-gray-400">/{{ page.slug }}</span>
             <span class="text-xs text-gray-400">
-              {{ page.organization?.tradeName ?? '—' }}
+              <app-organization-label [organization]="page.organization" />
             </span>
           </div>
           <div class="flex items-center gap-2 shrink-0">

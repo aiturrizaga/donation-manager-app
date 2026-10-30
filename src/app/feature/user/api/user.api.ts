@@ -4,7 +4,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiPagedResponse, ApiResponse, PageContent, PageQuery } from '@shared/models';
 import { buildHttpParams } from '@shared/utils/http.util';
-import { User, UserCreateRequest, UserFilterParams, UserUpdateRequest } from '@domain/user';
+import {
+  TemporaryPasswordResponse,
+  User,
+  UserCreatedResponse,
+  UserCreateRequest,
+  UserFilterParams,
+  UserUpdateRequest,
+} from '@domain/user';
 import { environment } from '@env/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -21,8 +28,10 @@ export class UserApi {
     return this.#http.get<ApiResponse<User>>(`${this.#base}/${id}`).pipe(map((r) => r.data));
   }
 
-  create(payload: UserCreateRequest): Observable<User> {
-    return this.#http.post<ApiResponse<User>>(this.#base, payload).pipe(map((r) => r.data));
+  create(payload: UserCreateRequest): Observable<UserCreatedResponse> {
+    return this.#http
+      .post<ApiResponse<UserCreatedResponse>>(this.#base, payload)
+      .pipe(map((r) => r.data));
   }
 
   update(id: number, payload: UserUpdateRequest): Observable<User> {
@@ -41,8 +50,10 @@ export class UserApi {
       .pipe(map((r) => r.data));
   }
 
-  resetPassword(id: number): Observable<void> {
-    return this.#http.post<void>(`${this.#base}/${id}/reset-password`, {});
+  resetPassword(id: number): Observable<TemporaryPasswordResponse> {
+    return this.#http
+      .post<ApiResponse<TemporaryPasswordResponse>>(`${this.#base}/${id}/reset-password`, {})
+      .pipe(map((r) => r.data));
   }
 
   delete(id: number): Observable<void> {

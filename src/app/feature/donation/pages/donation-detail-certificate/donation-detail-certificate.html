@@ -20,6 +20,14 @@
           {{ certificate().issuedAt | date:'dd MMM yyyy, HH:mm' }}
         </span>
       </div>
+      @if (certificate().regeneratedAt) {
+        <div class="flex justify-between py-3 gap-3">
+          <span class="text-sm text-gray-400">Fecha de regeneración</span>
+          <span class="text-sm text-gray-900 dark:text-zinc-100">
+            {{ certificate().regeneratedAt | date:'dd MMM yyyy, HH:mm' }}
+          </span>
+        </div>
+      }
       <div class="flex justify-between py-3 gap-3">
         <span class="text-sm text-gray-400">Donante en cert.</span>
         <span class="text-sm text-gray-900 dark:text-zinc-100">{{ certificate().donorNameOnCert }}</span>
@@ -34,12 +42,19 @@
           {{ certificate().currencyOnCert }} {{ certificate().amountOnCert | number:'1.2-2' }}
         </span>
       </div>
-      <div class="flex justify-between py-3 gap-3">
+      <div class="flex justify-between items-center py-3 gap-3">
         <span class="text-sm text-gray-400">Enviado por email</span>
-        <p-tag
-          [value]="certificate().sentByEmail ? 'Enviado' : 'Pendiente'"
-          [severity]="certificate().sentByEmail ? 'success' : 'secondary'"
-        />
+        <div class="flex items-center gap-2">
+          @if (certificate().sentByEmail && certificate().sentAt) {
+            <span class="text-xs text-gray-500 dark:text-zinc-400">
+              {{ certificate().sentAt | date:'dd MMM yyyy, HH:mm' }}
+            </span>
+          }
+          <p-tag
+            [value]="certificate().sentByEmail ? 'Enviado' : 'Pendiente'"
+            [severity]="certificate().sentByEmail ? 'success' : 'secondary'"
+          />
+        </div>
       </div>
     </div>
 
@@ -59,8 +74,19 @@
         [text]="true"
         size="small"
         [loading]="generating()"
+        [disabled]="sending()"
         (onClick)="generate()"
       />
+      @if (!certificate().sentByEmail) {
+        <p-button
+          icon="ti ti-mail-forward"
+          label="Reenviar correo"
+          size="small"
+          [loading]="sending()"
+          [disabled]="generating()"
+          (onClick)="resendEmail()"
+        />
+      }
     </div>
 
   </div>

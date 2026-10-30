@@ -47,7 +47,7 @@
         </td>
         <td>
           <span class="text-sm text-gray-700 dark:text-zinc-300">
-            {{ page.organization?.tradeName ?? page.organization?.legalName ?? '—' }}
+            <app-organization-label [organization]="page.organization" />
           </span>
         </td>
         <td>
@@ -146,7 +146,7 @@
           <span class="text-xs text-gray-500 dark:text-zinc-400">
             {{ getTypeLabel(page) }}
             @if (page.organization) {
-              · {{ page.organization.tradeName ?? page.organization.legalName }}
+              · <app-organization-label [organization]="page.organization" />
             }
           </span>
         </a>

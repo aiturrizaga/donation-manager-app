@@ -10,9 +10,13 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { UsersListFacade } from '../../facade/users-list.facade';
 import { UserFilters } from '../../components/user-filters/user-filters';
 import { UserDataView } from '../../components/user-data-view/user-data-view';
-import { User } from '@domain/user';
+import { User, UserCreatedResponse } from '@domain/user';
 import { UserApi } from '../../api/user.api';
 import { SaveUserDlg } from '../../components/save-user-dlg/save-user-dlg';
+import {
+  TemporaryPasswordDlg,
+  TemporaryPasswordDlgData,
+} from '../../components/temporary-password-dlg/temporary-password-dlg';
 import { InlineError } from '@shared/ui/inline-error/inline-error';
 import { rowOperation } from '@shared/utils/row-operation';
 
@@ -133,15 +137,21 @@ export class UserListPage {
   onResetPassword(user: User): void {
     if (this.resetPasswordOp.isActive(user.id)) return;
     this.#confirm.confirm({
-      message: `Se enviará un correo a ${user.partner.email} para restablecer la contraseña.`,
+      message:
+        `Se generará una contraseña temporal nueva para ${user.partner.name} y la actual dejará ` +
+        'de funcionar. Al iniciar sesión deberá cambiarla.',
       header: 'Restablecer contraseña',
       rejectLabel: 'No',
-      acceptLabel: 'Si, enviar',
+      acceptLabel: 'Si, restablecer',
       icon: 'ti ti-lock-open',
       accept: () => {
         this.resetPasswordOp.run(user.id, this.#api.resetPassword(user.id)).subscribe({
-          next: () => this.#notifySuccess('Correo de restablecimiento enviado.'),
-          error: () => this.#notifyError('No se pudo enviar el correo de restablecimiento.'),
+          next: ({ temporaryPassword }) =>
+            this.#showTemporaryPassword('Contraseña restablecida', {
+              password: temporaryPassword,
+              email: user.partner.email,
+            }),
+          error: () => this.#notifyError('No se pudo restablecer la contraseña.'),
         });
       },
     });
@@ -181,8 +191,25 @@ export class UserListPage {
       closable: true,
     });
 
-    ref?.onClose.subscribe((result: User) => {
-      if (result) this.facade.reload();
+    ref?.onClose.subscribe((result?: UserCreatedResponse) => {
+      if (!result) return;
+      this.facade.reload();
+      this.#showTemporaryPassword('Usuario creado', {
+        password: result.temporaryPassword,
+        email: result.user.partner.email,
+      });
+    });
+  }
+
+  #showTemporaryPassword(header: string, data: TemporaryPasswordDlgData): void {
+    this.#dialog.open(TemporaryPasswordDlg, {
+      header,
+      width: '480px',
+      modal: true,
+      // Only "Listo" closes it: the password can't be shown again.
+      closable: false,
+      closeOnEscape: false,
+      data,
     });
   }
 

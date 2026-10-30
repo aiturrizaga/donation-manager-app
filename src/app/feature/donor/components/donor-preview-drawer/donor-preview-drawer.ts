@@ -9,6 +9,7 @@ import { Button } from 'primeng/button';
 import { RouterLink } from '@angular/router';
 import { Donor } from '@domain/donor';
 import { DonationApi } from '@shared/api/donation.api';
+import { getDonationStatusLabel, getDonationStatusSeverity } from '@shared/utils/donation-status.util';
 
 @Component({
   selector: 'app-donor-preview-drawer',
@@ -53,29 +54,14 @@ export class DonorPreviewDrawer {
       });
   }
 
-  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
-    const map: Record<string, any> = {
-      completed: 'success',
-      pending: 'warn',
-      failed: 'danger',
-      refunded: 'secondary',
-      expired: 'secondary',
-    };
-    return map[status] ?? 'secondary';
+  getStatusSeverity(status: string) {
+    return getDonationStatusSeverity(status);
   }
 
   getStatusLabel(status: string): string {
-    const map: Record<string, string> = {
-      completed: 'Completado',
-      pending: 'Pendiente',
-      failed: 'Fallido',
-      refunded: 'Reembolsado',
-      expired: 'Expirado',
-    };
-    return map[status] ?? status;
+    return getDonationStatusLabel(status);
   }
 
   close(): void {
     this.visibleChange.emit(false);
-  }
-}
+  }}

@@ -36,7 +36,7 @@ export class DonationApi {
       .pipe(map((r) => r.data));
   }
 
-  exportCsv(filters: DonationFilterParams): Observable<Blob> {
+  exportXlsx(filters: DonationFilterParams): Observable<Blob> {
     const params = buildHttpParams({ ...filters });
     return this.#http.get(`${this.#base}/export`, {
       params,

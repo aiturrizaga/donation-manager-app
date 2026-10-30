@@ -5,14 +5,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { DatePicker } from 'primeng/datepicker';
+import { DONATION_STATUS_OPTIONS } from '@shared/utils/donation-status.util';
 
-const STATUS_OPTIONS = [
-  { label: 'Completado', value: 'completed' },
-  { label: 'Pendiente', value: 'pending' },
-  { label: 'Fallido', value: 'failed' },
-  { label: 'Reembolsado', value: 'refunded' },
-  { label: 'Expirado', value: 'expired' },
-];
+const STATUS_OPTIONS = DONATION_STATUS_OPTIONS;
 
 const TYPE_OPTIONS = [
   { label: 'Única', value: 'one_time' },
