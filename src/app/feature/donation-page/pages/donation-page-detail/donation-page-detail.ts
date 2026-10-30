@@ -9,6 +9,7 @@ import { DonationPageApi } from '../../api/donation-page.api';
 import { PageTitleService } from '@core/services';
 import { PageTabGeneral } from '../../components/page-tab-general/page-tab-general';
 import { PageTabBranding } from '../../components/page-tab-branding/page-tab-branding';
+import { PageTabSeo } from '../../components/page-tab-seo/page-tab-seo';
 import { PageFormConfig } from '@shared/ui/donation-page-form-config-editor/page-form-config';
 import { PageTabTargets } from '../../components/page-tab-targets/page-tab-targets';
 
@@ -24,6 +25,7 @@ import { PageTabTargets } from '../../components/page-tab-targets/page-tab-targe
     Tag,
     PageTabGeneral,
     PageTabBranding,
+    PageTabSeo,
     PageFormConfig,
     PageTabTargets,
   ],

@@ -15,6 +15,12 @@ export interface PageBrandingForm {
   welcomeText: FormControl<string | null>;
 }
 
+export interface PageSeoForm {
+  metaTitle: FormControl<string | null>;
+  metaDescription: FormControl<string | null>;
+  noIndex: FormControl<boolean>;
+}
+
 /** Formulario de la pestaña "Pasarela" del detalle de una DonationPage. */
 export interface DonationPageGatewayForm {
   publicKey: FormControl<string>;

@@ -1,0 +1,138 @@
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+  <!-- Formulario -->
+  <form [formGroup]="form" (ngSubmit)="save()" class="lg:col-span-3 flex flex-col gap-5">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-baseline justify-between gap-2">
+        <label class="font-medium" for="seo-title">
+          Título
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <span
+          class="text-xs"
+          [class.text-gray-400]="titleLength() <= titleRecommended"
+          [class.text-orange-500]="titleLength() > titleRecommended"
+        >
+          {{ titleLength() }}/{{ titleRecommended }}
+        </span>
+      </div>
+      <input
+        id="seo-title"
+        pInputText
+        formControlName="metaTitle"
+        [placeholder]="page().name"
+        [maxlength]="titleMax"
+        [invalid]="formValidator.hasError('metaTitle')"
+      />
+      <span class="text-xs text-gray-400">
+        Aparece en la pestaña del navegador, en Google y como título al compartir el link. Si lo
+        dejas vacío, se usa el nombre de la página.
+      </span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <div class="flex items-baseline justify-between gap-2">
+        <label class="font-medium" for="seo-description">
+          Descripción
+          <span class="text-gray-400 font-normal text-xs ml-1">(opcional)</span>
+        </label>
+        <span
+          class="text-xs"
+          [class.text-gray-400]="descriptionLength() <= descriptionRecommended"
+          [class.text-orange-500]="descriptionLength() > descriptionRecommended"
+        >
+          {{ descriptionLength() }}/{{ descriptionRecommended }}
+        </span>
+      </div>
+      <textarea
+        id="seo-description"
+        pTextarea
+        rows="3"
+        formControlName="metaDescription"
+        placeholder="Ej. Apoya la educación de jóvenes en Lima. Dona en línea de forma segura."
+        [maxlength]="descriptionMax"
+        [invalid]="formValidator.hasError('metaDescription')"
+      ></textarea>
+      <span class="text-xs text-gray-400">
+        Texto bajo el título en Google y en el preview al compartir. Si lo dejas vacío, se usa el
+        texto de bienvenida del branding.
+      </span>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <app-image-upload
+        label="Imagen para compartir"
+        [imageUrl]="ogImageUrl()"
+        [allowedTypes]="ogImageTypes"
+        [loading]="imageUploadOp.isPending()"
+        [removing]="imageRemoveOp.isPending()"
+        (fileSelected)="uploadImage($event)"
+        (removeRequested)="removeImage()"
+      />
+      <span class="text-xs text-gray-400">
+        Recomendado 1200 × 630 px (JPG, PNG o WEBP, máx. 5 MB). Si no subes una, se usa la imagen
+        hero o el logo.
+      </span>
+      @if (imageUploadOp.error(); as err) {
+        <p-message severity="error" size="small">{{ err.message }}</p-message>
+      }
+    </div>
+
+    <div class="flex items-start gap-3">
+      <p-toggleswitch formControlName="noIndex" inputId="seo-noindex" />
+      <label for="seo-noindex" class="flex flex-col gap-0.5 cursor-pointer">
+        <span class="text-sm">Ocultar de buscadores</span>
+        <span class="text-xs text-gray-400">
+          Pide a Google y otros buscadores no indexar esta página. El link se puede seguir
+          compartiendo con normalidad.
+        </span>
+      </label>
+    </div>
+
+    @if (saveOp.error(); as err) {
+      <p-message severity="error" size="small">{{ err.message }}</p-message>
+    }
+
+    <div class="flex justify-end">
+      <p-button type="submit" label="Guardar cambios" [loading]="saveOp.isPending()" />
+    </div>
+  </form>
+
+  <!-- Vista previa -->
+  <aside class="lg:col-span-2 flex flex-col gap-3">
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+      Vista previa al compartir
+    </div>
+
+    <div
+      class="rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+    >
+      <div class="aspect-[1200/630] bg-gray-100 dark:bg-zinc-800 flex items-center justify-center">
+        @if (previewImage(); as image) {
+          <img [src]="image" alt="" class="w-full h-full object-cover" />
+        } @else {
+          <span class="flex flex-col items-center gap-1 text-xs text-gray-400">
+            <i class="ti ti-photo-off text-2xl" aria-hidden="true"></i>
+            Sin imagen
+          </span>
+        }
+      </div>
+      <div class="flex flex-col gap-0.5 px-3 py-2.5 bg-gray-50 dark:bg-zinc-800/60">
+        <span class="text-[11px] uppercase text-gray-500 dark:text-zinc-400 truncate">
+          {{ previewHost() }}
+        </span>
+        <span class="text-sm font-semibold text-gray-900 dark:text-zinc-100 line-clamp-2">
+          {{ previewTitle() }}
+        </span>
+        <span class="text-xs text-gray-500 dark:text-zinc-400 line-clamp-2">
+          {{ previewDescription() }}
+        </span>
+      </div>
+    </div>
+
+    <span class="text-xs text-gray-400">
+      Así se verá aproximadamente en Facebook, WhatsApp y X. Las redes guardan el preview en caché:
+      si ya compartiste el link antes, puede tardar en actualizarse (en Facebook puedes forzarlo
+      desde el "Sharing Debugger").
+    </span>
+  </aside>
+</div>
