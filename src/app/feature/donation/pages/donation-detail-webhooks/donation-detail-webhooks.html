@@ -7,6 +7,11 @@
       </div>
     }
   </div>
+} @else if (error()) {
+  <app-inline-error
+    message="No se pudieron cargar los eventos webhook."
+    (retry)="load()"
+  />
 } @else if (items().length === 0) {
   <app-empty-state
     icon="ti-webhook"
